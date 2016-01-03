@@ -4,7 +4,7 @@ traytor blender exporter
 This is a python script for blender which exports the current scene into a
 json file which can be used by the traytor.
 
-# Usage:
+### Usage:
 Currently it's very stupid:
 
 - open the python script in blender
@@ -32,5 +32,5 @@ Currently it's very stupid:
 
 This should save the entire scene to the json file you specified.
 
-# Todo:
+### Todo:
 Make it a real exporter with material settings, nodes etc

@@ -3,11 +3,12 @@ package traytor
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddOne(t *testing.T) {
-	require := require.New(t)
+	assert := assert.New(t)
 
-	require.Equal(AddOne(5), 6)
+	assert.Equal(6, AddOne(5))
+	assert.Equal(0, AddOne(-1), "must work for negative numbers as well")
 }

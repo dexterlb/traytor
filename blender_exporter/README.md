@@ -25,6 +25,8 @@ Currently it's very stupid:
         }
     }
     ```
+  
+  these should match the names of the actual materials you assign to your meshes
 
 - run the script
 

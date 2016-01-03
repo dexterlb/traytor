@@ -12,15 +12,19 @@ Currently it's very stupid:
 - manually create a text block called `traytor_materials` and fill in your
   materials like so:
 
-    "pretty_material": {
-        "colour": [1, 0.2, 0],
-        "type": "lambert"
-    },
-    "nice_lamp": {
-        "colour": [1, 1, 1],
-        "strength": 10000,
-        "type": "emission"
+    ```
+    {
+        "pretty_material": {
+            "colour": [1, 0.2, 0],
+            "type": "lambert"
+        },
+        "nice_lamp": {
+            "colour": [1, 1, 1],
+            "strength": 10000,
+            "type": "emission"
+        }
     }
+    ```
 
 - run the script
 

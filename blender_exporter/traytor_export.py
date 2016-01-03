@@ -83,14 +83,15 @@ def get_scene(scene):
             transformation = obj.matrix_world
 
             mesh = obj.to_mesh(scene, apply_modifiers=True, settings='RENDER')
-            triangulate(mesh)
-            mesh.transform(transformation)
-            mesh.calc_normals()
-            
-            faces += get_faces(mesh, len(vertices))
-            vertices += get_vertices(mesh)
-            
-            bpy.data.meshes.remove(mesh)
+            try:
+                triangulate(mesh)
+                mesh.transform(transformation)
+                mesh.calc_normals()
+                
+                faces += get_faces(mesh, len(vertices))
+                vertices += get_vertices(mesh)
+            finally:                
+                bpy.data.meshes.remove(mesh)
     
     data = {
         'mesh': {

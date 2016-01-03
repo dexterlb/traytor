@@ -1,4 +1,4 @@
 traytor
 =======
 
-a very slow raytracer
+Every single ray misses

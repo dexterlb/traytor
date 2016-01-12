@@ -15,6 +15,13 @@ func TestVectors(t *testing.T) {
 	var vec *Vec3 = rnd.Vec3Sphere()
 
 	assert.InEpsilon(1, vec.Length(), Epsilon, "Random unit vector's length should be 1")
+
+	norm := vec
+
+	vec = rnd.Vec3Hemi(norm)
+	if DotProduct(vec, norm) < 0 {
+		t.Error("Random hemi vector is in the wrong hemisphere")
+	}
 }
 
 func TestFloats(t *testing.T) {

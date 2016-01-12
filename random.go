@@ -29,6 +29,15 @@ func (r *Random) Vec3Sphere() *Vec3 {
 	)
 }
 
+// Vec3Hemi returns a random unit vector in the hemisphere defined by normal
+func (r *Random) Vec3Hemi(normal *Vec3) *Vec3 {
+	vec := r.Vec3Sphere()
+	if DotProduct(vec, normal) < 0 {
+		vec.Negate()
+	}
+	return vec
+}
+
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
 	return r.generator.Float64()

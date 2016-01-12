@@ -5,17 +5,17 @@ import "fmt"
 
 // Vec3 is a 3 dimensional vector
 type Vec3 struct {
-	x, y, z float64
+	X, Y, Z float64
 }
 
 // NewVec3 returns new 3 dimensional vector
-func NewVec3(x, y, z float64) {
-	return &Vec3{x: x, y: x, z: z}
+func NewVec3(x, y, z float64) *Vec3 {
+	return &Vec3{X: x, Y: y, Z: z}
 }
 
 // ToZero makes all the dimentsions of the vector zero
 func (v *Vec3) ToZero() {
-	v.x, v.y, v.z = 0, 0, 0
+	v.X, v.Y, v.Z = 0, 0, 0
 }
 
 //Length return the lenght of a vector
@@ -25,29 +25,29 @@ func (v *Vec3) Length() float64 {
 
 // LengthSquared returns the square of the length of a vector
 func (v *Vec3) LengthSquared() float64 {
-	return (v.x*v.x + v.y*v.y + v.z*v.z)
+	return (v.X*v.X + v.Y*v.Y + v.Z*v.Z)
 }
 
 // Scale multiplies all the dimension of the vector by the given multiplier
 func (v *Vec3) Scale(multiplier float64) {
-	v.x *= multiplier
-	v.y *= multiplier
-	v.z *= multiplier
+	v.X *= multiplier
+	v.Y *= multiplier
+	v.Z *= multiplier
 }
 
 // Add takes another vector and adds its dimensions to those of the given vector
 func (v *Vec3) Add(other *Vec3) {
-	v.x += other.x
-	v.y += other.y
-	v.z += other.z
+	v.X += other.X
+	v.Y += other.Y
+	v.Z += other.Z
 }
 
 // Scaled returns a new Vec3 which is the product of the multiplication of the given vector and the multiplier
 func (v *Vec3) Scaled(multiplier float64) *Vec3 {
 	return NewVec3(
-		v.x*multiplier,
-		v.y*multiplier,
-		v.z*multiplier,
+		v.X*multiplier,
+		v.Y*multiplier,
+		v.Z*multiplier,
 	)
 }
 
@@ -58,23 +58,23 @@ func (v *Vec3) Normalise() {
 
 // Normalised returns a new vector which length is 1
 func (v *Vec3) Normalised() *Vec3 {
-	normalisedVector = NewVec3(v.x, v.y, v.z)
-	normalised.SetLength(1.0)
-	return normalized
+	normalisedVector := NewVec3(v.X, v.Y, v.Z)
+	normalisedVector.SetLength(1.0)
+	return normalisedVector
 }
 
 //Reflected makes the given vector equal to its reflected vector by the normal
 func (v *Vec3) Reflect(normal *Vec3) {
 	v.Normalise()
-	v += normal.Scaled(2 * DotProduct(normal, Negative(v)))
+	v.Add(normal.Scaled(2 * DotProduct(normal, v.Negative())))
 	v.Normalise()
 }
 
 //Reflected returns a new Vec3 witch is the reflected vector of the given vector by the normal
 func (v *Vec3) Reflected(normal *Vec3) *Vec3 {
-	reflectedVector := NewVec3(v.x, v.y, v.z)
+	reflectedVector := NewVec3(v.X, v.Y, v.Z)
 	reflectedVector.Normalise()
-	reflectedVector += normal.Scaled(2 * DotProduct(normal, Negative(reflectedVector)))
+	reflectedVector.Add(normal.Scaled(2 * DotProduct(normal, reflectedVector.Negative())))
 	return reflectedVector.Normalised()
 }
 
@@ -90,41 +90,41 @@ func (v *Vec3) Negate() {
 
 //SetLength makes the lenght of the vector equal to the given newLength
 func (v *Vec3) SetLength(newLength float64) {
-	v.scale(newLength / length())
+	v.Scale(newLength / v.Length())
 }
 
 //String returns the string representation of the vector in the form of (x, y, z)
 func (v *Vec3) String() string {
-	return fmt.Sprintf("(%.3f, %.3f, %.3f)", v.x, v.y, v.z)
+	return fmt.Sprintf("(%.3g, %.3g, %.3g)", v.X, v.Y, v.Z)
 }
 
 //AddVector returns a new vector which is the sum of the two given vectors
 func AddVectors(first, second *Vec3) *Vec3 {
-	return NewVec3(first.x+second.x, first.y+second.y, first.z+second.z)
+	return NewVec3(first.X+second.X, first.Y+second.Y, first.Z+second.Z)
 }
 
 //MinusVectors returns a new vector which is the difference between the two given vectors
 func MinusVectors(first, second *Vec3) *Vec3 {
-	return AddVectors(first, Negative(second))
+	return AddVectors(first, second.Negative())
 }
 
 // DotProduct returns a float64 number which is the product of the two given vectors
 func DotProduct(first, second *Vec3) float64 {
-	return (first.x*second.x + first.y*second.y + first.z*second.z)
+	return (first.X*second.X + first.Y*second.Y + first.Z*second.Z)
 }
 
 // CrossProduct returns a new Vec3 which is the cross product of the two given vectors
 func CrossProduct(first, second *Vec3) *Vec3 {
 	return NewVec3(
-		first.y*second.z-first.z*second.y,
-		first.z*second.x-first.x*second.z,
-		first.x*second.y-first.y*second.x,
+		first.Y*second.Z-first.Z*second.Y,
+		first.Z*second.X-first.X*second.Z,
+		first.X*second.Y-first.Y*second.X,
 	)
 }
 
 //FaceForward return a new Vec3 which is the normal vector directed so that the ray is facing forward
 func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
-	if DotProduct(ray, norm) < 0 {
+	if DotProduct(ray, normal) < 0 {
 		return normal
 	}
 	return normal.Negative()
@@ -138,6 +138,6 @@ type Ray struct {
 }
 
 // NewRay returns new ray
-func NewRay(start Vec3, direction Vec3, depth int) {
+func NewRay(start Vec3, direction Vec3, depth int) *Ray {
 	return &Ray{start: start, direction: direction, depth: depth}
 }

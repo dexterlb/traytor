@@ -2,27 +2,55 @@ package traytor
 
 import "testing"
 
-func TestFloat01(t *testing.T) {
+func TestFloats(t *testing.T) {
 	rnd := NewRandom(42)
-	number := rnd.Float01()
+	var number float64 = rnd.Float01()
 	if number < 0 || number > 1 {
 		t.Error("Float01 should be in [0..1]")
 	}
-}
 
-func TestFloat0A(t *testing.T) {
-	rnd := NewRandom(42)
-	number := rnd.Float0A(15.0)
+	number = rnd.Float0A(15.0)
 	if number < 0 || number > 15.0 {
 		t.Error("Float0A should be in [0..a]")
 	}
-}
 
-func TestFloatAB(t *testing.T) {
-	rnd := NewRandom(42)
-	number := rnd.FloatAB(-10.0, 5.0)
+	number = rnd.FloatAB(-10.0, 5.0)
 	if number < -10.0 || number > 5.0 {
 		t.Error("FloatAB should be in [a..b]")
+	}
+}
+
+func TestInts(t *testing.T) {
+	rnd := NewRandom(42)
+
+	var number32 int32 = rnd.Int320N(15)
+	if number32 < 0 || number32 > 15 {
+		t.Error("Int320N should be in [0..n]")
+	}
+
+	number32 = rnd.Int32AB(-10, 5)
+	if number32 < -10 || number32 > 5 {
+		t.Error("Int32AB should be in [a..b]")
+	}
+
+	var number64 int64 = rnd.Int640N(15)
+	if number64 < 0 || number64 > 15 {
+		t.Error("Int640N should be in [0..n]")
+	}
+
+	number64 = rnd.Int64AB(-10, 5)
+	if number64 < -10 || number64 > 5 {
+		t.Error("Int64AB should be in [a..b]")
+	}
+
+	var number int = rnd.Int0N(15)
+	if number < 0 || number > 15 {
+		t.Error("Int0N should be in [0..n]")
+	}
+
+	number = rnd.IntAB(-10, 5)
+	if number < -10 || number > 5 {
+		t.Error("IntAB should be in [a..b]")
 	}
 }
 

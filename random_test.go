@@ -3,7 +3,19 @@ package traytor
 import (
 	"math"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestVectors(t *testing.T) {
+	assert := assert.New(t)
+
+	rnd := NewRandom(42)
+
+	var vec *Vec3 = rnd.Vec3Sphere()
+
+	assert.InEpsilon(1, vec.Length(), Epsilon, "Random unit vector's length should be 1")
+}
 
 func TestFloats(t *testing.T) {
 	rnd := NewRandom(42)

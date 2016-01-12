@@ -18,6 +18,17 @@ func NewRandom(seed int64) *Random {
 	return r
 }
 
+// Vec3SPhere returns a random unit vector
+func (r *Random) Vec3Sphere() *Vec3 {
+	phi := r.Float02Pi()
+	theta := r.Float0Pi()
+	return NewVec3(
+		math.Cos(theta)*math.Sin(phi),
+		math.Sin(theta)*math.Sin(phi),
+		math.Cos(phi),
+	)
+}
+
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
 	return r.generator.Float64()

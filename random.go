@@ -1,6 +1,9 @@
 package traytor
 
-import "math/rand"
+import (
+	"math"
+	"math/rand"
+)
 
 // Random is a random generator with convenient methods
 type Random struct {
@@ -18,6 +21,16 @@ func NewRandom(seed int64) *Random {
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
 	return r.generator.Float64()
+}
+
+// Float0Pi returns a random float between 0 and Pi
+func (r *Random) Float0Pi() float64 {
+	return r.generator.Float64() * math.Pi
+}
+
+// Float02Pi returns a random float between 0 and 2*Pi
+func (r *Random) Float02Pi() float64 {
+	return r.generator.Float64() * 2 * math.Pi
 }
 
 // Float0A returns a random float between 0 and a

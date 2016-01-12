@@ -1,6 +1,9 @@
 package traytor
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestFloats(t *testing.T) {
 	rnd := NewRandom(42)
@@ -17,6 +20,16 @@ func TestFloats(t *testing.T) {
 	number = rnd.FloatAB(-10.0, 5.0)
 	if number < -10.0 || number > 5.0 {
 		t.Error("FloatAB should be in [a..b]")
+	}
+
+	number = rnd.Float0Pi()
+	if number < 0 || number > math.Pi {
+		t.Error("Float0Pi should be in [0..pi]")
+	}
+
+	number = rnd.Float02Pi()
+	if number < 0 || number > 2*math.Pi {
+		t.Error("Float02Pi should be in [0..2pi]")
 	}
 }
 

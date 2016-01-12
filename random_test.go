@@ -54,6 +54,30 @@ func TestInts(t *testing.T) {
 	}
 }
 
+func TestBools(t *testing.T) {
+	rnd := NewRandom(42)
+
+	var b bool = rnd.Bool()
+	if b != true && b != false {
+		t.Error("The world is going to end.")
+	}
+
+	var sign int = rnd.Sign()
+	if sign != -1 && sign != 1 {
+		t.Error("Sign should be -1 or 1")
+	}
+
+	var sign32 int32 = rnd.Sign32()
+	if sign32 != -1 && sign32 != 1 {
+		t.Error("Sign should be -1 or 1")
+	}
+
+	var sign64 int64 = rnd.Sign64()
+	if sign64 != -1 && sign64 != 1 {
+		t.Error("Sign should be -1 or 1")
+	}
+}
+
 func TestSeed(t *testing.T) {
 	rnd1 := NewRandom(42)
 	rnd2 := NewRandom(42)

@@ -59,3 +59,39 @@ func (r *Random) Int32AB(a, b int32) int32 {
 func (r *Random) IntAB(a, b int) int {
 	return r.Int0N(b-a) + a
 }
+
+// Bool returns true or false at random
+func (r *Random) Bool() bool {
+	if r.Int0N(1) == 0 {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Sign returns -1 or 1 at random
+func (r *Random) Sign() int {
+	if r.Bool() {
+		return 1
+	} else {
+		return -1
+	}
+}
+
+// Sign32 returns -1 or 1 at random
+func (r *Random) Sign32() int32 {
+	if r.Bool() {
+		return 1
+	} else {
+		return -1
+	}
+}
+
+// Sign64 returns -1 or 1 at random
+func (r *Random) Sign64() int64 {
+	if r.Bool() {
+		return 1
+	} else {
+		return -1
+	}
+}

@@ -1,5 +1,6 @@
 package traytor
 
 const (
-	Epsilon float64 = 0.0000001
+	// Epsilon is a very small number
+	Epsilon float64 = 1e-9
 )

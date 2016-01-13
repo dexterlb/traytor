@@ -63,14 +63,14 @@ func (v *Vec3) Normalised() *Vec3 {
 	return normalisedVector
 }
 
-//Reflected makes the given vector equal to its reflected vector by the normal
+//Reflected makes the given vector equal to its reflected vector by the normal and is also normalised
 func (v *Vec3) Reflect(normal *Vec3) {
 	v.Normalise()
 	v.Add(normal.Scaled(2 * DotProduct(normal, v.Negative())))
 	v.Normalise()
 }
 
-//Reflected returns a new Vec3 witch is the reflected vector of the given vector by the normal
+//Reflected returns a new Vec3 witch is the normalised reflected vector of the given vector by the normal
 func (v *Vec3) Reflected(normal *Vec3) *Vec3 {
 	reflectedVector := NewVec3(v.X, v.Y, v.Z)
 	reflectedVector.Normalise()
@@ -103,12 +103,12 @@ func AddVectors(first, second *Vec3) *Vec3 {
 	return NewVec3(first.X+second.X, first.Y+second.Y, first.Z+second.Z)
 }
 
-//MinusVectors returns a new vector which is the difference between the two given vectors
+//MinusVectors returns a new vector which is the first vector minus the second
 func MinusVectors(first, second *Vec3) *Vec3 {
 	return AddVectors(first, second.Negative())
 }
 
-// DotProduct returns a float64 number which is the product of the two given vectors
+// DotProduct returns a float64 number which is the dot product of the two given vectors
 func DotProduct(first, second *Vec3) float64 {
 	return (first.X*second.X + first.Y*second.Y + first.Z*second.Z)
 }

@@ -13,8 +13,8 @@ func NewVec3(x, y, z float64) *Vec3 {
 	return &Vec3{X: x, Y: y, Z: z}
 }
 
-// ToZero makes all the dimentsions of the vector zero
-func (v *Vec3) ToZero() {
+// MakeZero makes all the dimentsions of the vector zero
+func (v *Vec3) MakeZero() {
 	v.X, v.Y, v.Z = 0, 0, 0
 }
 

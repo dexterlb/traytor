@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-func ExampleVec3_ToZero() {
+func ExampleVec3_MakeZero() {
 	v := NewVec3(1, 2, 3)
 	fmt.Printf("%s\n", v)
-	v.ToZero()
+	v.MakeZero()
 	fmt.Printf("%s\n", v)
 
 	// Output:

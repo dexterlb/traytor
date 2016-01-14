@@ -1,10 +1,9 @@
 package traytor
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
@@ -50,7 +49,5 @@ func TestToColour(t *testing.T) {
 	asserEqualColours(t, NewColour(0, 0, 0), ToColour(c))
 
 	c = NewColour32Bit(51, 0, 0)
-	newColour := ToColour(c)
 	asserEqualColours(t, NewColour(0.2, 0, 0), ToColour(c))
-
 }

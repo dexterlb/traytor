@@ -3,9 +3,9 @@ package traytor
 import "image/color"
 import "math"
 
-//Colour is a representation of a float64 RGB colour
+//Colour is a representation of a float32 RGB colour
 type Colour struct {
-	R, G, B float64
+	R, G, B float32
 }
 
 //Colour32Bit is 32bit colour implementing the color.Color interface
@@ -24,7 +24,7 @@ func (c *Colour32Bit) RGBA() (r, g, b, a uint32) {
 }
 
 //NewColour returns a new RGB colour
-func NewColour(r, g, b float64) *Colour {
+func NewColour(r, g, b float32) *Colour {
 	return &Colour{R: r, G: g, B: b}
 }
 
@@ -34,7 +34,7 @@ func (c *Colour) To32Bit() *Colour32Bit {
 }
 
 //linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 255
-func linearTosRGB(x float64) uint32 {
+func linearTosRGB(x float32) uint32 {
 	a := 0.055
 	if x <= 0 {
 		return 0
@@ -51,12 +51,12 @@ func linearTosRGB(x float64) uint32 {
 }
 
 //sRGBToLinear converts singel int number to float using special magic formula.
-func sRGBToLinear(i uint32) float64 {
+func sRGBToLinear(i uint32) float32 {
 	if i > 255 {
 		return 1
 	}
 
-	x := float64(i) / 255.0
+	x := float32(i) / 255.0
 	if x <= 0.04045 {
 		return x / 12.92
 	} else {
@@ -76,12 +76,12 @@ func (c *Colour) MakeZero() {
 }
 
 //SetColour sets the colour's components to the given r, g and b
-func (c *Colour) SetColour(r, g, b float64) {
+func (c *Colour) SetColour(r, g, b float32) {
 	c.R, c.G, c.B = r, g, b
 }
 
 //Intensity returns the intensity of the given colour
-func (c *Colour) Intensity() float64 {
+func (c *Colour) Intensity() float32 {
 	return (c.R + c.G + c.B) / 3.0
 }
 

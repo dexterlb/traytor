@@ -1,6 +1,7 @@
 package traytor
 
 import "image/color"
+import "math"
 
 //Colour is a representation of a float64 RGB colour
 type Colour struct {
@@ -32,10 +33,21 @@ func (c *Colour) To32Bit() *Colour32Bit {
 	return NewColour32Bit(uint32(FloatToInt(c.R)), uint32(FloatToInt(c.G)), uint32(FloatToInt(c.B)))
 }
 
+//linearToFLoat converts singel int number to float using special magic formula.
+func linearToFloat(x int32) float64 {
+	x = float64(x) / 255.0
+	if x >= 0 && x <= 0.00313066 {
+		return x * 12.92
+	}
+	if x > 0.00313066 && x <= 1 {
+		return (math.Pow((1.055*x), (1/2.4)) - 0.055)
+	}
+}
+
 //ToColour takes any colour that implements the color.Color interface and turns it into RGB colout(r, g, b are between 0 and 1)
 func ToColour(c color.Color) *Colour {
 	r, g, b, _ := c.RGBA()
-	return NewColour(float64(r)/255.0, float64(g)/255.0, float64(b)/255.0)
+	return NewColour(linearToFloat(r), linearToFloat(g), linearToFloat(b))
 }
 
 //MakeZero returns black RGB colour

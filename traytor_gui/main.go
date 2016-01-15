@@ -84,6 +84,21 @@ func (l *LameColour) RGBA() (uint32, uint32, uint32, uint32) {
 	return l.r, l.g, l.b, 1
 }
 
+func WaitForExit() {
+	for {
+		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+			switch t := event.(type) {
+			case *sdl.QuitEvent:
+				return
+			case *sdl.KeyUpEvent:
+				if t.Keysym.Sym == sdl.K_ESCAPE {
+					return
+				}
+			}
+		}
+	}
+}
+
 func main() {
 	display, err := NewDisplay(800, 800, "shite")
 	if err != nil {
@@ -101,6 +116,7 @@ func main() {
 	}
 	display.Update()
 
-	sdl.Delay(4000)
+	WaitForExit()
+
 	sdl.Quit()
 }

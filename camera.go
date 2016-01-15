@@ -1,9 +1,16 @@
 package traytor
 
-// Camera is a pinhole camera which can shoot rays. It has a focus
+// Camera is a generic camera
+type Camera interface {
+	// ShootRay generates a ray which corresponds to the specified 2D coordinates
+	// in the camera's viewframe
+	ShootRay(x, y float64) *Ray
+}
+
+// PinholeCamera has a focus
 // (the location of the camera) and 3 points which define a
 // rectangle (a "window" into the scene)
-type Camera struct {
+type PinholeCamera struct {
 	Focus      Vec3
 	BottomLeft Vec3
 	TopLeft    Vec3
@@ -12,7 +19,7 @@ type Camera struct {
 
 // ShootRay generates a ray coming out of the camera, going through the
 // specified coordinates of the screen
-func (c *Camera) ShootRay(x, y float64) *Ray {
+func (c *PinholeCamera) ShootRay(x, y float64) *Ray {
 	r := &Ray{}
 	r.Start = c.Focus
 	intersection := AddVectors(

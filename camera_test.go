@@ -2,8 +2,8 @@ package traytor
 
 import "fmt"
 
-func ExampleCamera_ShootRay() {
-	c := &Camera{
+func ExamplePinholeCamera_ShootRay() {
+	var c Camera = &PinholeCamera{
 		Focus:      *NewVec3(0, 0, 0),
 		TopLeft:    *NewVec3(-1, 1, 1),
 		TopRight:   *NewVec3(1, 1, 1),

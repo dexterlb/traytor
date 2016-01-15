@@ -22,10 +22,12 @@ type PinholeCamera struct {
 func (c *PinholeCamera) ShootRay(x, y float64) *Ray {
 	r := &Ray{}
 	r.Start = c.Focus
-	intersection := AddVectors(
-		MinusVectors(&c.TopRight, &c.TopLeft).Scaled(x),
-		MinusVectors(&c.BottomLeft, &c.TopLeft).Scaled(y),
-	)
+
+	intersection := &Vec3{}
+	*intersection = c.TopLeft
+	intersection.Add(MinusVectors(&c.TopRight, &c.TopLeft).Scaled(x))
+	intersection.Add(MinusVectors(&c.BottomLeft, &c.TopLeft).Scaled(y))
+
 	r.Direction = *MinusVectors(intersection, &r.Start).Normalised()
 	return r
 }

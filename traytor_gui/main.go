@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"image/color"
+	"io/ioutil"
+	"log"
 
 	"github.com/salviati/go-qt5/qt5"
 )
@@ -12,29 +12,27 @@ func main() {
 }
 
 func ui_main() {
+	data, err := ioutil.ReadFile("/tmp/foo.png")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	pixmap := qt5.NewPixmapWithData(data)
+
 	w := qt5.NewWidget()
 	defer w.Close()
 
-	// canvas := qt5.NewWidget()
+	w.SetWindowTitle("This is a big shit")
+	w.SetSizev(640, 480)
 
-	w.OnPaintEvent(func(e *qt5.PaintEvent) {
-		paint := qt5.NewPainter()
-		defer paint.Close()
-		paint.Begin(w)
-		pen := qt5.NewPen()
-		pen.SetColor(color.RGBA{255, 128, 0, 0})
-		pen.SetWidth(2)
-		fmt.Println(pen, pen.Color(), pen.Width())
-		paint.SetPen(pen)
-		brush := qt5.NewBrush()
-		brush.SetStyle(qt5.SolidPattern)
-		brush.SetColor(color.RGBA{128, 128, 0, 255})
-		paint.SetBrush(brush)
-		paint.DrawRect(qt5.Rect{10, 10, 100, 100})
-	})
+	label := qt5.NewLabel()
+	label.SetPixmap(pixmap)
 
-	w.SetSize(qt5.Size{400, 400})
+	vbox := qt5.NewVBoxLayout()
+	vbox.AddWidget(label)
 
+	w.SetLayout(vbox)
 	w.Show()
 
 	qt5.Run()

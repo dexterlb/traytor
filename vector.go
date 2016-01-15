@@ -132,12 +132,12 @@ func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
 
 // Ray is defined by its start, direction and depth which indicates how many materials it has passed through
 type Ray struct {
-	start     Vec3
-	direction Vec3
-	depth     int
+	Start     Vec3
+	Direction Vec3
+	Depth     int
 }
 
 // NewRay returns new ray
 func NewRay(start Vec3, direction Vec3, depth int) *Ray {
-	return &Ray{start: start, direction: direction, depth: depth}
+	return &Ray{Start: start, Direction: direction, Depth: depth}
 }

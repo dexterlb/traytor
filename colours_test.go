@@ -49,5 +49,5 @@ func TestToColour(t *testing.T) {
 	asserEqualColours(t, NewColour(0, 0, 0), ToColour(c))
 
 	c = NewColour32Bit(51, 0, 0)
-	asserEqualColours(t, NewColour(0.2, 0, 0), ToColour(c))
+	asserEqualColours(t, NewColour(0.4679389891357439, 0, 0), ToColour(c))
 }

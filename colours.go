@@ -30,16 +30,36 @@ func NewColour(r, g, b float64) *Colour {
 
 //To32Bit returns each of the components of the given RGB color to  uint32
 func (c *Colour) To32Bit() *Colour32Bit {
-	return NewColour32Bit(uint32(FloatToInt(c.R)), uint32(FloatToInt(c.G)), uint32(FloatToInt(c.B)))
+	return NewColour32Bit(linearTosRGB(c.R), linearTosRGB(c.G), linearTosRGB(c.B))
 }
 
-//linearToFLoat converts singel int number to float using special magic formula.
-func linearToFloat(x int32) float64 {
-	x = float64(x) / 255.0
-	if x >= 0 && x <= 0.00313066 {
-		return x * 12.92
+//linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 255
+func linearTosRGB(x float64) uint32 {
+	a := 0.055
+	if x <= 0 {
+		return 0
 	}
-	if x > 0.00313066 && x <= 1 {
+	if x >= 1 {
+		return 255
+	}
+	if x <= 0.00313008 {
+		x = x * 12.02
+	} else {
+		x = (1.0+a)*math.Pow(x, 1.0/2.4) - a
+	}
+	return uint32(Round(x * 255.0))
+}
+
+//sRGBToLinear converts singel int number to float using special magic formula.
+func sRGBToLinear(i uint32) float64 {
+	if i > 255 {
+		return 1
+	}
+
+	x := float64(i) / 255.0
+	if x <= 0.04045 {
+		return x / 12.92
+	} else {
 		return (math.Pow((1.055*x), (1/2.4)) - 0.055)
 	}
 }
@@ -47,7 +67,7 @@ func linearToFloat(x int32) float64 {
 //ToColour takes any colour that implements the color.Color interface and turns it into RGB colout(r, g, b are between 0 and 1)
 func ToColour(c color.Color) *Colour {
 	r, g, b, _ := c.RGBA()
-	return NewColour(linearToFloat(r), linearToFloat(g), linearToFloat(b))
+	return NewColour(sRGBToLinear(r), sRGBToLinear(g), sRGBToLinear(b))
 }
 
 //MakeZero returns black RGB colour

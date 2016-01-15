@@ -1,7 +1,6 @@
 package traytor
 
 import "image/color"
-import "math"
 
 //Colour is a representation of a float32 RGB colour
 type Colour struct {
@@ -35,7 +34,7 @@ func (c *Colour) To32Bit() *Colour32Bit {
 
 //linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 255
 func linearTosRGB(x float32) uint32 {
-	a := 0.055
+	a := float32(0.055)
 	if x <= 0 {
 		return 0
 	}
@@ -45,9 +44,9 @@ func linearTosRGB(x float32) uint32 {
 	if x <= 0.00313008 {
 		x = x * 12.02
 	} else {
-		x = (1.0+a)*math.Pow(x, 1.0/2.4) - a
+		x = (1.0+a)*Pow32(x, 1.0/2.4) - a
 	}
-	return uint32(Round(x * 255.0))
+	return uint32(Round32(x * 255.0))
 }
 
 //sRGBToLinear converts singel int number to float using special magic formula.
@@ -60,7 +59,7 @@ func sRGBToLinear(i uint32) float32 {
 	if x <= 0.04045 {
 		return x / 12.92
 	} else {
-		return (math.Pow((1.055*x), (1/2.4)) - 0.055)
+		return (Pow32((1.055*x), (1/2.4)) - 0.055)
 	}
 }
 

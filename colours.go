@@ -1,10 +1,18 @@
 package traytor
 
-import "image/color"
+import (
+	"fmt"
+	"image/color"
+)
 
 //Colour is a representation of a float32 RGB colour
 type Colour struct {
 	R, G, B float32
+}
+
+//String returns the string representation of the colour in the form of {r, g, b}
+func (c *Colour) String() string {
+	return fmt.Sprintf("{%.3g, %.3g, %.3g}", c.R, c.G, c.B)
 }
 
 //Colour32Bit is 32bit colour implementing the color.Color interface
@@ -88,4 +96,11 @@ func (c *Colour) Add(other *Colour) {
 	c.R += other.R
 	c.G += other.G
 	c.B += other.B
+}
+
+func Sum(first, other Colour) *Colour {
+	r := first.R + other.R
+	g := first.G + other.G
+	b := first.B + other.B
+	return NewColour(r, g, b)
 }

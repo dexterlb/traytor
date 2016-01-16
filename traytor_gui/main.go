@@ -1,9 +1,11 @@
 package main
 
 import (
+	"image"
 	"image/color"
+	"image/png"
 	"log"
-	"math"
+	"os"
 	"unsafe"
 
 	"github.com/veandco/go-sdl2/sdl"
@@ -15,21 +17,34 @@ type Display struct {
 	window *sdl.Window
 }
 
-func (d *Display) setPixel(x int32, y int32, colour color.Color) {
+func (d *Display) setPixel(x int, y int, colour color.Color) {
 	r, g, b, _ := colour.RGBA()
 
 	var value uint32 = sdl.MapRGB(
 		d.format,
-		uint8(r),
-		uint8(g),
-		uint8(b),
+		uint8(r>>8),
+		uint8(g>>8),
+		uint8(b>>8),
 	)
 
 	var pix = uintptr(unsafe.Pointer(&d.screen.Pixels()[0]))
-	pix += uintptr(((y * d.screen.W) + x)) * unsafe.Sizeof(value)
+	pix += uintptr(((y * int(d.screen.W)) + x)) * unsafe.Sizeof(value)
 	var pu = unsafe.Pointer(pix)
 	var pp *uint32 = (*uint32)(pu)
 	*pp = value
+}
+
+func (d *Display) showImage(img image.Image) {
+	topleftX := img.Bounds().Min.X
+	topleftY := img.Bounds().Min.Y
+	width := img.Bounds().Max.X - topleftX - 1
+	height := img.Bounds().Max.Y - topleftY - 1
+
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			d.setPixel(x, y, img.At(x+topleftX, y+topleftY))
+		}
+	}
 }
 
 func NewDisplay(width, height int, title string) (*Display, error) {
@@ -107,13 +122,20 @@ func main() {
 	}
 	defer display.Close()
 
-	colour := &LameColour{4, 240, 20}
-
-	for t := 0.0; t < 2*math.Pi; t += 0.001 {
-		x := 16 * math.Pow(math.Sin(t), 3)
-		y := 13*math.Cos(t) - 5*math.Cos(2*t) - 2*math.Cos(3*t) - math.Cos(4*t)
-		display.setPixel(int32(400+x*16), int32(400-y*16), colour)
+	file, err := os.Open("/tmp/foo.png")
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
+
+	decoded, err := png.Decode(file)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	display.showImage(decoded)
+
 	display.Update()
 
 	WaitForExit()

@@ -92,7 +92,7 @@ func (d *Display) Update() {
 	d.window.UpdateSurface()
 }
 
-func WaitForExit() {
+func (d *Display) Loop() {
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
 			switch t := event.(type) {
@@ -102,6 +102,8 @@ func WaitForExit() {
 				if t.Keysym.Sym == sdl.K_ESCAPE {
 					return
 				}
+			case *sdl.WindowEvent:
+				d.Update()
 			}
 		}
 	}
@@ -133,7 +135,7 @@ func main() {
 
 	display.Update()
 
-	WaitForExit()
+	display.Loop()
 
 	sdl.Quit()
 }

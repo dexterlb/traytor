@@ -1,7 +1,6 @@
 package traytor
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 )
@@ -68,7 +67,6 @@ func (im *Image) Bounds() image.Rectangle {
 func ToImage(im image.Image) *Image {
 	width := im.Bounds().Max.X - im.Bounds().Min.X
 	height := im.Bounds().Max.Y - im.Bounds().Min.Y
-	fmt.Printf("wh %d %d\n", width, height)
 	extractedImage := NewImage(width, height)
 	for i := 0; i < width; i++ {
 		for j := 0; j < height; j++ {

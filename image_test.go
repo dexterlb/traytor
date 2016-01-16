@@ -2,6 +2,7 @@ package traytor
 
 import (
 	"fmt"
+	"image/color"
 )
 
 func ExampleImage_String() {
@@ -33,5 +34,26 @@ func ExampleImage_Add() {
 	// {5, 7, 9}, {5, 7, 9}
 	// {5, 7, 9}, {5, 7, 9}
 	//
+}
 
+func ExampleImage_Bounds() {
+	im := NewImage(640, 480)
+
+	bounds := im.Bounds()
+	fmt.Printf("%s\n", bounds)
+
+	// Output:
+	// (0,0)-(640,480)
+	//
+}
+
+func ExampleImage_ColorModel() {
+	im := NewImage(640, 480)
+	if im.ColorModel() == color.RGBAModel {
+		fmt.Printf("Model is RGBA\n")
+	}
+
+	// Output:
+	// Model is RGBA
+	//
 }

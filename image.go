@@ -1,5 +1,10 @@
 package traytor
 
+import (
+	"image"
+	"image/color"
+)
+
 //Image is a stuct which will display images via its 2D colour array, wich represents the screen
 type Image struct {
 	pixels        [][]Colour
@@ -16,6 +21,16 @@ func NewImage(width, height int) *Image {
 		}
 	}
 	return &Image{pixels: pixels, width: width, height: height}
+}
+
+//ColorModel returns the image's color model (as used by Go's image interface)
+func (im *Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+//Bounds returns a rectangle as big as the image
+func (im *Image) Bounds() image.Rectangle {
+	return image.Rect(0, 0, im.width, im.height)
 }
 
 func (im *Image) String() string {

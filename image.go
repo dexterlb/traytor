@@ -70,7 +70,7 @@ func ToImage(im image.Image) *Image {
 	extractedImage := NewImage(width, height)
 	for i := 0; i < height; i++ {
 		for j := 0; j < width; j++ {
-			extractedImage.pixels[i][j].Add((*im.At(i, j)).ToColour())
+			extractedImage.pixels[i][j].Add((*im.At(im.Bounds().Min.X+x, im.Bounds().Min.Y+i, im.Bounds().Min.X+x, im.Bounds().Min.Y+j)).ToColour())
 		}
 	}
 	return extractedImage

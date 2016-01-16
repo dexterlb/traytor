@@ -3,6 +3,9 @@ package traytor
 import (
 	"fmt"
 	"image/color"
+	"image/png"
+	"os"
+	"testing"
 )
 
 func ExampleImage_String() {
@@ -76,4 +79,19 @@ func ExampleImage_At() {
 	// [0, 255, 0]
 	// [255, 255, 0]
 	//
+}
+
+func TestSavePng(t *testing.T) {
+	file, err := os.Create("/tmp/test.png")
+	if err != nil {
+		t.Error(err)
+	}
+
+	im := NewImage(20, 20)
+	im.pixels[5][5].SetColour(1, 0, 1)
+
+	err = png.Encode(file, im)
+	if err != nil {
+		t.Error(err)
+	}
 }

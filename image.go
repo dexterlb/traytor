@@ -63,3 +63,15 @@ func (im *Image) ColorModel() color.Model {
 func (im *Image) Bounds() image.Rectangle {
 	return image.Rect(0, 0, im.width, im.height)
 }
+
+func ToImage(im image.Image) *Image {
+	width := im.Bounds().Max.X - 1 - im.Bounds().Min.X
+	height := im.Bounds().Max.Y - 1 - im.Bounds().Min.Y
+	extractedImage := NewImage(width, height)
+	for i := 0; i < height; i++ {
+		for j := 0; j < width; j++ {
+			extractedImage.pixels[i][j].Add((*im.At(i, j)).ToColour())
+		}
+	}
+	return extractedImage
+}

@@ -2,8 +2,9 @@ package traytor
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
@@ -38,10 +39,10 @@ func TestRGBA(t *testing.T) {
 	assert := assert.New(t)
 	c := NewColour32Bit(51, 0, 0)
 	r, g, b, a := c.RGBA()
-	assert.InEpsilon(51, r, Epsilon)
-	assert.InEpsilon(0, g, Epsilon)
-	assert.InEpsilon(0, b, Epsilon)
-	assert.InEpsilon(1, a, Epsilon)
+	assert.Equal(uint32(51), r)
+	assert.Equal(uint32(0), g)
+	assert.Equal(uint32(0), b)
+	assert.Equal(uint32(255), a)
 }
 
 func ExampleColour_String() {

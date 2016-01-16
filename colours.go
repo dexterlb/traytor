@@ -32,7 +32,7 @@ func NewColour32Bit(r, g, b uint32) *Colour32Bit {
 
 //RGBA implements the color.Color interface converting the 32bit colour to 32bit colour with alpha
 func (c *Colour32Bit) RGBA() (r, g, b, a uint32) {
-	return c.R, c.G, c.B, 1
+	return c.R, c.G, c.B, 255
 }
 
 //NewColour returns a new RGB colour

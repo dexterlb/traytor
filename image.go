@@ -1,6 +1,7 @@
 package traytor
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 )
@@ -26,8 +27,8 @@ func NewImage(width, height int) *Image {
 //String returns a string which is the representaton of image: {r, g, b}, ... {r, g, b}\n ...\n {r, g, b},...{r, g, b}
 func (im *Image) String() string {
 	representation := ""
-	for j := 0; j < im.height; j++ {
-		for i := 0; i < im.width; i++ {
+	for j := 0; j < im.width; j++ {
+		for i := 0; i < im.height; i++ {
 			representation += im.pixels[i][j].String()
 			if i != im.width-1 {
 				representation += ", "
@@ -41,8 +42,8 @@ func (im *Image) String() string {
 //Add returns a new image which is the sum of two given.
 func (im *Image) Add(other *Image) *Image {
 	sum := NewImage(im.width, im.height)
-	for j := 0; j < im.height; j++ {
-		for i := 0; i < im.width; i++ {
+	for j := 0; j < im.width; j++ {
+		for i := 0; i < im.height; i++ {
 			sum.pixels[i][j] = *Sum(im.pixels[i][j], other.pixels[i][j])
 		}
 	}
@@ -65,12 +66,13 @@ func (im *Image) Bounds() image.Rectangle {
 }
 
 func ToImage(im image.Image) *Image {
-	width := im.Bounds().Max.X - 1 - im.Bounds().Min.X
-	height := im.Bounds().Max.Y - 1 - im.Bounds().Min.Y
+	width := im.Bounds().Max.X - im.Bounds().Min.X
+	height := im.Bounds().Max.Y - im.Bounds().Min.Y
+	fmt.Printf("wh %d %d\n", width, height)
 	extractedImage := NewImage(width, height)
-	for i := 0; i < height; i++ {
-		for j := 0; j < width; j++ {
-			extractedImage.pixels[i][j].Add(ToColour(im.At(im.Bounds().Min.Y+i, im.Bounds().Min.Y+j)))
+	for i := 0; i < width; i++ {
+		for j := 0; j < height; j++ {
+			extractedImage.pixels[i][j].Add(ToColour(im.At(im.Bounds().Min.X+i, im.Bounds().Min.Y+j)))
 		}
 	}
 	return extractedImage

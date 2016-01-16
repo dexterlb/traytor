@@ -8,6 +8,7 @@ import (
 	"os"
 	"unsafe"
 
+	"github.com/DexterLB/traytor"
 	"github.com/veandco/go-sdl2/sdl"
 )
 
@@ -91,14 +92,6 @@ func (d *Display) Update() {
 	d.window.UpdateSurface()
 }
 
-type LameColour struct {
-	r, g, b uint32
-}
-
-func (l *LameColour) RGBA() (uint32, uint32, uint32, uint32) {
-	return l.r, l.g, l.b, 1
-}
-
 func WaitForExit() {
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -134,7 +127,9 @@ func main() {
 		return
 	}
 
-	display.showImage(decoded)
+	img := traytor.ToImage(decoded)
+
+	display.showImage(img)
 
 	display.Update()
 

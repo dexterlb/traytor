@@ -33,5 +33,24 @@ func ExampleImage_Add() {
 	// {5, 7, 9}, {5, 7, 9}
 	// {5, 7, 9}, {5, 7, 9}
 	//
+}
 
+func ExampleImage_At() {
+	im := NewImage(2, 2)
+	for j := 0; j < im.height; j++ {
+		for i := 0; i < im.width; i++ {
+			im.pixels[i][j].SetColour(float32(i), float32(j), 0)
+		}
+	}
+	fmt.Printf("%s\n", im.At(0, 0))
+	fmt.Printf("%s\n", im.At(1, 0))
+	fmt.Printf("%s\n", im.At(0, 1))
+	fmt.Printf("%s\n", im.At(1, 1))
+
+	// Output:
+	// [0, 0, 0]
+	// [255, 0, 0]
+	// [0, 255, 0]
+	// [255, 255, 0]
+	//
 }

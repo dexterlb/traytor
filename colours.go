@@ -15,6 +15,11 @@ func (c *Colour) String() string {
 	return fmt.Sprintf("{%.3g, %.3g, %.3g}", c.R, c.G, c.B)
 }
 
+//String returns the string representation of the 32bit colour in the form of [r, g, b]
+func (c *Colour32Bit) String() string {
+	return fmt.Sprintf("[%d, %d, %d]", c.R, c.G, c.B)
+}
+
 //Colour32Bit is 32bit colour implementing the color.Color interface
 type Colour32Bit struct {
 	R, G, B uint32

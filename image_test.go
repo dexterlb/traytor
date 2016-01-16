@@ -75,9 +75,9 @@ func ExampleImage_At() {
 
 	// Output:
 	// [0, 0, 0]
-	// [255, 0, 0]
-	// [0, 255, 0]
-	// [255, 255, 0]
+	// [65535, 0, 0]
+	// [0, 65535, 0]
+	// [65535, 65535, 0]
 	//
 }
 
@@ -88,10 +88,26 @@ func TestSavePng(t *testing.T) {
 	}
 
 	im := NewImage(20, 20)
-	im.pixels[5][5].SetColour(1, 0, 1)
+	im.pixels[5][5].SetColour(0, 1, 0.5)
 
 	err = png.Encode(file, im)
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestLoadPng(t *testing.T) {
+	file, err := os.Open("/tmp/test2.png")
+	if err != nil {
+		t.Error(err)
+	}
+
+	decoded, err := png.Decode(file)
+	if err != nil {
+		t.Error(err)
+	}
+
+	im := ToImage(decoded)
+	r, g, b, a := decoded.At(5, 5).RGBA()
+	t.Error("%s %d %d %d %d\n", im.pixels[5][5], r, g, b, a)
 }

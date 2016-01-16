@@ -32,7 +32,7 @@ func NewColour32Bit(r, g, b uint32) *Colour32Bit {
 
 //RGBA implements the color.Color interface converting the 32bit colour to 32bit colour with alpha
 func (c *Colour32Bit) RGBA() (r, g, b, a uint32) {
-	return c.R, c.G, c.B, 255
+	return c.R, c.G, c.B, 65535
 }
 
 //NewColour returns a new RGB colour
@@ -45,30 +45,30 @@ func (c *Colour) To32Bit() *Colour32Bit {
 	return NewColour32Bit(linearTosRGB(c.R), linearTosRGB(c.G), linearTosRGB(c.B))
 }
 
-//linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 255
+//linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 65535
 func linearTosRGB(x float32) uint32 {
 	a := float32(0.055)
 	if x <= 0 {
 		return 0
 	}
 	if x >= 1 {
-		return 255
+		return 65535
 	}
 	if x <= 0.00313008 {
 		x = x * 12.02
 	} else {
 		x = (1.0+a)*Pow32(x, 1.0/2.4) - a
 	}
-	return uint32(Round32(x * 255.0))
+	return uint32(Round32(x * 65535.0))
 }
 
 //sRGBToLinear converts singel int number to float using special magic formula.
 func sRGBToLinear(i uint32) float32 {
-	if i > 255 {
+	if i > 65535 {
 		return 1
 	}
 
-	x := float32(i) / 255.0
+	x := float32(i) / 65535.0
 	if x <= 0.04045 {
 		return x / 12.92
 	} else {

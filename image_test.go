@@ -3,9 +3,6 @@ package traytor
 import (
 	"fmt"
 	"image/color"
-	"image/png"
-	"os"
-	"testing"
 )
 
 func ExampleImage_String() {
@@ -80,38 +77,3 @@ func ExampleImage_At() {
 	// [65535, 65535, 0]
 	//
 }
-
-func TestSavePng(t *testing.T) {
-	file, err := os.Create("/tmp/test.png")
-	if err != nil {
-		t.Error(err)
-	}
-
-	im := NewImage(20, 20)
-	im.pixels[5][5].SetColour(0, 1, 0.5)
-
-	err = png.Encode(file, im)
-	if err != nil {
-		t.Error(err)
-	}
-}
-
-/*
-	// works, but the test itself is unfinished
-func TestLoadPng(t *testing.T) {
-	file, err := os.Open("/tmp/test2.png")
-	if err != nil {
-		t.Error(err)
-	}
-
-	decoded, err := png.Decode(file)
-	if err != nil {
-		t.Error(err)
-	}
-
-	im := ToImage(decoded)
-	r, g, b, a := decoded.At(5, 5).RGBA()
-	t.Error("%s %d %d %d %d\n", im.pixels[5][5], r, g, b, a)
-}
-
-*/

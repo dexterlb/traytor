@@ -64,6 +64,7 @@ func (im *Image) Bounds() image.Rectangle {
 	return image.Rect(0, 0, im.width, im.height)
 }
 
+//ToImage constructs an Image from an sRGB image
 func ToImage(im image.Image) *Image {
 	width := im.Bounds().Max.X - im.Bounds().Min.X
 	height := im.Bounds().Max.Y - im.Bounds().Min.Y

@@ -23,16 +23,7 @@ func NewImage(width, height int) *Image {
 	return &Image{pixels: pixels, width: width, height: height}
 }
 
-//ColorModel returns the image's color model (as used by Go's image interface)
-func (im *Image) ColorModel() color.Model {
-	return color.RGBAModel
-}
-
-//Bounds returns a rectangle as big as the image
-func (im *Image) Bounds() image.Rectangle {
-	return image.Rect(0, 0, im.width, im.height)
-}
-
+//String returns a string which is the representaton of image: {r, g, b}, ... {r, g, b}\n ...\n {r, g, b},...{r, g, b}
 func (im *Image) String() string {
 	representation := ""
 	for j := 0; j < im.height; j++ {
@@ -47,6 +38,7 @@ func (im *Image) String() string {
 	return representation
 }
 
+//Add returns a new image which is the sum of two given.
 func (im *Image) Add(other *Image) *Image {
 	sum := NewImage(im.width, im.height)
 	for j := 0; j < im.height; j++ {
@@ -55,4 +47,19 @@ func (im *Image) Add(other *Image) *Image {
 		}
 	}
 	return sum
+}
+
+//At returns the Colour of the pixel at [x][y]
+func (im *Image) At(x, y int) color.Color {
+	return im.pixels[x][y].To32Bit()
+}
+
+//ColorModel returns the image's color model (as used by Go's image interface)
+func (im *Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+//Bounds returns a rectangle as big as the image
+func (im *Image) Bounds() image.Rectangle {
+	return image.Rect(0, 0, im.width, im.height)
 }

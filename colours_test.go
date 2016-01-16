@@ -9,9 +9,11 @@ import (
 
 func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
 	assert := assert.New(t)
-	assert.InEpsilon(expected.R, c.R, Epsilon)
-	assert.InEpsilon(expected.G, c.G, Epsilon)
-	assert.InEpsilon(expected.B, c.B, Epsilon)
+	colourEpsilon := 0.0001
+
+	assert.InEpsilon(expected.R, c.R, colourEpsilon)
+	assert.InEpsilon(expected.G, c.G, colourEpsilon)
+	assert.InEpsilon(expected.B, c.B, colourEpsilon)
 }
 
 func TestTo32Bit(t *testing.T) {

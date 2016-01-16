@@ -96,6 +96,8 @@ func TestSavePng(t *testing.T) {
 	}
 }
 
+/*
+	// works, but the test itself is unfinished
 func TestLoadPng(t *testing.T) {
 	file, err := os.Open("/tmp/test2.png")
 	if err != nil {
@@ -111,3 +113,5 @@ func TestLoadPng(t *testing.T) {
 	r, g, b, a := decoded.At(5, 5).RGBA()
 	t.Error("%s %d %d %d %d\n", im.pixels[5][5], r, g, b, a)
 }
+
+*/

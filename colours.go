@@ -47,7 +47,6 @@ func (c *Colour) To32Bit() *Colour32Bit {
 
 //linearTosRGBreturn an int between 0 and 1 constructed from a given float between 0 and 65535
 func linearTosRGB(x float32) uint32 {
-	a := float32(0.055)
 	if x <= 0 {
 		return 0
 	}
@@ -57,7 +56,7 @@ func linearTosRGB(x float32) uint32 {
 	if x <= 0.00313008 {
 		x = x * 12.02
 	} else {
-		x = (1.0+a)*Pow32(x, 1.0/2.4) - a
+		x = (1.055)*Pow32(x, 1.0/2.4) - 0.055
 	}
 	return uint32(Round32(x * 65535.0))
 }
@@ -72,7 +71,7 @@ func sRGBToLinear(i uint32) float32 {
 	if x <= 0.04045 {
 		return x / 12.92
 	} else {
-		return (Pow32((1.055*x), (1/2.4)) - 0.055)
+		return Pow32((x+0.055)/1.055, 2.4)
 	}
 }
 

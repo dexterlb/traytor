@@ -17,7 +17,7 @@ func main() {
 	}
 	defer display.Close()
 
-	file, err := os.Open("/tmp/foo.png")
+	file, err := os.Open("foo.png")
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -31,7 +31,7 @@ func main() {
 
 	img := traytor.ToImage(decoded)
 
-	display.ShowImage(200, 200, img)
+	display.ShowImage(400-img.Width/2, 400-img.Height/2, img)
 
 	display.Update()
 

@@ -108,21 +108,26 @@ func (d *Display) Update() {
 	d.window.UpdateSurface()
 }
 
+// CheckExit returns true if an exit event has happened, false otherwise
+func (d *Display) CheckExit() bool {
+	for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
+		switch t := event.(type) {
+		case *sdl.QuitEvent:
+			return true
+		case *sdl.KeyUpEvent:
+			if t.Keysym.Sym == sdl.K_ESCAPE {
+				return true
+			}
+		case *sdl.WindowEvent:
+			d.Update()
+		}
+	}
+	return false
+}
+
 // Loop waits for an exit event, refreshing the screen each time it's uncovered
 func (d *Display) Loop() {
-	for {
-		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
-			switch t := event.(type) {
-			case *sdl.QuitEvent:
-				return
-			case *sdl.KeyUpEvent:
-				if t.Keysym.Sym == sdl.K_ESCAPE {
-					return
-				}
-			case *sdl.WindowEvent:
-				d.Update()
-			}
-		}
+	for !d.CheckExit() {
 	}
 }
 

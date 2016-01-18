@@ -16,15 +16,15 @@ func ExampleImage_String() {
 
 func ExampleImage_Add() {
 	im1 := NewImage(2, 2)
-	for j := 0; j < im1.height; j++ {
-		for i := 0; i < im1.width; i++ {
-			im1.pixels[i][j].SetColour(4, 5, 6)
+	for j := 0; j < im1.Height; j++ {
+		for i := 0; i < im1.Width; i++ {
+			im1.Pixels[i][j].SetColour(4, 5, 6)
 		}
 	}
 	im2 := NewImage(2, 2)
-	for j := 0; j < im2.height; j++ {
-		for i := 0; i < im2.width; i++ {
-			im2.pixels[i][j].SetColour(1, 2, 3)
+	for j := 0; j < im2.Height; j++ {
+		for i := 0; i < im2.Width; i++ {
+			im2.Pixels[i][j].SetColour(1, 2, 3)
 		}
 	}
 	im3 := im1.Add(im2)
@@ -60,9 +60,9 @@ func ExampleImage_ColorModel() {
 
 func ExampleImage_At() {
 	im := NewImage(2, 2)
-	for j := 0; j < im.height; j++ {
-		for i := 0; i < im.width; i++ {
-			im.pixels[i][j].SetColour(float32(i), float32(j), 0)
+	for j := 0; j < im.Height; j++ {
+		for i := 0; i < im.Width; i++ {
+			im.Pixels[i][j].SetColour(float32(i), float32(j), 0)
 		}
 	}
 	fmt.Printf("%s\n", im.At(0, 0))

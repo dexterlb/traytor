@@ -8,12 +8,14 @@ import (
 	"github.com/veandco/go-sdl2/sdl"
 )
 
+// Display is a window with a drawable canvas
 type Display struct {
 	screen *sdl.Surface
 	format *sdl.PixelFormat
 	window *sdl.Window
 }
 
+// SetPixel sets the colour of the pixel at the given coordinates
 func (d *Display) SetPixel(x int, y int, colour color.Color) {
 	r, g, b, _ := colour.RGBA()
 
@@ -31,19 +33,21 @@ func (d *Display) SetPixel(x int, y int, colour color.Color) {
 	*pp = value
 }
 
-func (d *Display) ShowImage(img image.Image) {
+// ShowImage draws an image at the given coordinates
+func (d *Display) ShowImage(x int, y int, img image.Image) {
 	topleftX := img.Bounds().Min.X
 	topleftY := img.Bounds().Min.Y
 	width := img.Bounds().Max.X - topleftX - 1
 	height := img.Bounds().Max.Y - topleftY - 1
 
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			d.SetPixel(x, y, img.At(x+topleftX, y+topleftY))
+	for locX := 0; locX < width; locX++ {
+		for locY := 0; locY < height; locY++ {
+			d.SetPixel(x+locX, y+locY, img.At(locX+topleftX, locY+topleftY))
 		}
 	}
 }
 
+// NewDisplay creates a display with the given size and window title
 func NewDisplay(width, height int, title string) (*Display, error) {
 	d := &Display{}
 
@@ -80,14 +84,17 @@ func NewDisplay(width, height int, title string) (*Display, error) {
 	return d, nil
 }
 
+// Close closes the window of the display
 func (d *Display) Close() {
 	d.window.Destroy()
 }
 
+// Update refreshes the screen
 func (d *Display) Update() {
 	d.window.UpdateSurface()
 }
 
+// Loop waits for an exit event, refreshing the screen each time it's uncovered
 func (d *Display) Loop() {
 	for {
 		for event := sdl.PollEvent(); event != nil; event = sdl.PollEvent() {
@@ -105,6 +112,7 @@ func (d *Display) Loop() {
 	}
 }
 
+// Quit exits the gui
 func Quit() {
 	sdl.Quit()
 }

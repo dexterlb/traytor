@@ -31,7 +31,7 @@ func main() {
 
 	img := traytor.ToImage(decoded)
 
-	display.ShowImage(img)
+	display.ShowImage(200, 200, img)
 
 	display.Update()
 

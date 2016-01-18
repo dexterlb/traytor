@@ -22,6 +22,11 @@ func TestVectors(t *testing.T) {
 	if DotProduct(vec, norm) < 0 {
 		t.Error("Random hemi vector is in the wrong hemisphere")
 	}
+
+	vec = rnd.Vec3HemiCos(norm)
+	if DotProduct(vec, norm) < 0 {
+		t.Error("Random cosine-weighed hemi vector is in the wrong hemisphere")
+	}
 }
 
 func TestFloats(t *testing.T) {

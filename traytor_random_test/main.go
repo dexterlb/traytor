@@ -19,11 +19,21 @@ func testSphere(display *gui.Display) {
 
 func testHemi(display *gui.Display) {
 	rnd := traytor.NewRandom(42)
-	for i := 0; i < 10000; i++ {
-		vec := rnd.Vec3Hemi(traytor.NewVec3(0, 1, 0))
+	for i := 0; i < 4000; i++ {
+		vec := rnd.Vec3Hemi(traytor.NewVec3(0, 0, -1))
 		vec.Scale(250)
 		vec.Add(traytor.NewVec3(400, 0, 400))
 		display.SetPixel(int(vec.X), int(vec.Z), traytor.NewColour32Bit(0x0fff, 0xffff, 0x4000))
+	}
+}
+
+func testHemiCos(display *gui.Display) {
+	rnd := traytor.NewRandom(42)
+	for i := 0; i < 4000; i++ {
+		vec := rnd.Vec3HemiCos(traytor.NewVec3(0, 0, 1))
+		vec.Scale(250)
+		vec.Add(traytor.NewVec3(400, 0, 400))
+		display.SetPixel(int(vec.X), int(vec.Z), traytor.NewColour32Bit(0xffff, 0x0fff, 0x4000))
 	}
 }
 
@@ -37,7 +47,8 @@ func main() {
 	}
 	defer display.Close()
 
-	testSphere(display)
+	testHemi(display)
+	testHemiCos(display)
 
 	display.Update()
 

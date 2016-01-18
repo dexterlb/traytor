@@ -38,6 +38,29 @@ func (r *Random) Vec3Hemi(normal *Vec3) *Vec3 {
 	return vec
 }
 
+// Vec3HemiCos returns a random unit vector chosen on a
+// cosine-weighed hemisphere defined by normal
+func (r *Random) Vec3HemiCos(normal *Vec3) *Vec3 {
+	ox := CrossProduct(NewVec3(42, 56, -15), normal)
+	for math.Abs(ox.Length()) < Epsilon {
+		ox = CrossProduct(r.Vec3Sphere(), normal)
+	}
+
+	oy := CrossProduct(ox, normal)
+	ox.Normalise()
+	oy.Normalise()
+
+	u := r.Float01()
+	radius := math.Sqrt(u)
+	theta := r.Float02Pi()
+
+	vec := normal.Scaled(math.Sqrt(math.Max(0, 1-u)))
+	vec.Add(ox.Scaled(radius * math.Cos(theta)))
+	vec.Add(oy.Scaled(radius * math.Sin(theta)))
+
+	return vec
+}
+
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
 	return r.generator.Float64()

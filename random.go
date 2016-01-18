@@ -20,12 +20,12 @@ func NewRandom(seed int64) *Random {
 
 // Vec3SPhere returns a random unit vector
 func (r *Random) Vec3Sphere() *Vec3 {
-	phi := r.Float02Pi()
-	theta := r.Float0Pi()
+	u := r.FloatAB(-1, 1)
+	theta := r.Float02Pi()
 	return NewVec3(
-		math.Cos(theta)*math.Sin(phi),
-		math.Sin(theta)*math.Sin(phi),
-		math.Cos(phi),
+		math.Sqrt(1-u*u)*math.Cos(theta),
+		math.Sqrt(1-u*u)*math.Sin(theta),
+		u,
 	)
 }
 

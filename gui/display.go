@@ -13,6 +13,8 @@ type Display struct {
 	screen *sdl.Surface
 	format *sdl.PixelFormat
 	window *sdl.Window
+	width  int
+	height int
 }
 
 // SetPixel sets the colour of the pixel at the given coordinates
@@ -47,11 +49,23 @@ func (d *Display) ShowImage(x int, y int, img image.Image) {
 	}
 }
 
+// Fill fills the screen with the specified colour
+func (d *Display) Fill(colour color.Color) {
+	for x := 0; x < d.width; x++ {
+		for y := 0; y < d.height; y++ {
+			d.SetPixel(x, y, colour)
+		}
+	}
+}
+
 // NewDisplay creates a display with the given size and window title
 func NewDisplay(width, height int, title string) (*Display, error) {
 	d := &Display{}
 
 	sdl.Init(sdl.INIT_EVERYTHING)
+
+	d.width = width
+	d.height = height
 
 	var err error
 	d.window, err = sdl.CreateWindow(

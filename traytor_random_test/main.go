@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/gui"
@@ -11,29 +12,29 @@ func testSphere(display *gui.Display) {
 	rnd := traytor.NewRandom(42)
 	for i := 0; i < 10000; i++ {
 		vec := rnd.Vec3Sphere()
-		vec.Scale(250)
+		vec.Scale(350)
 		vec.Add(traytor.NewVec3(400, 0, 400))
 		display.SetPixel(int(vec.X), int(vec.Z), traytor.NewColour32Bit(0x0fff, 0xffff, 0x4000))
+		time.Sleep(100 * time.Microsecond)
+		display.Update()
 	}
 }
 
 func testHemi(display *gui.Display) {
 	rnd := traytor.NewRandom(42)
-	for i := 0; i < 4000; i++ {
+	for i := 0; i < 17000; i++ {
 		vec := rnd.Vec3Hemi(traytor.NewVec3(0, 0, -1))
-		vec.Scale(250)
+		vec.Scale(350)
 		vec.Add(traytor.NewVec3(400, 0, 400))
 		display.SetPixel(int(vec.X), int(vec.Z), traytor.NewColour32Bit(0x0fff, 0xffff, 0x4000))
-	}
-}
 
-func testHemiCos(display *gui.Display) {
-	rnd := traytor.NewRandom(42)
-	for i := 0; i < 4000; i++ {
-		vec := rnd.Vec3HemiCos(traytor.NewVec3(0, 0, 1))
-		vec.Scale(250)
-		vec.Add(traytor.NewVec3(400, 0, 400))
-		display.SetPixel(int(vec.X), int(vec.Z), traytor.NewColour32Bit(0xffff, 0x0fff, 0x4000))
+		vecCos := rnd.Vec3HemiCos(traytor.NewVec3(0, 0, 1))
+		vecCos.Scale(350)
+		vecCos.Add(traytor.NewVec3(400, 0, 400))
+		display.SetPixel(int(vecCos.X), int(vecCos.Z), traytor.NewColour32Bit(0xffff, 0x0fff, 0x4000))
+
+		time.Sleep(100 * time.Microsecond)
+		display.Update()
 	}
 }
 
@@ -48,7 +49,6 @@ func main() {
 	defer display.Close()
 
 	testHemi(display)
-	testHemiCos(display)
 
 	display.Update()
 

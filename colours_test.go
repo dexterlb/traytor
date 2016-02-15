@@ -3,9 +3,8 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
-	"testing"
-
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
@@ -73,7 +72,7 @@ func TestToColour(t *testing.T) {
 	asserEqualColours(t, NewColour(0.7, 0.2, 0.5), ToColour(c))
 }
 
-func TestJson(t *testing.T) {
+func TestColourJson(t *testing.T) {
 	c := NewColour(0, 0, 0)
 	err := json.Unmarshal([]byte(`[0.4, 0.5, 1]`), &c)
 	if err != nil {

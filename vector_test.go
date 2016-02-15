@@ -1,6 +1,7 @@
 package traytor
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -194,4 +195,13 @@ func TestFacingForward(t *testing.T) {
 	newNormal = normal.FaceForward(NewVec3(0, 0, 1))
 	asserEqualVectors(t, NewVec3(0, 0, -1), newNormal)
 
+}
+
+func TestVectorJson(t *testing.T) {
+	v := NewVec3(0, 0, 0)
+	err := json.Unmarshal([]byte(`[0.4, 0.5, 1]`), &v)
+	if err != nil {
+		t.Error(err)
+	}
+	asserEqualVectors(t, NewVec3(0.4, 0.5, 1), v)
 }

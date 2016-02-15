@@ -1,7 +1,10 @@
 package traytor
 
-import "math"
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"math"
+)
 
 // Vec3 is a 3 dimensional vector
 type Vec3 struct {
@@ -122,12 +125,25 @@ func CrossProduct(first, second *Vec3) *Vec3 {
 	)
 }
 
-//FaceForward return a new Vec3 which is the normal vector directed so that the ray is facing forward
+//FaceForward returns a new Vec3 which is the normal vector directed so that the ray is facing forward
 func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
 	if DotProduct(ray, normal) < 0 {
 		return normal
 	}
 	return normal.Negative()
+}
+
+//UnmarshalJSON implements the json.Unmarshaler interface
+func (v *Vec3) UnmarshalJSON(data []byte) error {
+	var unmarshaled []float64
+	err := json.Unmarshal(data, &unmarshaled)
+	if err != nil {
+		return err
+	}
+	v.X = unmarshaled[0]
+	v.Y = unmarshaled[1]
+	v.Z = unmarshaled[2]
+	return nil
 }
 
 // Ray is defined by its start, direction and depth which indicates how many materials it has passed through

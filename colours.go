@@ -1,6 +1,7 @@
 package traytor
 
 import (
+	"encoding/json"
 	"fmt"
 	"image/color"
 )
@@ -100,6 +101,19 @@ func (c *Colour) Add(other *Colour) {
 	c.R += other.R
 	c.G += other.G
 	c.B += other.B
+}
+
+//UnmarshalJSON implements the json.Unmarshaler interface
+func (c *Colour) UnmarshalJSON(data []byte) error {
+	var unmarshaled []float32
+	err := json.Unmarshal(data, &unmarshaled)
+	if err != nil {
+		return err
+	}
+	c.R = unmarshaled[0]
+	c.G = unmarshaled[1]
+	c.B = unmarshaled[2]
+	return nil
 }
 
 func Sum(first, other Colour) *Colour {

@@ -11,10 +11,10 @@ type Camera interface {
 // (the location of the camera) and 3 points which define a
 // rectangle (a "window" into the scene)
 type PinholeCamera struct {
-	Focus      Vec3
-	BottomLeft Vec3
-	TopLeft    Vec3
-	TopRight   Vec3
+	Focus      Vec3 `json:"focus"`
+	BottomLeft Vec3 `json:"bottom_left"`
+	TopLeft    Vec3 `json:"top_left"`
+	TopRight   Vec3 `json:"top_right"`
 }
 
 // ShootRay generates a ray coming out of the camera, going through the

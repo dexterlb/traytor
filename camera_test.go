@@ -45,12 +45,12 @@ func ExamplePinholeCamera_ShootRay_weirdfocus() {
 }
 
 func TestPinholeCameraJson(t *testing.T) {
-	data := []byte(`
+	data := []byte(`{
 		"focus": [1, 2, 3],
 		"top_left": [4, 5, 6],
 		"top_right": [7, 8, 9],
 		"bottom_left": [10, 11, 12]
-	`)
+	}`)
 	c := &PinholeCamera{}
 	err := json.Unmarshal(data, &c)
 	if err != nil {

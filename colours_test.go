@@ -1,6 +1,7 @@
 package traytor
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -70,4 +71,10 @@ func TestToColour(t *testing.T) {
 
 	c = NewColour32Bit(0xdab3, 0x7c0a, 0xbc40)
 	asserEqualColours(t, NewColour(0.7, 0.2, 0.5), ToColour(c))
+}
+
+func TestJson(t *testing.T) {
+	c := NewColour(0, 0, 0)
+	json.Unmarshal([]byte(`[0.4, 0.5, 1]`), &c)
+	asserEqualColours(t, NewColour(0.4, 0.5, 1), c)
 }

@@ -75,6 +75,9 @@ func TestToColour(t *testing.T) {
 
 func TestJson(t *testing.T) {
 	c := NewColour(0, 0, 0)
-	json.Unmarshal([]byte(`[0.4, 0.5, 1]`), &c)
+	err := json.Unmarshal([]byte(`[0.4, 0.5, 1]`), &c)
+	if err != nil {
+		t.Error(err)
+	}
 	asserEqualColours(t, NewColour(0.4, 0.5, 1), c)
 }

@@ -1,6 +1,10 @@
 package traytor
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"testing"
+)
 
 func ExamplePinholeCamera_ShootRay() {
 	var c Camera = &PinholeCamera{
@@ -38,4 +42,23 @@ func ExamplePinholeCamera_ShootRay_weirdfocus() {
 	// Output:
 	// 0, 0: (-2, 15, 3) -> (-0.577, 0.577, 0.577)
 	// 0.5, 0.5: (-2, 15, 3) -> (0, 1, 0)
+}
+
+func TestPinholeCameraJson(t *testing.T) {
+	data := []byte(`
+		"focus": [1, 2, 3],
+		"top_left": [4, 5, 6],
+		"top_right": [7, 8, 9],
+		"bottom_left": [10, 11, 12]
+	`)
+	c := &PinholeCamera{}
+	err := json.Unmarshal(data, &c)
+	if err != nil {
+		t.Error(err)
+	}
+
+	asserEqualVectors(t, NewVec3(1, 2, 3), &c.Focus)
+	asserEqualVectors(t, NewVec3(4, 5, 6), &c.TopLeft)
+	asserEqualVectors(t, NewVec3(7, 8, 9), &c.TopRight)
+	asserEqualVectors(t, NewVec3(10, 11, 12), &c.BottomLeft)
 }

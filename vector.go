@@ -140,7 +140,7 @@ func MixedProduct(a, b, c *Vec3) float64 {
 
 //UnmarshalJSON implements the json.Unmarshaler interface
 func (v *Vec3) UnmarshalJSON(data []byte) error {
-	var unmarshaled []float64
+	var unmarshaled [3]float64
 	err := json.Unmarshal(data, &unmarshaled)
 	if err != nil {
 		return err
@@ -161,4 +161,10 @@ type Ray struct {
 // NewRay returns new ray
 func NewRay(start Vec3, direction Vec3, depth int) *Ray {
 	return &Ray{Start: start, Direction: direction, Depth: depth}
+}
+
+//String returns the string representation of the ray
+// in the form of "<start> -> <direction>"
+func (r *Ray) String() string {
+	return fmt.Sprintf("%s -> %s", &r.Start, &r.Direction)
 }

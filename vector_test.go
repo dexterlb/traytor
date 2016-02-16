@@ -195,7 +195,7 @@ func ExampleMixedProduct() {
 
 	// Output:
 	// p = MixedProduct((1, 0, 0), (0, 1, 0), (0, 2, 42))
-	// p = 42
+	// p = 42.00
 	//
 }
 

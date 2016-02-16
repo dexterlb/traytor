@@ -20,6 +20,12 @@ type Mesh struct {
 	Faces    []Triangle `json:"faces"`
 }
 
+// Intersect finds the intersection between a ray and the mesh
+// returns nil if they don't intersect
+func (m *Mesh) Intersect(ray *Ray) *Intersection {
+	return &Intersection{}
+}
+
 func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle) *Intersection {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
 	if DotProduct(&ray.Direction, &triangle.Normal) > 0 {

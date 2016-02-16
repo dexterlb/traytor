@@ -15,10 +15,10 @@ func ExamplePinholeCamera_ShootRay() {
 	}
 
 	ray := c.ShootRay(0, 0)
-	fmt.Printf("0, 0: %s -> %s\n", &ray.Start, &ray.Direction)
+	fmt.Printf("0, 0: %s\n", ray)
 
 	ray = c.ShootRay(0.5, 0.5)
-	fmt.Printf("0.5, 0.5: %s -> %s\n", &ray.Start, &ray.Direction)
+	fmt.Printf("0.5, 0.5: %s\n", ray)
 
 	// Output:
 	// 0, 0: (0, 0, 0) -> (-0.577, 0.577, 0.577)
@@ -34,10 +34,10 @@ func ExamplePinholeCamera_ShootRay_weirdfocus() {
 	}
 
 	ray := c.ShootRay(0, 0)
-	fmt.Printf("0, 0: %s -> %s\n", &ray.Start, &ray.Direction)
+	fmt.Printf("0, 0: %s\n", ray)
 
 	ray = c.ShootRay(0.5, 0.5)
-	fmt.Printf("0.5, 0.5: %s -> %s\n", &ray.Start, &ray.Direction)
+	fmt.Printf("0.5, 0.5: %s\n", ray)
 
 	// Output:
 	// 0, 0: (-2, 15, 3) -> (-0.577, 0.577, 0.577)

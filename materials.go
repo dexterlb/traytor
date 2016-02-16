@@ -17,9 +17,31 @@ func (m *AnyMaterial) UnmarshalJson(data []byte) error {
 		return err
 	}
 
+	// Here comes code duplication
 	switch materialType {
 	case "emissive":
 		material := &EmissiveMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "lambert":
+		material := &LambertMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "reflective":
+		material := &ReflectiveMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "refractive":
+		material := &RefractiveMaterial{}
 		err = json.Unmarshal(data, &material)
 		if err != nil {
 			return err
@@ -45,7 +67,7 @@ type EmissiveMaterial struct {
 
 // Shade returns the emitted colour after intersecting the material
 func (m *EmissiveMaterial) Shade(intersection *Intersection) *Colour {
-	return NewColour(1, 1, 1)
+	return m.Colour.Scaled(m.Strength)
 }
 
 // LambertMaterial is a simple diffuse material

@@ -1,5 +1,37 @@
 package traytor
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// AnyMaterial implements the Material interface and is deserialiseable from json
+type AnyMaterial struct {
+	Material
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface
+func (m *AnyMaterial) UnmarshalJson(data []byte) error {
+	materialType, err := jsonObjectType(data)
+	if err != nil {
+		return err
+	}
+
+	switch materialType {
+	case "emissive":
+		material := &EmissiveMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	default:
+		return fmt.Errorf("Unknown material type: '%s'", materialType)
+	}
+
+	return nil
+}
+
 // Material objects are used to shade surfaces
 type Material interface {
 	Shade(intersection *Intersection) *Colour

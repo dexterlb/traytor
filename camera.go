@@ -1,5 +1,37 @@
 package traytor
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
+// AnyCamera implements the Camera interface and is deserialiseable from json
+type AnyCamera struct {
+	Camera
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface
+func (c *AnyCamera) UnmarshalJSON(data []byte) error {
+	cameraType, err := jsonObjectType(data)
+	if err != nil {
+		return err
+	}
+
+	switch cameraType {
+	case "pinhole":
+		camera := &PinholeCamera{}
+		err := json.Unmarshal(data, &camera)
+		if err != nil {
+			return err
+		}
+		*c = AnyCamera{camera}
+	default:
+		return fmt.Errorf("Unknown camera type: '%s'", cameraType)
+	}
+
+	return nil
+}
+
 // Camera is a generic camera
 type Camera interface {
 	// ShootRay generates a ray which corresponds to the specified 2D coordinates

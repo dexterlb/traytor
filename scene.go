@@ -2,7 +2,7 @@ package traytor
 
 // Scene contains all the information for a scene
 type Scene struct {
-	camera    *Camera
+	camera    *AnyCamera
 	materials []Material
 	mesh      Mesh
 }

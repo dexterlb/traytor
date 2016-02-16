@@ -3,8 +3,9 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func ExampleVec3_MakeZero() {
@@ -184,6 +185,17 @@ func ExampleCrossProduct() {
 	// Output:
 	// p = CrossProduct((1, 0, 0), (0, 1, 0))
 	// p = (0, 0, 1)
+	//
+}
+
+func ExampleMixedProduct() {
+	fmt.Printf("p = MixedProduct((1, 0, 0), (0, 1, 0), (0, 2, 42))\n")
+	p := MixedProduct(NewVec3(1, 0, 0), NewVec3(0, 1, 0), NewVec3(0, 2, 42))
+	fmt.Printf("p = %.2f\n", p)
+
+	// Output:
+	// p = MixedProduct((1, 0, 0), (0, 1, 0), (0, 2, 42))
+	// p = 42
 	//
 }
 

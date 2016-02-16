@@ -62,3 +62,23 @@ func TestPinholeCameraJson(t *testing.T) {
 	asserEqualVectors(t, NewVec3(7, 8, 9), &c.TopRight)
 	asserEqualVectors(t, NewVec3(10, 11, 12), &c.BottomLeft)
 }
+
+func TestAnyCameraJson(t *testing.T) {
+	data := []byte(`{
+		"type": 		"pinhole",
+		"focus":		[0, 0, 0],
+		"top_left": 	[-1, 1, 1],
+		"top_right":	[1, 1, 1],
+		"bottom_left": 	[-1, 1, -1]
+	}`)
+	c := &AnyCamera{}
+	err := json.Unmarshal(data, &c)
+	if err != nil {
+		t.Error(err)
+	}
+
+	ray := c.ShootRay(0.5, 0.5)
+
+	asserEqualVectors(t, NewVec3(0, 1, 0), &ray.Direction)
+	asserEqualVectors(t, NewVec3(0, 0, 0), &ray.Start)
+}

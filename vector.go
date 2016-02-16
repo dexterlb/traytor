@@ -133,6 +133,11 @@ func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
 	return normal.Negative()
 }
 
+//MixedProduct returns (a^b)*c
+func MixedProduct(a, b, c *Vec3) float32 {
+	return DotProduct(CrossProduct(a, b), c)
+}
+
 //UnmarshalJSON implements the json.Unmarshaler interface
 func (v *Vec3) UnmarshalJSON(data []byte) error {
 	var unmarshaled []float64

@@ -11,8 +11,8 @@ type Scene struct {
 type Intersection struct {
 	Point     *Vec3
 	Incoming  *Ray
-	distance  float64
-	u, v      float64
+	Distance  float64
+	U, V      float64
 	Normal    *Vec3
 	SurfaceOx *Vec3
 	SurfaceOy *Vec3

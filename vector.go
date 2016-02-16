@@ -134,7 +134,7 @@ func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
 }
 
 //MixedProduct returns (a^b)*c
-func MixedProduct(a, b, c *Vec3) float32 {
+func MixedProduct(a, b, c *Vec3) float64 {
 	return DotProduct(CrossProduct(a, b), c)
 }
 

@@ -5,6 +5,7 @@ import "math"
 const (
 	// Epsilon is a very small number
 	Epsilon float64 = 1e-9
+	Inf     float64 = 1e99
 )
 
 // Round returns the nearest int to a given float number

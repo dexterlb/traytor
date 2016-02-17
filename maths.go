@@ -5,7 +5,8 @@ import "math"
 const (
 	// Epsilon is a very small number
 	Epsilon float64 = 1e-9
-	Inf     float64 = 1e99
+	// Inf is a very large number
+	Inf float64 = 1e99
 )
 
 // Round returns the nearest int to a given float number
@@ -21,4 +22,20 @@ func Round32(number float32) int {
 // Pow32 is a Pow function which uses float32
 func Pow32(x, a float32) float32 {
 	return float32(math.Pow(float64(x), float64(a)))
+}
+
+// SolveEquation solves the following system (returning x and y):
+// | a1 * x + b1 * y + c1 = 0
+// | a2 * x + b2 * y + c2 = 0
+func SolveEquation(a, b, c *Vec3) (float64, float64) {
+	coefficientMatrix := [2][2]float64{{a.X, b.X}, {a.Y, b.Y}}
+	constantCoefficientMatrix := [2]float64{c.X, c.Y}
+
+	det := coefficientMatrix[0][0]*coefficientMatrix[1][1] -
+		coefficientMatrix[1][0]*coefficientMatrix[0][1]
+	x := (constantCoefficientMatrix[0]*coefficientMatrix[1][1] -
+		constantCoefficientMatrix[1]*coefficientMatrix[0][1]) / det
+	y := (constantCoefficientMatrix[1]*coefficientMatrix[0][0] -
+		constantCoefficientMatrix[0]*coefficientMatrix[1][0]) / det
+	return x, y
 }

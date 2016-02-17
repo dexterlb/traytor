@@ -14,8 +14,3 @@ func (r *Raytracer) Raytrace(ray *Ray) *Colour {
 func (r *Raytracer) Sample(image *Image) {
 
 }
-
-//LoadScene load the scene from a file
-func LoadScene(filename string) *Image {
-	return NewImage(400, 400)
-}

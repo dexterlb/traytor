@@ -20,7 +20,7 @@ func ExampleMesh_Intersect() {
 			},
 			{
 				"normal": [0, 0, 1],
-				"coordinates": [1, 1, 0],
+				"coordinates": [0, 1, 0],
 				"uv": [1, 1]
 			}
 		],
@@ -39,7 +39,7 @@ func ExampleMesh_Intersect() {
 	}
 
 	ray := &Ray{
-		Start:     *NewVec3(0.25, 0.75, 1),
+		Start:     *NewVec3(0.25, 0.25, 1),
 		Direction: *NewVec3(0, 0, -1),
 	}
 
@@ -53,7 +53,7 @@ func ExampleMesh_Intersect() {
 		fmt.Printf("no intersection\n")
 	} else {
 		fmt.Printf("intersection point: %s\n", intersection.Point)
-		fmt.Printf("caused by ray: %s -> %s\n", intersection.Incoming)
+		fmt.Printf("caused by ray: %s\n", intersection.Incoming)
 		fmt.Printf("at a distance: %.3g\n", intersection.Distance)
 		fmt.Printf("with surface coordinates (%.3g, %.3g)\n",
 			intersection.U, intersection.V)
@@ -66,8 +66,10 @@ func ExampleMesh_Intersect() {
 	// Output:
 	// intersection point: (0.25, 0.75, 0)
 	// caused by ray: (0.25, 0.75, 1) -> (0, 0, -1)
+	// intersection point: (0.25, 0.25, 0)
+	// caused by ray: (0.25, 0.25, 1) -> (0, 0, -1)
 	// at a distance: 1
-	// with surface coordinates: (0.25, 0.75)
+	// with surface coordinates: (0.5, 0.25)
 	// surface normal: (0, 0, 1)
 	// surface coordinate system: Ox: (1, 0, 0), Oy: (0, 1, 0)
 	// surface material: 42

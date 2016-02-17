@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/gui"
@@ -40,8 +41,10 @@ func main() {
 	image := traytor.NewImage(width, height)
 	image.Divisor = 0
 
-	for {
+	for i := 0; true; i++ {
+		startTime := time.Now()
 		raytracer.Sample(image)
+		log.Printf("rendered sample %d for %s\n", i, time.Since(startTime))
 		display.ShowImage(0, 0, image)
 		display.Update()
 		if display.CheckExit() {

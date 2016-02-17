@@ -17,9 +17,31 @@ func (m *AnyMaterial) UnmarshalJson(data []byte) error {
 		return err
 	}
 
+	// Here comes code duplication
 	switch materialType {
 	case "emissive":
 		material := &EmissiveMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "lambert":
+		material := &LambertMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "reflective":
+		material := &ReflectiveMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
+	case "refractive":
+		material := &RefractiveMaterial{}
 		err = json.Unmarshal(data, &material)
 		if err != nil {
 			return err
@@ -34,7 +56,7 @@ func (m *AnyMaterial) UnmarshalJson(data []byte) error {
 
 // Material objects are used to shade surfaces
 type Material interface {
-	Shade(intersection *Intersection) *Colour
+	Shade(intersection *Intersection, raytracer *Raytracer) *Colour
 }
 
 // EmissiveMaterial acts as a lamp
@@ -44,8 +66,8 @@ type EmissiveMaterial struct {
 }
 
 // Shade returns the emitted colour after intersecting the material
-func (m *EmissiveMaterial) Shade(intersection *Intersection) *Colour {
-	return NewColour(1, 1, 1)
+func (m *EmissiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
+	return m.Colour.Scaled(m.Strength)
 }
 
 // LambertMaterial is a simple diffuse material
@@ -54,7 +76,7 @@ type LambertMaterial struct {
 }
 
 // Shade returns the emitted colour after intersecting the material
-func (m *LambertMaterial) Shade(intersection *Intersection) *Colour {
+func (m *LambertMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
 	return NewColour(0, 0, 0)
 }
 
@@ -65,7 +87,7 @@ type ReflectiveMaterial struct {
 }
 
 // Shade returns the emitted colour after intersecting the material
-func (m *ReflectiveMaterial) Shade(intersection *Intersection) *Colour {
+func (m *ReflectiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
 	return NewColour(0, 0, 0)
 }
 
@@ -77,6 +99,6 @@ type RefractiveMaterial struct {
 }
 
 // Shade returns the emitted colour after intersecting the material
-func (m *RefractiveMaterial) Shade(intersection *Intersection) *Colour {
+func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
 	return NewColour(0, 0, 0)
 }

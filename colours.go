@@ -97,10 +97,27 @@ func (c *Colour) Intensity() float32 {
 	return (c.R + c.G + c.B) / 3.0
 }
 
+//Add adds another colour to this one
 func (c *Colour) Add(other *Colour) {
 	c.R += other.R
 	c.G += other.G
 	c.B += other.B
+}
+
+//Scale multiplies the colour by the given multiplier
+func (c *Colour) Scale(multiplier float32) {
+	c.R *= multiplier
+	c.G *= multiplier
+	c.B *= multiplier
+}
+
+//Scaled returns a new colour which is the product of the original and multiplier
+func (c *Colour) Scaled(multiplier float32) *Colour {
+	return NewColour(
+		c.R*multiplier,
+		c.G*multiplier,
+		c.B*multiplier,
+	)
 }
 
 //UnmarshalJSON implements the json.Unmarshaler interface

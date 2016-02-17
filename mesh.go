@@ -69,7 +69,7 @@ func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
 			material = triangle.Material
 		}
 	}
-	if distance >= Inf-Epsilon {
+	if maxDistance >= Inf-Epsilon {
 		return nil, -1
 	}
 	return intersection, material

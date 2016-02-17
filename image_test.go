@@ -27,8 +27,8 @@ func ExampleImage_Add() {
 			im2.Pixels[i][j].SetColour(1, 2, 3)
 		}
 	}
-	im3 := im1.Add(im2)
-	fmt.Printf("%s\n", im3)
+	im1.Add(im2)
+	fmt.Printf("%s\n", im1)
 
 	// Output:
 	// {5, 7, 9}, {5, 7, 9}

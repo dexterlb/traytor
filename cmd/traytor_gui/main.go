@@ -34,6 +34,7 @@ func main() {
 	}
 
 	image := traytor.NewImage(800, 450)
+	image.Divisor = 0
 
 	for {
 		raytracer.Sample(image)

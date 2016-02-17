@@ -9,6 +9,7 @@ import (
 type Image struct {
 	Pixels        [][]Colour
 	Width, Height int
+	Divisor       int
 }
 
 //NewImage will set the screen to the given width and height
@@ -20,7 +21,7 @@ func NewImage(width, height int) *Image {
 			pixels[i][j] = *NewColour(0, 0, 0)
 		}
 	}
-	return &Image{Pixels: pixels, Width: width, Height: height}
+	return &Image{Pixels: pixels, Width: width, Height: height, Divisor: 1}
 }
 
 //String returns a string which is the representaton of image: {r, g, b}, ... {r, g, b}\n ...\n {r, g, b},...{r, g, b}
@@ -38,20 +39,34 @@ func (im *Image) String() string {
 	return representation
 }
 
-//Add returns a new image which is the sum of two given.
-func (im *Image) Add(other *Image) *Image {
-	sum := NewImage(im.Width, im.Height)
+//Add adds another image to this one
+func (im *Image) Add(other *Image) {
 	for j := 0; j < im.Width; j++ {
 		for i := 0; i < im.Height; i++ {
-			sum.Pixels[i][j] = *Sum(im.Pixels[i][j], other.Pixels[i][j])
+			(&im.Pixels[i][j]).Add(&other.Pixels[i][j])
 		}
 	}
+}
+
+//AddImages returns a new image which is the sum of the given ones
+func AddImages(a *Image, b *Image) *Image {
+	sum := NewImage(a.Width, a.Height)
+	sum.Add(a)
+	sum.Add(b)
 	return sum
 }
 
-//At returns the Colour of the pixel at [x][y]
+//AtHDR returns the Colour of the pixel at [x][y] (scaled by the divisor)
+func (im *Image) AtHDR(x, y int) *Colour {
+	if im.Divisor == 0 {
+		return NewColour(1, 1, 1)
+	}
+	return im.Pixels[x][y].Scaled(1 / float32(im.Divisor))
+}
+
+//At returns the sRGB Colour of the pixel at [x][y (scaled by the divisor)]
 func (im *Image) At(x, y int) color.Color {
-	return im.Pixels[x][y].To32Bit()
+	return im.AtHDR(x, y).To32Bit()
 }
 
 //ColorModel returns the image's color model (as used by Go's image interface)

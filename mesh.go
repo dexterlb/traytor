@@ -20,7 +20,7 @@ type Mesh struct {
 	Faces    []Triangle `json:"faces"`
 }
 
-func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle) *Intersection {
+func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle, maxDistance float64) *Intersection {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
 	if DotProduct(&ray.Direction, &triangle.Normal) > 0 {
 		return nil
@@ -41,35 +41,33 @@ func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle) *Intersection 
 	}
 	reverseDet := 1 / det
 	intersectDist := DotProduct(ABxAC, distToA) * reverseDet
+
+	if intersectDist < 0 || intersectDist > maxDistance {
+		return nil
+	}
+	//lambda2 = (dist^dir)*AC / det
+	//lambda3 = -(dist^dir)*AB / det 
+	float64 lambda2 = MixedProduct(intersectDist, rayDir, minusVectors(C, A)) * reverseDet 
+	float64 lambda3 = MixedProduct(intersectDist, rayDir, minusVectors(B, A)) * reverseDet
+	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2 + lambda3 > 1 {
+		return nil
+	} 
 	intersection.Distance = intersectDist
+	intersection.Point = ray.Start + rayDir * intersectDist
+	if Triangle.Normal {
+			intersection.Normal = Triangle.Normal
+		} else {
+			Anormal := m.Vertices[triangle.Vertices[0]].Normal
+			Bnormal := m.Vertices[triangle.Vertices[1]].Normal
+			Cnormal := m.Vertices[triangle.Vertices[2]].Normal
+			ABxlambda2 := MinusVectors(Bnormal, Anormal).Scaled(lambda2)
+			ACxlambda3 := MinusVectors(Cnormal, Anormal).Scaled(lambda3)
+			intersection.Normal = AddVectors(Anormal, AddVectors(ABxlambda2, ACxlambda3))
+		}
 	return intersection
 }
 
 /*
-bool Mesh::intersectTriangle(const RRay& ray, const Triangle& t, IntersectionInfo& info)
-{
-	if (backfaceCulling && dot(ray.dir, t.gnormal) > 0) return false;
-	Vector A = vertices[t.v[0]];
-
-	Vector H = ray.start - A;
-	Vector D = ray.dir;
-
-	double Dcr = - (t.ABcrossAC * D);
-
-	if (fabs(Dcr) < 1e-12) return false;
-
-	double rDcr = 1 / Dcr;
-	double gamma = (t.ABcrossAC * H) * rDcr;
-	if (gamma < 0 || gamma > info.distance) return false;
-
-	Vector HcrossD = H^D;
-	double lambda2 = (HcrossD * t.AC) * rDcr;
-	if (lambda2 < 0 || lambda2 > 1) return false;
-
-	double lambda3 = -(t.AB * HcrossD) * rDcr;
-	if (lambda3 < 0 || lambda3 > 1) return false;
-
-	if (lambda2 + lambda3 > 1) return false;
 
 	info.distance = gamma;
 	info.ip = ray.start + ray.dir * gamma;

@@ -3,14 +3,15 @@ package traytor
 import (
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"os"
 )
 
 // Scene contains all the information for a scene
 type Scene struct {
-	Camera    *AnyCamera    `json:"camera"`
-	Materials []AnyMaterial `json:"materials"`
-	Mesh      Mesh          `json:"mesh"`
+	Camera    *AnyCamera     `json:"camera"`
+	Materials []*AnyMaterial `json:"materials"`
+	Mesh      Mesh           `json:"mesh"`
 }
 
 // Intersection represents a point on a surface struck by a ray
@@ -42,6 +43,7 @@ func LoadScene(filename string) (*Scene, error) {
 
 	scene := &Scene{}
 	err = decoder.Decode(&scene)
+	fmt.Fprintf(os.Stderr, "%v", scene.Materials)
 	if err != nil {
 		return nil, err
 	} else {

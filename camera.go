@@ -3,6 +3,7 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 )
 
 // AnyCamera implements the Camera interface and is deserialiseable from json
@@ -12,6 +13,7 @@ type AnyCamera struct {
 
 // UnmarshalJSON implements the json.Unmarshaler interface
 func (c *AnyCamera) UnmarshalJSON(data []byte) error {
+	fmt.Fprintf(os.Stderr, "camera\n")
 	cameraType, err := jsonObjectType(data)
 	if err != nil {
 		return err

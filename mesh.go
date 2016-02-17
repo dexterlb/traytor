@@ -1,9 +1,7 @@
 package traytor
 
 import (
-	"fmt"
 	"math"
-	"os"
 )
 
 // Vertex is a single vertex in a mesh
@@ -101,10 +99,8 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	}
 	//lambda2 = (dist^dir)*AC / det
 	//lambda3 = -(dist^dir)*AB / det
-	fmt.Fprintf(os.Stderr, "mixed: %s\n", distToA)
 	lambda2 := MixedProduct(distToA, &rayDir, MinusVectors(C, A)) * reverseDet
 	lambda3 := -MixedProduct(distToA, &rayDir, MinusVectors(B, A)) * reverseDet
-	fmt.Fprintf(os.Stderr, "lambda2: %.3g, lambda3: %.3g", lambda2, lambda3)
 	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2+lambda3 > 1 {
 		return nil, Inf
 	}
@@ -132,7 +128,6 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	intersection.U = uv.X
 	intersection.V = uv.Y
 
-	fmt.Fprintf(os.Stderr, "computed coordinate system: %s %s\n", triangle.surfaceOx, triangle.surfaceOy)
 	intersection.SurfaceOx = triangle.surfaceOx
 	intersection.SurfaceOy = triangle.surfaceOy
 

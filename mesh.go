@@ -11,7 +11,7 @@ type Vertex struct {
 type Triangle struct {
 	Vertices [3]int `json:"vertices"`
 	Material int    `json:"material"`
-	Normal   Vec3   `json:"normal"`
+	Normal   *Vec3  `json:"normal"`
 }
 
 // Mesh is a triangle mesh
@@ -27,9 +27,9 @@ func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
 	return nil, -1
 }
 
-func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle, maxDistance float64) *Intersection {
+func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, maxDistance float64) *Intersection {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
-	if DotProduct(&ray.Direction, &triangle.Normal) > 0 {
+	if DotProduct(&ray.Direction, triangle.Normal) > 0 {
 		return nil
 	}
 	intersection := &Intersection{}
@@ -53,54 +53,33 @@ func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle, maxDistance fl
 		return nil
 	}
 	//lambda2 = (dist^dir)*AC / det
-	//lambda3 = -(dist^dir)*AB / det 
-	float64 lambda2 = MixedProduct(intersectDist, rayDir, minusVectors(C, A)) * reverseDet 
-	float64 lambda3 = MixedProduct(intersectDist, rayDir, minusVectors(B, A)) * reverseDet
-	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2 + lambda3 > 1 {
+	//lambda3 = -(dist^dir)*AB / det
+	lambda2 := MixedProduct(distToA, &rayDir, MinusVectors(C, A)) * reverseDet
+	lambda3 := -MixedProduct(distToA, &rayDir, MinusVectors(B, A)) * reverseDet
+	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2+lambda3 > 1 {
 		return nil
-	} 
+	}
 	intersection.Distance = intersectDist
-	intersection.Point = ray.Start + rayDir * intersectDist
-	if Triangle.Normal {
-			intersection.Normal = Triangle.Normal
-		} else {
-			Anormal := m.Vertices[triangle.Vertices[0]].Normal
-			Bnormal := m.Vertices[triangle.Vertices[1]].Normal
-			Cnormal := m.Vertices[triangle.Vertices[2]].Normal
-			ABxlambda2 := MinusVectors(Bnormal, Anormal).Scaled(lambda2)
-			ACxlambda3 := MinusVectors(Cnormal, Anormal).Scaled(lambda3)
-			intersection.Normal = AddVectors(Anormal, AddVectors(ABxlambda2, ACxlambda3))
-		}
+	intersection.Point = AddVectors(&ray.Start, (&rayDir).Scaled(intersectDist))
+	if triangle.Normal != nil {
+		intersection.Normal = triangle.Normal
+	} else {
+		Anormal := &m.Vertices[triangle.Vertices[0]].Normal
+		Bnormal := &m.Vertices[triangle.Vertices[1]].Normal
+		Cnormal := &m.Vertices[triangle.Vertices[2]].Normal
+		ABxlambda2 := MinusVectors(Bnormal, Anormal).Scaled(lambda2)
+		ACxlambda3 := MinusVectors(Cnormal, Anormal).Scaled(lambda3)
+		intersection.Normal = AddVectors(Anormal, AddVectors(ABxlambda2, ACxlambda3))
+	}
+	uvA := &m.Vertices[triangle.Vertices[0]].UV
+	uvB := &m.Vertices[triangle.Vertices[1]].UV
+	uvC := &m.Vertices[triangle.Vertices[2]].UV
+
+	uvABxlambda2 := MinusVectors(uvB, uvA).Scaled(lambda2)
+	uvACxlambda3 := MinusVectors(uvC, uvA).Scaled(lambda3)
+	uv := AddVectors(uvA, AddVectors(uvABxlambda2, uvACxlambda3))
+	intersection.U = uv.X
+	intersection.V = uv.Y
+
 	return intersection
 }
-
-/*
-
-	info.distance = gamma;
-	info.ip = ray.start + ray.dir * gamma;
-	if (!faceted) {
-		Vector nA = normals[t.n[0]];
-		Vector nB = normals[t.n[1]];
-		Vector nC = normals[t.n[2]];
-
-		info.normal = nA + (nB - nA) * lambda2 + (nC - nA) * lambda3;
-		info.normal.normalize();
-	} else {
-		info.normal = t.gnormal;
-	}
-
-	info.dNdx = t.dNdx;
-	info.dNdy = t.dNdy;
-
-	Vector uvA = uvs[t.t[0]];
-	Vector uvB = uvs[t.t[1]];
-	Vector uvC = uvs[t.t[2]];
-
-	Vector uv = uvA + (uvB - uvA) * lambda2 + (uvC - uvA) * lambda3;
-	info.u = uv.x;
-	info.v = uv.y;
-	info.geom = this;
-
-	return true;
-}
-*/

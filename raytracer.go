@@ -21,7 +21,7 @@ func (r *Raytracer) Sample(image *Image) {
 	var colour *Colour
 	for i := 0; i < image.Width; i++ {
 		for j := 0; j < image.Height; j++ {
-			ray = r.Scene.Camera.ShootRay(float64(i)/float64(image.Width), float64(j)/float64(image.Height))
+			ray = r.Scene.Camera.ShootRay((float64(i)+r.Random.Float01())/float64(image.Width), (float64(j)+r.Random.Float01())/float64(image.Height))
 			colour = r.Raytrace(ray)
 			image.Pixels[i][j].Add(colour)
 		}

@@ -3,7 +3,6 @@ package traytor
 import (
 	"compress/gzip"
 	"encoding/json"
-	"fmt"
 	"os"
 )
 
@@ -43,7 +42,6 @@ func LoadScene(filename string) (*Scene, error) {
 
 	scene := &Scene{}
 	err = decoder.Decode(&scene)
-	fmt.Fprintf(os.Stderr, "%v", scene.Materials)
 	if err != nil {
 		return nil, err
 	} else {

@@ -48,3 +48,8 @@ func LoadScene(filename string) (*Scene, error) {
 		return scene, nil
 	}
 }
+
+// Init performs all necessary preprocessing on the scene
+func (s *Scene) Init() {
+	s.Mesh.Init()
+}

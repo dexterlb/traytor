@@ -1,8 +1,8 @@
 package traytor
 
 type Raytracer struct {
-	scene  *Scene
-	random *Random
+	Scene  *Scene
+	Random *Random
 }
 
 //Raytrace returns the colour obtained by tracing the given ray

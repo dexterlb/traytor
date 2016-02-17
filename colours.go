@@ -133,7 +133,8 @@ func (c *Colour) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func Sum(first, other Colour) *Colour {
+//AddColours adds two colours
+func AddColours(first, other *Colour) *Colour {
 	r := first.R + other.R
 	g := first.G + other.G
 	b := first.B + other.B

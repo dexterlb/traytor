@@ -10,12 +10,6 @@ import (
 
 func main() {
 	defer gui.Quit()
-	display, err := gui.NewDisplay(800, 450, "shite")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	defer display.Close()
 
 	if len(os.Args) <= 1 {
 		log.Fatal("Please supply a scene file (.json.gz) as an argument.")
@@ -33,7 +27,18 @@ func main() {
 		Random: traytor.NewRandom(42),
 	}
 
-	image := traytor.NewImage(800, 450)
+	width := 800
+	height := 450
+
+	display, err := gui.NewDisplay(width, height, "shite")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	defer display.Close()
+
+	image := traytor.NewImage(width, height)
+	image.Divisor = 0
 
 	for {
 		raytracer.Sample(image)

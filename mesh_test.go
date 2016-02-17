@@ -21,7 +21,7 @@ func ExampleMesh_Intersect() {
 			{
 				"normal": [0, 0, 1],
 				"coordinates": [0, 1, 0],
-				"uv": [1, 1]
+				"uv": [0, 1]
 			}
 		],
 		"faces": [
@@ -37,6 +37,8 @@ func ExampleMesh_Intersect() {
 		fmt.Printf("Error reading json: %s\n", err)
 		return
 	}
+
+	mesh.Init()
 
 	ray := &Ray{
 		Start:     *NewVec3(0.25, 0.25, 1),

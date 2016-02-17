@@ -15,15 +15,43 @@ type Vertex struct {
 
 // Triangle is a face with 3 vertices (indices in the vertex array)
 type Triangle struct {
-	Vertices [3]int `json:"vertices"`
-	Material int    `json:"material"`
-	Normal   *Vec3  `json:"normal"`
+	Vertices  [3]int `json:"vertices"`
+	Material  int    `json:"material"`
+	Normal    *Vec3  `json:"normal"`
+	surfaceOx *Vec3
+	surfaceOy *Vec3
 }
 
 // Mesh is a triangle mesh
 type Mesh struct {
 	Vertices []Vertex   `json:"vertices"`
 	Faces    []Triangle `json:"faces"`
+}
+
+func (m *Mesh) Init() {
+	for i := range m.Faces {
+		triangle := &m.Faces[i]
+
+		A := &m.Vertices[triangle.Vertices[0]].Coordinates
+		B := &m.Vertices[triangle.Vertices[1]].Coordinates
+		C := &m.Vertices[triangle.Vertices[2]].Coordinates
+
+		AB := MinusVectors(A, B)
+		AC := MinusVectors(A, C)
+
+		surfaceA := &m.Vertices[triangle.Vertices[0]].UV
+		surfaceB := &m.Vertices[triangle.Vertices[1]].UV
+		surfaceC := &m.Vertices[triangle.Vertices[2]].UV
+
+		surfaceAB := MinusVectors(surfaceA, surfaceB)
+		surfaceAC := MinusVectors(surfaceA, surfaceC)
+
+		px, qx := SolveEquation(surfaceAB, surfaceAC, NewVec3(1, 0, 0))
+		py, qy := SolveEquation(surfaceAB, surfaceAC, NewVec3(0, 1, 0))
+
+		triangle.surfaceOx = AddVectors(AB.Scaled(px), AC.Scaled(qx))
+		triangle.surfaceOy = AddVectors(AB.Scaled(py), AC.Scaled(qy))
+	}
 }
 
 // Intersect finds the intersection between a ray and the mesh
@@ -100,8 +128,13 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	uvABxlambda2 := MinusVectors(uvB, uvA).Scaled(lambda2)
 	uvACxlambda3 := MinusVectors(uvC, uvA).Scaled(lambda3)
 	uv := AddVectors(uvA, AddVectors(uvABxlambda2, uvACxlambda3))
+
 	intersection.U = uv.X
 	intersection.V = uv.Y
+
+	fmt.Fprintf(os.Stderr, "computed coordinate system: %s %s\n", triangle.surfaceOx, triangle.surfaceOy)
+	intersection.SurfaceOx = triangle.surfaceOx
+	intersection.SurfaceOy = triangle.surfaceOy
 
 	intersection.Incoming = ray
 	return intersection, intersection.Distance

@@ -22,8 +22,9 @@ func main() {
 	scene.Init()
 
 	raytracer := &traytor.Raytracer{
-		Scene:  scene,
-		Random: traytor.NewRandom(42),
+		Scene:    scene,
+		Random:   traytor.NewRandom(42),
+		MaxDepth: 4,
 	}
 
 	width := 800

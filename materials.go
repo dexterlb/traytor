@@ -75,9 +75,25 @@ type LambertMaterial struct {
 	Colour *Colour
 }
 
+/*
+	out_color = texture ? texture->sample(x) : this->color;
+	Vector N = faceforward(w_in, x.normal);
+
+	w_out.dir = hemisphereSample(N);
+	w_out.flags |= RF_DIFFUSE;
+	w_out.start = x.ip + N * 1e-6;
+
+	/*color*/ /*BRDF*/ /*Kajiya's cos term*/
+//out_color *= (1 / PI) * dot(w_out.dir, N);
+
 // Shade returns the emitted colour after intersecting the material
 func (m *LambertMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
-	return NewColour(0, 0, 0)
+	randomRayDir := *raytracer.Random.Vec3HemiCos(intersection.Normal)
+	randomRayStart := *AddVectors(intersection.Point, intersection.Normal.Scaled(Epsilon))
+	ray := &Ray{Start: randomRayStart, Direction: randomRayDir, Depth: intersection.Incoming.Depth + 1}
+	colour := raytracer.Raytrace(ray)
+	colour.MultiplyBy(m.Colour)
+	return colour
 }
 
 // ReflectiveMaterial is a reflective material

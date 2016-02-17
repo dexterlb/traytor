@@ -140,3 +140,16 @@ func AddColours(first, other *Colour) *Colour {
 	b := first.B + other.B
 	return NewColour(r, g, b)
 }
+
+func MultiplyColours(first, other *Colour) *Colour {
+	r := first.R * other.R
+	g := first.G * other.G
+	b := first.B * other.B
+	return NewColour(r, g, b)
+}
+
+func (c *Colour) MultiplyBy(other *Colour) {
+	c.R *= other.R
+	c.G *= other.G
+	c.B *= other.B
+}

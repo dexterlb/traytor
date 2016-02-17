@@ -1,12 +1,16 @@
 package traytor
 
 type Raytracer struct {
-	Scene  *Scene
-	Random *Random
+	Scene    *Scene
+	Random   *Random
+	MaxDepth int
 }
 
 //Raytrace returns the colour obtained by tracing the given ray
 func (r *Raytracer) Raytrace(ray *Ray) *Colour {
+	if ray.Depth > r.MaxDepth {
+		return NewColour(0, 0, 0)
+	}
 	intersectionInfo, material := r.Scene.Mesh.Intersect(ray)
 	if intersectionInfo == nil {
 		return NewColour(0, 0, 0)

@@ -27,9 +27,8 @@ def make_vertex(mesh, index):
 
 def make_face(mesh, face, vertex_index_offset):
     face_vertices = face.loop_indices
-
     data = {
-        'vertices': [vertex + vertex_index_offset for vertex in face_vertices],
+        'vertices': [mesh.loops[vertex].vertex_index + vertex_index_offset for vertex in face_vertices],
         'material': make_material_index(mesh, face.material_index)
     }
     
@@ -115,6 +114,7 @@ def json_to_file(scene, file):
 def jsongz_to_file(scene, file):
     with gzip.open(file, 'wt') as f:
         json.dump(get_scene(scene), f, separators=(',', ':'))
-        
+
+      
 json_to_file(bpy.context.scene, '/tmp/scene.json')
 jsongz_to_file(bpy.context.scene, '/tmp/scene.json.gz')

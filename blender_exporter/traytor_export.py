@@ -44,6 +44,7 @@ def make_camera(camera, scene):
     frame = [list(transformation * point) for point in camera.data.view_frame(scene)]
     
     data = {
+        'type': 'pinhole',
         'top_right': frame[0],
         'bottom_right': frame[1],
         'bottom_left': frame[2],

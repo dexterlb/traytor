@@ -66,6 +66,8 @@ func ExampleMesh_Intersect() {
 	}
 
 	// Output:
+	// intersection point: (0.25, 0.75, 0)
+	// caused by ray: (0.25, 0.75, 1) -> (0, 0, -1)
 	// intersection point: (0.25, 0.25, 0)
 	// caused by ray: (0.25, 0.25, 1) -> (0, 0, -1)
 	// at a distance: 1

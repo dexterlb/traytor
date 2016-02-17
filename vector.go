@@ -98,7 +98,7 @@ func (v *Vec3) SetLength(newLength float64) {
 
 //String returns the string representation of the vector in the form of (x, y, z)
 func (v *Vec3) String() string {
-	return fmt.Sprintf("(%.3g, %.3g, %.3g)", v.X, v.Y, v.Z)
+	return fmt.Sprintf("(%.3g, %.3g, %.3g)", SnapZero(v.X), SnapZero(v.Y), SnapZero(v.Z))
 }
 
 //AddVector returns a new vector which is the sum of the two given vectors

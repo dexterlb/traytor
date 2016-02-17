@@ -39,3 +39,11 @@ func SolveEquation(a, b, c *Vec3) (float64, float64) {
 		constantCoefficientMatrix[0]*coefficientMatrix[1][0]) / det
 	return x, y
 }
+
+// SnapZero returns 0 if x is a very close to 0, and returns x otherwise
+func SnapZero(x float64) float64 {
+	if x < Epsilon && x > -Epsilon {
+		return 0
+	}
+	return x
+}

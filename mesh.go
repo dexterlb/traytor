@@ -21,9 +21,10 @@ type Mesh struct {
 }
 
 // Intersect finds the intersection between a ray and the mesh
-// returns nil if they don't intersect
-func (m *Mesh) Intersect(ray *Ray) *Intersection {
-	return &Intersection{}
+// and returns their intersection and the surface material.
+// Returns nil and -1 if they don't intersect
+func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
+	return nil, -1
 }
 
 func (m *Mesh) IntersectionTriangle(ray *Ray, triangle *Triangle) *Intersection {

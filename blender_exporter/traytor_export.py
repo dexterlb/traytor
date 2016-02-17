@@ -18,7 +18,7 @@ def make_vertex(mesh, index):
     uv_layer = mesh.uv_layers.active
     vertex = mesh.vertices[index]
     data = {
-        'point': list(vertex.co),
+        'coordinates': list(vertex.co),
         'normal': list(vertex.normal)
     }
     if uv_layer:

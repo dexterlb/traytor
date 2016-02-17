@@ -19,7 +19,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	scene.Init()
 
 	raytracer := &traytor.Raytracer{

@@ -3,6 +3,7 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 )
 
 // AnyMaterial implements the Material interface and is deserialiseable from json
@@ -11,8 +12,9 @@ type AnyMaterial struct {
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface
-func (m *AnyMaterial) UnmarshalJson(data []byte) error {
+func (m *AnyMaterial) UnmarshalJSON(data []byte) error {
 	materialType, err := jsonObjectType(data)
+	fmt.Fprintf(os.Stderr, "%s", materialType)
 	if err != nil {
 		return err
 	}

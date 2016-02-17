@@ -27,10 +27,10 @@ func NewImage(width, height int) *Image {
 //String returns a string which is the representaton of image: {r, g, b}, ... {r, g, b}\n ...\n {r, g, b},...{r, g, b}
 func (im *Image) String() string {
 	representation := ""
-	for j := 0; j < im.Width; j++ {
-		for i := 0; i < im.Height; i++ {
+	for i := 0; i < im.Width; i++ {
+		for j := 0; j < im.Height; j++ {
 			representation += im.Pixels[i][j].String()
-			if i != im.Width-1 {
+			if j != im.Width-1 {
 				representation += ", "
 			}
 		}
@@ -41,8 +41,8 @@ func (im *Image) String() string {
 
 //Add adds another image to this one
 func (im *Image) Add(other *Image) {
-	for j := 0; j < im.Width; j++ {
-		for i := 0; i < im.Height; i++ {
+	for i := 0; i < im.Width; i++ {
+		for j := 0; j < im.Height; j++ {
 			(&im.Pixels[i][j]).Add(&other.Pixels[i][j])
 		}
 	}

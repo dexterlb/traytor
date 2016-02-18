@@ -13,11 +13,12 @@ type Vertex struct {
 
 // Triangle is a face with 3 vertices (indices in the vertex array)
 type Triangle struct {
-	Vertices  [3]int `json:"vertices"`
-	Material  int    `json:"material"`
-	Normal    *Vec3  `json:"normal"`
-	surfaceOx *Vec3
-	surfaceOy *Vec3
+	Vertices      [3]int `json:"vertices"`
+	Material      int    `json:"material"`
+	AB, AC, ABxAC *Vec3
+	Normal        *Vec3 `json:"normal"`
+	surfaceOx     *Vec3
+	surfaceOy     *Vec3
 }
 
 // Mesh is a triangle mesh
@@ -34,8 +35,12 @@ func (m *Mesh) Init() {
 		B := &m.Vertices[triangle.Vertices[1]].Coordinates
 		C := &m.Vertices[triangle.Vertices[2]].Coordinates
 
-		AB := MinusVectors(A, B)
-		AC := MinusVectors(A, C)
+		AB := MinusVectors(B, A)
+		AC := MinusVectors(C, A)
+
+		triangle.AB = AB
+		triangle.AC = AC
+		triangle.ABxAC = CrossProduct(AB, AC)
 
 		surfaceA := &m.Vertices[triangle.Vertices[0]].UV
 		surfaceB := &m.Vertices[triangle.Vertices[1]].UV
@@ -80,12 +85,9 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	intersection := &Intersection{}
 	//If the triangle is ABC, this gives you A
 	A := &m.Vertices[triangle.Vertices[0]].Coordinates
-	B := &m.Vertices[triangle.Vertices[1]].Coordinates
-	C := &m.Vertices[triangle.Vertices[2]].Coordinates
-
 	distToA := MinusVectors(&ray.Start, A)
 	rayDir := ray.Direction
-	ABxAC := CrossProduct(MinusVectors(B, A), MinusVectors(C, A))
+	ABxAC := triangle.ABxAC
 	//We will find the barycentric coordinates using Cramer's formula, so we'll need the determinant
 	//det is (AB^AC)*dir of the ray, but we're gonna use 1/det, so we find the recerse:
 	det := -DotProduct(ABxAC, &rayDir)
@@ -99,8 +101,8 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	}
 	//lambda2 = (dist^dir)*AC / det
 	//lambda3 = -(dist^dir)*AB / det
-	lambda2 := MixedProduct(distToA, &rayDir, MinusVectors(C, A)) * reverseDet
-	lambda3 := -MixedProduct(distToA, &rayDir, MinusVectors(B, A)) * reverseDet
+	lambda2 := MixedProduct(distToA, &rayDir, triangle.AC) * reverseDet
+	lambda3 := -MixedProduct(distToA, &rayDir, triangle.AB) * reverseDet
 	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2+lambda3 > 1 {
 		return nil, Inf
 	}

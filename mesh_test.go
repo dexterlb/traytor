@@ -41,7 +41,7 @@ func ExampleMesh_Intersect() {
 	mesh.Init()
 
 	ray := &Ray{
-		Start:     *NewVec3(0.25, 0.25, 1),
+		Start:     *NewVec3(0.15, 0.11, 1),
 		Direction: *NewVec3(0, 0, -1),
 	}
 
@@ -66,10 +66,10 @@ func ExampleMesh_Intersect() {
 	}
 
 	// Output:
-	// intersection point: (0.25, 0.25, 0)
-	// caused by ray: (0.25, 0.25, 1) -> (0, 0, -1)
+	// intersection point: (0.15, 0.11, 0)
+	// caused by ray: (0.15, 0.11, 1) -> (0, 0, -1)
 	// at a distance: 1
-	// with surface coordinates: (0.25, 0.25)
+	// with surface coordinates: (0.15, 0.11)
 	// surface normal: (0, 0, 1)
 	// surface coordinate system: Ox: (1, 0, 0), Oy: (0, 1, 0)
 	// surface material: 42

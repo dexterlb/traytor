@@ -15,20 +15,21 @@ def make_material(mesh, material):
     }
 
 def make_vertex(mesh, index):
-    uv_layer = mesh.uv_layers.active
-    vertex = mesh.vertices[index]
+    vertex = mesh.vertices[mesh.loops[index].vertex_index]
     data = {
         'coordinates': list(vertex.co),
         'normal': list(vertex.normal)
     }
+    uv_layer = mesh.uv_layers.active
     if uv_layer:
         data['uv'] = list(uv_layer.data[index].uv)
+
     return data
 
 def make_face(mesh, face, vertex_index_offset):
     face_vertices = face.loop_indices
     data = {
-        'vertices': [mesh.loops[vertex].vertex_index + vertex_index_offset for vertex in face_vertices],
+        'vertices': [vertex + vertex_index_offset for vertex in face_vertices],
         'material': make_material_index(mesh, face.material_index)
     }
     
@@ -57,7 +58,7 @@ def get_materials(mesh):
     return [make_material(mesh, material) for material in mesh.materials]
 
 def get_vertices(mesh):
-    return [make_vertex(mesh, index) for index in range(len(mesh.vertices))]
+    return [make_vertex(mesh, index) for index in range(len(mesh.loops))]
 
 def get_faces(mesh, vertex_index_offset):
     return [make_face(mesh, face, vertex_index_offset) for face in mesh.polygons]

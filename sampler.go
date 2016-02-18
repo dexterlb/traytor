@@ -200,7 +200,16 @@ func (i *ImageTexture) GetColour(intersection *Intersection) *Colour {
 	u -= math.Floor(u)
 	v -= math.Floor(v)
 
-	return i.Image.AtHDR(int(u*float64(i.Image.Width)), int(v*float64(i.Image.Height)))
+	if u < 0 {
+		u += 1
+	}
+	if v < 0 {
+		v += 1
+	}
+
+	v = 1 - v // (0, 0) is at the topleft corner of images
+
+	return i.Image.AtHDR(int(u*float64(i.Image.Width-1)), int(v*float64(i.Image.Height-1)))
 }
 
 // GetFac returns the colour intensity at (u, v)

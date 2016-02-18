@@ -89,11 +89,11 @@ func (v *Vec3) Negative() *Vec3 {
 func (v *Vec3) GetAxis(axis int) float64 {
 	switch axis {
 	case Ox:
-		return v.X, nil
+		return v.X
 	case Oy:
-		return v.Y, nil
+		return v.Y
 	case Oz:
-		return v.Z, nil
+		return v.Z
 	}
 }
 

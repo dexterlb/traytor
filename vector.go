@@ -95,6 +95,7 @@ func (v *Vec3) GetAxis(axis int) float64 {
 	case Oz:
 		return v.Z
 	}
+	return Inf
 }
 
 //Negate makes the given vector equal to its opposite vector

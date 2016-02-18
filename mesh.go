@@ -215,3 +215,16 @@ func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth
 	node.Children[1] = rightChild
 	return node
 }
+
+func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree) *Intersection {
+	intersectionInfo := &Intersection{}
+	intersected := false
+	if node.Axis == Leaf {
+		for triangle := range node.Triangles {
+			intersected, intersectionInfo = m.intersectTriangle(ray, triangle)
+			if intersected {
+				return intersectionInfo
+			}
+		}
+	}
+}

@@ -98,6 +98,17 @@ func (v *Vec3) GetDimension(axis int) float64 {
 	return Inf
 }
 
+func (v *Vec3) SetDimension(axis int, value float64) {
+	switch axis {
+	case Ox:
+		v.X = value
+	case Oy:
+		v.Y = value
+	case Oz:
+		v.Z = value
+	}
+}
+
 //Negate makes the given vector equal to its opposite vector
 func (v *Vec3) Negate() {
 	v.Scale(-1)

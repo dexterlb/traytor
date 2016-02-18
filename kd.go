@@ -2,19 +2,19 @@ package traytor
 
 type KDtree struct {
 	Axis      int
-	Median    int
-	Triangles []*Triangle
+	Median    float64
+	Triangles []int
 	Children  [2]*KDtree
 }
 
-func NewLeaf(triangles []*Triangle) *KDtree {
+func NewLeaf(triangles []int) *KDtree {
 	return &KDtree{
 		Axis:      Leaf,
 		Triangles: triangles,
 	}
 }
 
-func NewNode(median int, axis int) *KDtree {
+func NewNode(median float64, axis int) *KDtree {
 	var children [2]*KDtree
 	return &KDtree{
 		Axis:     axis,

@@ -4,6 +4,10 @@ import (
 	"math"
 )
 
+const (
+	MaxTreeDepth = 10
+)
+
 // Vertex is a single vertex in a mesh
 type Vertex struct {
 	Normal      Vec3 `json:"normal"`
@@ -170,32 +174,33 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 }
 
 func (m *Mesh) KDTree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
-	node = &KDtree{}
-	if depth > MaxDepth {
-		node = NewLeaf(triangles)
+	if depth > MaxTreeDepth {
+		node := NewLeaf(trianglesIndices)
 		return node
 	}
 	axis := depth % 3
 	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
 	righLimit := boundingBox.MinVolume.GetDimension(axis)
+
 	median := (leftLimit + righLimit) / 2
+
 	var leftTriangles, rightTriangles []int
 	var A, B, C *Vec3
 	leftBoundingBox, rightBoundingBox := boundingBox.Split(axis, median)
 	for _, index := range trianglesIndices {
-		A = m.Vertices[m.Faces[index].Vertices[0]].Coordinates
-		B = m.Vertices[m.Faces[index].Vertices[1]].Coordinates
-		C = m.Vertices[m.Faces[index].Vertices[1]].Coordinates
+		A = &m.Vertices[m.Faces[index].Vertices[0]].Coordinates
+		B = &m.Vertices[m.Faces[index].Vertices[1]].Coordinates
+		C = &m.Vertices[m.Faces[index].Vertices[1]].Coordinates
 
 		if leftBoundingBox.IntersectTriangle(A, B, C) {
 			leftTriangles = append(leftTriangles, index)
 		}
 
 		if rightBoundingBox.IntersectTriangle(A, B, C) {
-			appendTriangles = append(rightTriangles, index)
+			rightTriangles = append(rightTriangles, index)
 		}
 	}
-	node = NewNode(median, axis)
+	node := NewNode(median, axis)
 	leftChild := m.KDTree(leftBoundingBox, leftTriangles, depth+1)
 	rightChild := m.KDTree(rightBoundingBox, rightTriangles, depth+1)
 	node.Children[0] = leftChild

@@ -81,20 +81,19 @@ func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
 }
 
 //Intersect triangle looks very similar to mesh.IntersectTriangle
-func IntersectTriangle(ray *Ray, A, B, C *vec3) (bool, float64) {
-	var distance floa64
+func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 	AB := MinusVectors(B, A)
 	AC := MinusVectors(C, A)
 	reverseDirection := ray.Direction.Negative()
-	distToA := MinusVectors(ray.Start, A)
+	distToA := MinusVectors(&ray.Start, A)
 	ABxAC := CrossProduct(AB, AC)
 	det := DotProduct(ABxAC, reverseDirection)
 	reverseDet := 1 / det
 	if math.Abs(det) < Epsilon {
 		return false, Inf
 	}
-	lambda2 := MixedProduct(DistToA, AC, reverseDirection) * reverseDet
-	lambda3 := MixedProduct(AB, DistToA, reverseDirection) * reverseDet
+	lambda2 := MixedProduct(distToA, AC, reverseDirection) * reverseDet
+	lambda3 := MixedProduct(AB, distToA, reverseDirection) * reverseDet
 	gamma := DotProduct(ABxAC, distToA) * reverseDet
 	if gamma < 0 {
 		return false, Inf

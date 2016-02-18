@@ -7,9 +7,11 @@ import (
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/gui"
+	"github.com/pkg/profile"
 )
 
 func main() {
+	defer profile.Start().Stop()
 	defer gui.Quit()
 
 	if len(os.Args) <= 1 {

@@ -61,30 +61,19 @@ type Material interface {
 
 // EmissiveMaterial acts as a lamp
 type EmissiveMaterial struct {
-	Colour   *Colour
-	Strength float32
+	Colour   *AnySampler
+	Strength *AnySampler
 }
 
 // Shade returns the emitted colour after intersecting the material
 func (m *EmissiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
-	return m.Colour.Scaled(m.Strength)
+	return m.Colour.GetColour(intersection).Scaled(float32(m.Strength.GetFac(intersection)))
 }
 
 // LambertMaterial is a simple diffuse material
 type LambertMaterial struct {
-	Colour *Colour
+	Colour *AnySampler
 }
-
-/*
-	out_color = texture ? texture->sample(x) : this->color;
-	Vector N = faceforward(w_in, x.normal);
-
-	w_out.dir = hemisphereSample(N);
-	w_out.flags |= RF_DIFFUSE;
-	w_out.start = x.ip + N * 1e-6;
-
-	/*color*/ /*BRDF*/ /*Kajiya's cos term*/
-//out_color *= (1 / PI) * dot(w_out.dir, N);
 
 // Shade returns the emitted colour after intersecting the material
 func (m *LambertMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
@@ -92,14 +81,14 @@ func (m *LambertMaterial) Shade(intersection *Intersection, raytracer *Raytracer
 	randomRayStart := *AddVectors(intersection.Point, intersection.Normal.Scaled(Epsilon))
 	ray := &Ray{Start: randomRayStart, Direction: randomRayDir, Depth: intersection.Incoming.Depth + 1}
 	colour := raytracer.Raytrace(ray)
-	colour.MultiplyBy(m.Colour)
+	colour.MultiplyBy(m.Colour.GetColour(intersection))
 	return colour
 }
 
 // ReflectiveMaterial is a reflective material
 type ReflectiveMaterial struct {
-	Colour    *Colour
-	Roughness float32
+	Colour    *AnySampler
+	Roughness *AnySampler
 }
 
 // Shade returns the emitted colour after intersecting the material
@@ -109,9 +98,9 @@ func (m *ReflectiveMaterial) Shade(intersection *Intersection, raytracer *Raytra
 
 // RefractiveMaterial is a material for modeling glass, etc
 type RefractiveMaterial struct {
-	Colour    *Colour
-	Roughness float32
-	IOR       float32
+	Colour    *AnySampler
+	Roughness *AnySampler
+	IOR       *AnySampler
 }
 
 // Shade returns the emitted colour after intersecting the material

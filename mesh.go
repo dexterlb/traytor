@@ -160,3 +160,30 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	intersection.Incoming = ray
 	return intersection, intersection.Distance
 }
+
+func (m *Mesh) GetBoundingBox() *BoundingBox {
+	boundingBox := NewBoundingBox()
+	for vertex := range m.Vertices {
+		boundingBox.AddPoint(vertex.Coordinates)
+	}
+	return boundingBox
+}
+
+func (m *Mesh) KDTree(node *KDtree, boundingBox *BoundingBox, triangles []*Triangle, depth int) {
+	node = &KDtree{}
+	if depth > MaxDepth {
+		node = NewLeaf(triangles)
+		return node
+	}
+	axis := 2
+	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
+	righLimit := boundingBox.MinVolume.GetDimension(axis)
+	median := (leftLimit + righLimit) / 2
+	var leftTriangles, rightTriangles []*Triangle
+	var A, B, C *Vec3
+	leftBoundingBox, rightBoundingBox := boundingBox.Split(axis, median)
+	for index, _ := range triangles {
+		current = m.Faces.
+		A = m.Vertices.Coordin
+	}
+}

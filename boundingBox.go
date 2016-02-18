@@ -170,25 +170,11 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 	return false
 }
 
-/*
-line bool intersectTriangle(const Vector& A, const Vector& B, const Vector& C) const
-		Vector AB = B - A;
-		Vector AC = C - A;
-		Vector ABcrossAC = AB ^ AC;
-		double D = A * ABcrossAC;
-		for (int mask = 0; mask < 7; mask++) {
-			for (int j = 0; j < 3; j++) {
-				if (mask & (1 << j)) continue;
-				ray.start.set((mask & 1) ? vmax.x : vmin.x, (mask & 2) ? vmax.y : vmin.y, (mask & 4) ? vmax.z : vmin.z);
-				Vector rayEnd = ray.start;
-				rayEnd[j] = vmax[j];
-				if (signOf(ray.start * ABcrossAC - D) != signOf(rayEnd * ABcrossAC - D)) {
-					ray.dir = rayEnd - ray.start;
-					ray.prepareForTracing();
-					double gamma = 1.0000001;
-					if (intersectTriangleFast(ray, A, B, C, gamma)) return true;
-				}
-			}
-		}
-		return false;
-*/
+func (b *BoundingBox) Split(axis int, median float64) (*BoundingBox, *BoundingBox) {
+	left := b
+	right := b
+	left.MaxVolume.SetDimension(axis, median)
+	right.MinVolume.SetDimension(axis, median)
+
+	return left, right
+}

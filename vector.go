@@ -86,7 +86,7 @@ func (v *Vec3) Negative() *Vec3 {
 	return v.Scaled(-1)
 }
 
-func (v *Vec3) GetAxis(axis int) float64 {
+func (v *Vec3) GetDimension(axis int) float64 {
 	switch axis {
 	case Ox:
 		return v.X

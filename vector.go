@@ -86,6 +86,17 @@ func (v *Vec3) Negative() *Vec3 {
 	return v.Scaled(-1)
 }
 
+func (v *Vec3) GetAxis(axis int) float64 {
+	switch axis {
+	case Ox:
+		return v.X, nil
+	case Oy:
+		return v.Y, nil
+	case Oz:
+		return v.Z, nil
+	}
+}
+
 //Negate makes the given vector equal to its opposite vector
 func (v *Vec3) Negate() {
 	v.Scale(-1)
@@ -167,4 +178,22 @@ func NewRay(start Vec3, direction Vec3, depth int) *Ray {
 // in the form of "<start> -> <direction>"
 func (r *Ray) String() string {
 	return fmt.Sprintf("%s -> %s", &r.Start, &r.Direction)
+}
+
+func (v *Vec3) Inverse() *Vec3 {
+	var newX, newY, newZ float64
+	if math.Abs(v.X) > Epsilon {
+		newX = 1 / v.X
+	}
+	if math.Abs(v.Y) > Epsilon {
+		newY = 1 / v.Y
+	}
+	if math.Abs(v.Z) > Epsilon {
+		newX = 1 / v.Z
+	}
+	return &Vec3{
+		X: newX,
+		Y: newY,
+		Z: newZ,
+	}
 }

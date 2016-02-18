@@ -3,6 +3,13 @@ package traytor
 import "math"
 
 const (
+	Ox = iota
+	Oy
+	Oz
+	Leaf
+)
+
+const (
 	// Epsilon is a very small number
 	Epsilon float64 = 1e-9
 	// Inf is a very large number
@@ -40,10 +47,14 @@ func SolveEquation(a, b, c *Vec3) (float64, float64) {
 	return x, y
 }
 
-// SnapZero returns 0 if x is a very close to 0, and returns x otherwise
+// SnapZero returns 0 if x is too close to 0, and returns x otherwise
 func SnapZero(x float64) float64 {
 	if x < Epsilon && x > -Epsilon {
 		return 0
 	}
 	return x
+}
+
+func Between(min, max, point float64) bool {
+	return (min-Epsilon <= point && max+Epsilon >= point)
 }

@@ -46,8 +46,8 @@ func (m *Mesh) Init() {
 		surfaceB := &m.Vertices[triangle.Vertices[1]].UV
 		surfaceC := &m.Vertices[triangle.Vertices[2]].UV
 
-		surfaceAB := MinusVectors(surfaceA, surfaceB)
-		surfaceAC := MinusVectors(surfaceA, surfaceC)
+		surfaceAB := MinusVectors(surfaceB, surfaceA)
+		surfaceAC := MinusVectors(surfaceC, surfaceA)
 
 		px, qx := SolveEquation(surfaceAB, surfaceAC, NewVec3(1, 0, 0))
 		py, qy := SolveEquation(surfaceAB, surfaceAC, NewVec3(0, 1, 0))

@@ -163,27 +163,42 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 
 func (m *Mesh) GetBoundingBox() *BoundingBox {
 	boundingBox := NewBoundingBox()
-	for vertex := range m.Vertices {
+	for _, vertex := range m.Vertices {
 		boundingBox.AddPoint(vertex.Coordinates)
 	}
 	return boundingBox
 }
 
-func (m *Mesh) KDTree(node *KDtree, boundingBox *BoundingBox, triangles []*Triangle, depth int) {
+func (m *Mesh) KDTree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
 	node = &KDtree{}
 	if depth > MaxDepth {
 		node = NewLeaf(triangles)
 		return node
 	}
-	axis := 2
+	axis := depth % 3
 	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
 	righLimit := boundingBox.MinVolume.GetDimension(axis)
 	median := (leftLimit + righLimit) / 2
-	var leftTriangles, rightTriangles []*Triangle
+	var leftTriangles, rightTriangles []int
 	var A, B, C *Vec3
 	leftBoundingBox, rightBoundingBox := boundingBox.Split(axis, median)
-	for index, _ := range triangles {
-		current = m.Faces.
-		A = m.Vertices.Coordin
+	for _, index := range trianglesIndices {
+		A = m.Vertices[m.Faces[index].Vertices[0]].Coordinates
+		B = m.Vertices[m.Faces[index].Vertices[1]].Coordinates
+		C = m.Vertices[m.Faces[index].Vertices[1]].Coordinates
+
+		if leftBoundingBox.IntersectTriangle(A, B, C) {
+			leftTriangles = append(leftTriangles, index)
+		}
+
+		if rightBoundingBox.IntersectTriangle(A, B, C) {
+			appendTriangles = append(rightTriangles, index)
+		}
 	}
+	node = NewNode(median, axis)
+	leftChild := m.KDTree(leftBoundingBox, leftTriangles, depth+1)
+	rightChild := m.KDTree(rightBoundingBox, rightTriangles, depth+1)
+	node.Children[0] = leftChild
+	node.Children[1] = rightChild
+	return node
 }

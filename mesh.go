@@ -29,9 +29,17 @@ type Triangle struct {
 type Mesh struct {
 	Vertices []Vertex   `json:"vertices"`
 	Faces    []Triangle `json:"faces"`
+	tree     *KDtree
 }
 
 func (m *Mesh) Init() {
+	allIndices := make([]int, len(m.Faces))
+	for i := range allIndices {
+		allIndices[i] = i
+	}
+	// will uncomment this after fixing segmentation fault in bbox
+	// m.tree = m.newKDtree(m.GetBoundingBox(), allIndices, 0)
+
 	for i := range m.Faces {
 		triangle := &m.Faces[i]
 
@@ -108,7 +116,7 @@ func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 	return true, gamma
 }
 
-func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, float64) {
+func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Intersection) bool {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
 	intersection := &Intersection{}
 	//If the triangle is ABC, this gives you A
@@ -120,19 +128,19 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	//det is (AB^AC)*dir of the ray, but we're gonna use 1/det, so we find the recerse:
 	det := -DotProduct(ABxAC, &rayDir)
 	if math.Abs(det) < Epsilon {
-		return nil, Inf
+		return false
 	}
 	reverseDet := 1 / det
 	intersectDist := DotProduct(ABxAC, distToA) * reverseDet
-	if intersectDist < 0 {
-		return nil, Inf
+	if intersectDist < 0 || intersectDist > intersection.Distance {
+		return false
 	}
 	//lambda2 = (dist^dir)*AC / det
 	//lambda3 = -(dist^dir)*AB / det
 	lambda2 := MixedProduct(distToA, &rayDir, triangle.AC) * reverseDet
 	lambda3 := -MixedProduct(distToA, &rayDir, triangle.AB) * reverseDet
 	if lambda2 < 0 || lambda2 > 1 || lambda3 < 0 || lambda3 > 1 || lambda2+lambda3 > 1 {
-		return nil, Inf
+		return false
 	}
 
 	intersection.Distance = intersectDist
@@ -162,7 +170,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle) (*Intersection, f
 	intersection.SurfaceOy = triangle.surfaceOy
 
 	intersection.Incoming = ray
-	return intersection, intersection.Distance
+	return true
 }
 
 func (m *Mesh) GetBoundingBox() *BoundingBox {
@@ -173,7 +181,7 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 	return boundingBox
 }
 
-func (m *Mesh) KDTree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
+func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
 	if depth > MaxTreeDepth {
 		node := NewLeaf(trianglesIndices)
 		return node
@@ -201,8 +209,8 @@ func (m *Mesh) KDTree(boundingBox *BoundingBox, trianglesIndices []int, depth in
 		}
 	}
 	node := NewNode(median, axis)
-	leftChild := m.KDTree(leftBoundingBox, leftTriangles, depth+1)
-	rightChild := m.KDTree(rightBoundingBox, rightTriangles, depth+1)
+	leftChild := m.newKDtree(leftBoundingBox, leftTriangles, depth+1)
+	rightChild := m.newKDtree(rightBoundingBox, rightTriangles, depth+1)
 	node.Children[0] = leftChild
 	node.Children[1] = rightChild
 	return node

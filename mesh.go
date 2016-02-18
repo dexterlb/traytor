@@ -208,15 +208,43 @@ func (m *Mesh) KDTree(boundingBox *BoundingBox, trianglesIndices []int, depth in
 	return node
 }
 
-func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree) *Intersection {
-	intersectionInfo := &Intersection{}
-	intersected := false
+func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, intersectionInfo *Intersection) bool {
+	foundIntersection := false
 	if node.Axis == Leaf {
 		for triangle := range node.Triangles {
-			intersected, intersectionInfo = m.intersectTriangle(ray, triangle)
+			intersected = m.intersectTriangle(ray, triangle, intersectionInfo)
 			if intersected {
-				return intersectionInfo
+				foundIntersection = true
 			}
 		}
+		return foundIntersection
 	}
+
+	leftBoundingBoxChild, rightBoundingBoxChild := boundingBox.Split(node.Axis, node.Median)
+	var firstBoundingBox, secondBoundingBox *BoundingBox
+	var firstNodeChild, secondNodeChild *KDtree
+	if ray.Start.GetDimension(node.Axis) > node.Median {
+		firstBoundingBox = leftBoundingBoxChild
+		secondBoundingBox = rightBoundingBoxChild
+		firstNodeChild = node.Children[0]
+		secondNodeChild = node.Children[1]
+	} else {
+		firstBoundingBox = leftBoundingBoxChild
+		secondBoundingBox = rightBoundingBoxChild
+		firstNodeChild = node.Children[1]
+		secondNodeChild = node.Children[0]
+	}
+
+	if boundingBox.IntersectWall() {
+		if m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo) {
+			return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
+		}
+	} else {
+		if firstBoundingBox.Intersect(ray) {
+			return m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo)
+		} else {
+			return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
+		}
+	}
+	return false
 }

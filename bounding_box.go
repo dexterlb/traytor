@@ -164,7 +164,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 			*rayEnd = ray.Start
 			rayEnd.SetDimension(int(axis), b.MaxVolume.GetDimension(int(axis)))
 
-			if (DotProduct(&ray.Start, ABxAC)-distance)*(DotProduct(&ray.Start, ABxAC)-distance) <= 0 {
+			if (DotProduct(&ray.Start, ABxAC)-distance)*(DotProduct(rayEnd, ABxAC)-distance) <= 0 {
 				ray.Direction = *MinusVectors(rayEnd, &ray.Start)
 				intersected, distance := IntersectTriangle(ray, A, B, C)
 				if intersected && distance < 1.0000001 {

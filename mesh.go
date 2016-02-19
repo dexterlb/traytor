@@ -1,6 +1,7 @@
 package traytor
 
 import (
+	//"log"
 	"math"
 )
 
@@ -41,7 +42,6 @@ func (m *Mesh) Init() {
 
 	m.BoundingBox = m.GetBoundingBox()
 	m.tree = m.newKDtree(m.BoundingBox, allIndices, 0)
-	// fmt.Fprintf(os.Stderr, "tree: %s\n", m.tree)
 	for i := range m.Faces {
 		triangle := &m.Faces[i]
 
@@ -151,6 +151,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 	}
 
 	ip := AddVectors(&ray.Start, (&rayDir).Scaled(intersectDist))
+
 	if boundingBox != nil && !boundingBox.Inside(ip) {
 		return false
 	}
@@ -236,7 +237,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 				foundIntersection = true
 			}
 		}
-		return foundIntersection && boundingBox.Inside(intersectionInfo.Point)
+		return foundIntersection
 	}
 
 	leftBoundingBoxChild, rightBoundingBoxChild := boundingBox.Split(node.Axis, node.Median)

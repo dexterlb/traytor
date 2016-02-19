@@ -1,9 +1,7 @@
 package traytor
 
 import (
-	"fmt"
 	"math"
-	"os"
 )
 
 const (
@@ -92,13 +90,9 @@ func (m *Mesh) SlowIntersect(ray *Ray) (*Intersection, int) {
 }
 
 func (m *Mesh) Intersect(ray *Ray) *Intersection {
-	fmt.Fprintf(os.Stderr, "bbox: %v\n", m.BoundingBox)
-	fmt.Fprintf(os.Stderr, "ray: %s\n", ray)
-
 	if !m.BoundingBox.Intersect(ray) {
 		return nil
 	}
-	fmt.Fprintf(os.Stderr, "Tree: %v\n", m.tree)
 	intersectionInfo := &Intersection{Distance: Inf}
 	if m.IntersectKD(ray, m.BoundingBox, m.tree, intersectionInfo) {
 		return intersectionInfo
@@ -183,6 +177,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 	intersection.SurfaceOy = triangle.surfaceOy
 
 	intersection.Incoming = ray
+	intersection.Material = triangle.Material
 	return true
 }
 

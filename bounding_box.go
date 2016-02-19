@@ -66,7 +66,7 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	//we take the other two axes
 	otherAxis1, otherAxis2 := otherAxes(axis)
 
-	multiplier := ray.Inverse.GetDimension(axis)
+	multiplier := ray.Inverse[axis]
 	var intersectionX, intersectionY float64
 
 	distance := (b.MinVolume[axis] - start[axis]) * multiplier
@@ -204,7 +204,7 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 
 	otherAxis1, otherAxis2 := otherAxes(axis)
 	distance := median - start[axis]
-	directionInAxis := ray.Inverse.GetDimension(axis)
+	directionInAxis := ray.Inverse[axis]
 
 	if (distance * directionInAxis) < 0 {
 		return false

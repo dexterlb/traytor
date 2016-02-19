@@ -188,7 +188,7 @@ type Ray struct {
 	Start     Vec3
 	Direction Vec3
 	Depth     int
-	Inverse   Vec3
+	Inverse   [3]float64
 }
 
 // NewRay returns new ray
@@ -203,14 +203,16 @@ func (r *Ray) String() string {
 }
 
 func (r *Ray) Init() {
-	r.Inverse.MakeZero()
+	for i := 0; i < 3; i++ {
+		r.Inverse[i] = 0
+	}
 	if math.Abs(r.Direction.X) > Epsilon {
-		r.Inverse.X = 1.0 / r.Direction.X
+		r.Inverse[0] = 1.0 / r.Direction.X
 	}
 	if math.Abs(r.Direction.Y) > Epsilon {
-		r.Inverse.Y = 1.0 / r.Direction.Y
+		r.Inverse[1] = 1.0 / r.Direction.Y
 	}
 	if math.Abs(r.Direction.Z) > Epsilon {
-		r.Inverse.Z = 1.0 / r.Direction.Z
+		r.Inverse[2] = 1.0 / r.Direction.Z
 	}
 }

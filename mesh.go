@@ -1,8 +1,6 @@
 package traytor
 
-import (
-	"math"
-)
+import "math"
 
 const (
 	MaxTreeDepth = 10

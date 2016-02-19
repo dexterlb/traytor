@@ -3,6 +3,7 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 )
 
 // AnyMaterial implements the Material interface and is deserialiseable from json
@@ -93,7 +94,11 @@ type ReflectiveMaterial struct {
 
 // Shade returns the emitted colour after intersecting the material
 func (m *ReflectiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
-	return NewColour(0, 0, 0)
+	ray := intersection.Incoming
+	reflectedRay := &Ray{}
+	reflectedRay.Direction = *ray.Direction.Reflected(intersection.Normal)
+	reflectedRay.Start = *AddVectors(&ray.Start, intersection.Normal.Scaled(Epsilon))
+	return raytracer.Raytrace(reflectedRay)
 }
 
 // RefractiveMaterial is a material for modeling glass, etc
@@ -105,5 +110,20 @@ type RefractiveMaterial struct {
 
 // Shade returns the emitted colour after intersecting the material
 func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
-	return NewColour(0, 0, 0)
+	ray := intersection.Incoming
+	normal := intersection.Normal
+	eta := m.IOR.GetFac(intersection)
+	if DotProduct(normal, &ray.Direction) < 0 {
+		eta = 1 / eta
+	}
+	forwardNormal := FaceForward(normal, &ray.Direction)
+	refracted := Refract(&ray.Direction, forwardNormal, eta)
+	if math.Abs(refracted.Length()) < Epsilon {
+		return NewColour(0, 0, 0)
+	}
+	newRay := &Ray{}
+	newRay.Start = *AddVectors(intersection.Point, ray.Direction.Scaled(Epsilon))
+	newRay.Direction = *refracted
+	newRay.Depth = ray.Depth + 1
+	return raytracer.Raytrace(newRay)
 }

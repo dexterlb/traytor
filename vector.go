@@ -170,6 +170,24 @@ func MixedProduct(a, b, c *Vec3) float64 {
 	return DotProduct(CrossProduct(a, b), c)
 }
 
+func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
+	cosAlpha := DotProduct(incoming, normal)
+	coeff := 1 - (ior*ior)*(1-cosAlpha*cosAlpha)
+	// Check for total inner reflectionreturn
+	if coeff < Epsilon {
+		return NewVec3(0, 0, 0)
+	}
+	return MinusVectors(incoming.Scaled(ior), normal.Scaled((ior*cosAlpha + math.Sqrt(coeff))))
+}
+
+func FaceForward(normal *Vec3, ray *Vec3) *Vec3 {
+	if DotProduct(normal, ray) < 0 {
+		return normal
+	} else {
+		return normal.Negative()
+	}
+}
+
 //UnmarshalJSON implements the json.Unmarshaler interface
 func (v *Vec3) UnmarshalJSON(data []byte) error {
 	var unmarshaled [3]float64

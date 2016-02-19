@@ -170,7 +170,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 func (m *Mesh) GetBoundingBox() *BoundingBox {
 	boundingBox := NewBoundingBox()
 	for _, vertex := range m.Vertices {
-		boundingBox.AddPoint(vertex.Coordinates)
+		boundingBox.AddPoint(&vertex.Coordinates)
 	}
 	return boundingBox
 }

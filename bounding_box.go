@@ -17,7 +17,7 @@ func NewBoundingBox() *BoundingBox {
 }
 
 //AddPoint expands the volume of the box, if the point isn't already in the box
-func (b *BoundingBox) AddPoint(point Vec3) {
+func (b *BoundingBox) AddPoint(point *Vec3) {
 	b.MinVolume.X = math.Min(b.MinVolume.X, point.X)
 	b.MinVolume.Y = math.Min(b.MinVolume.Y, point.Y)
 	b.MinVolume.Z = math.Min(b.MinVolume.Z, point.Z)

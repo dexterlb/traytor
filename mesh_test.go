@@ -139,29 +139,29 @@ func TestIntersectTwoTriangles(t *testing.T) {
 				"uv": [0, 1]
 			},
 			{
-				"normal": [0, 0, 1],
+				"normal": [0, 0, -1],
 				"coordinates": [0, 0, 4],
 				"uv": [0, 0]
 			},
 			{
-				"normal": [0, 0, 1],
+				"normal": [0, 0, -1],
 				"coordinates": [1, 0, 4],
 				"uv": [1, 0]
 			},
 			{
-				"normal": [0, 0, 1],
+				"normal": [0, 0, -1],
 				"coordinates": [0, 1, 4],
 				"uv": [0, 1]
 			}
 		],
 		"faces": [
 			{
-				"vertices": [0, 1, 2],
-				"material": 42
-			},
-			{
 				"vertices": [3, 4, 5],
 				"material": 5
+			},
+			{
+				"vertices": [0, 1, 2],
+				"material": 42
 			}
 		]
 	}`)
@@ -185,6 +185,17 @@ func TestIntersectTwoTriangles(t *testing.T) {
 	if intersection.Material != 42 {
 		t.Error("Intersected wrong triangle")
 	}
+
+	ray.Direction.Z = 1
+
+	intersection = mesh.Intersect(ray)
+	if intersection == nil {
+		t.Fatal("Intersection shouldn't be nil")
+	}
+	if intersection.Material != 5 {
+		t.Error("Intersected wrong triangle")
+	}
+
 }
 
 func TestIntersectWeirdTriangle(t *testing.T) {

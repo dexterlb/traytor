@@ -140,7 +140,7 @@ func AddVectors(first, second *Vec3) *Vec3 {
 
 //MinusVectors returns a new vector which is the first vector minus the second
 func MinusVectors(first, second *Vec3) *Vec3 {
-	return AddVectors(first, second.Negative())
+	return NewVec3(first.X-second.X, first.Y-second.Y, first.Z-second.Z)
 }
 
 // DotProduct returns a float64 number which is the dot product of the two given vectors

@@ -1,8 +1,6 @@
 package traytor
 
-import (
-	"math"
-)
+import "math"
 
 type BoundingBox struct {
 	MaxVolume, MinVolume Vec3

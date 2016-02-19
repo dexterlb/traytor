@@ -72,19 +72,19 @@ func (m *Mesh) Init() {
 // Intersect finds the intersection between a ray and the mesh
 // and returns their intersection and the surface material.
 // Returns nil and -1 if they don't intersect
-func (m *Mesh) SlowIntersect(ray *Ray) (*Intersection, int) {
+func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 	intersection := &Intersection{}
 	intersection.Distance = Inf
-	material := -1
+	found := false
 	for _, triangle := range m.Faces {
 		if m.intersectTriangle(ray, &triangle, intersection) {
-			material = triangle.Material
+			found = true
 		}
 	}
-	if material == -1 {
-		return nil, -1
+	if !found {
+		return nil
 	}
-	return intersection, material
+	return intersection
 }
 
 func (m *Mesh) Intersect(ray *Ray) *Intersection {

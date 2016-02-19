@@ -287,13 +287,13 @@ func TestIntersectWeirdTriangle(t *testing.T) {
 		t.Fatalf("Error reading json: %s\n", err)
 	}
 
-	ray := camera.ShootRay(0.5, 0.8)
+	ray := camera.ShootRay(600.0/800.0, 230.0/450.0)
 
 	intersection := mesh.Intersect(ray)
 	if intersection == nil {
 		t.Fatal("Intersection shouldn't be nil")
 	}
-	if intersection.Material != 0 {
+	if intersection.Material != 2 {
 		t.Error("Intersected wrong triangle")
 	}
 }

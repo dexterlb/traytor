@@ -195,13 +195,13 @@ func (r *Ray) String() string {
 func (v *Vec3) Inverse() *Vec3 {
 	var newX, newY, newZ float64
 	if math.Abs(v.X) > Epsilon {
-		newX = 1 / v.X
+		newX = 1.0 / v.X
 	}
 	if math.Abs(v.Y) > Epsilon {
-		newY = 1 / v.Y
+		newY = 1.0 / v.Y
 	}
 	if math.Abs(v.Z) > Epsilon {
-		newX = 1 / v.Z
+		newZ = 1.0 / v.Z
 	}
 	return &Vec3{
 		X: newX,

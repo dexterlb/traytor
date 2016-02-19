@@ -1,7 +1,9 @@
 package traytor
 
 import (
+	"fmt"
 	"math"
+	"os"
 )
 
 const (
@@ -27,9 +29,10 @@ type Triangle struct {
 
 // Mesh is a triangle mesh
 type Mesh struct {
-	Vertices []Vertex   `json:"vertices"`
-	Faces    []Triangle `json:"faces"`
-	tree     *KDtree
+	Vertices    []Vertex   `json:"vertices"`
+	Faces       []Triangle `json:"faces"`
+	tree        *KDtree
+	BoundingBox *BoundingBox
 }
 
 func (m *Mesh) Init() {
@@ -37,8 +40,9 @@ func (m *Mesh) Init() {
 	for i := range allIndices {
 		allIndices[i] = i
 	}
-	// will uncomment this after fixing segmentation fault in bbox
-	// m.tree = m.newKDtree(m.GetBoundingBox(), allIndices, 0)
+
+	m.BoundingBox = m.GetBoundingBox()
+	m.tree = m.newKDtree(m.BoundingBox, allIndices, 0)
 
 	for i := range m.Faces {
 		triangle := &m.Faces[i]
@@ -72,7 +76,7 @@ func (m *Mesh) Init() {
 // Intersect finds the intersection between a ray and the mesh
 // and returns their intersection and the surface material.
 // Returns nil and -1 if they don't intersect
-func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
+func (m *Mesh) SlowIntersect(ray *Ray) (*Intersection, int) {
 	intersection := &Intersection{}
 	intersection.Distance = Inf
 	material := -1
@@ -85,6 +89,21 @@ func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
 		return nil, -1
 	}
 	return intersection, material
+}
+
+func (m *Mesh) Intersect(ray *Ray) *Intersection {
+	fmt.Fprintf(os.Stderr, "bbox: %v\n", m.BoundingBox)
+	fmt.Fprintf(os.Stderr, "ray: %s\n", ray)
+
+	if !m.BoundingBox.Intersect(ray) {
+		return nil
+	}
+	fmt.Fprintf(os.Stderr, "Tree: %v\n", m.tree)
+	intersectionInfo := &Intersection{Distance: Inf}
+	if m.IntersectKD(ray, m.BoundingBox, m.tree, intersectionInfo) {
+		return intersectionInfo
+	}
+	return nil
 }
 
 //Intersect triangle looks very similar to mesh.IntersectTriangle
@@ -176,7 +195,7 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 }
 
 func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
-	if depth > MaxTreeDepth {
+	if depth > MaxTreeDepth || len(trianglesIndices) < 2 {
 		node := NewLeaf(trianglesIndices)
 		return node
 	}
@@ -192,7 +211,7 @@ func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth
 	for _, index := range trianglesIndices {
 		A = &m.Vertices[m.Faces[index].Vertices[0]].Coordinates
 		B = &m.Vertices[m.Faces[index].Vertices[1]].Coordinates
-		C = &m.Vertices[m.Faces[index].Vertices[1]].Coordinates
+		C = &m.Vertices[m.Faces[index].Vertices[2]].Coordinates
 
 		if leftBoundingBox.IntersectTriangle(A, B, C) {
 			leftTriangles = append(leftTriangles, index)
@@ -213,7 +232,7 @@ func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth
 func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, intersectionInfo *Intersection) bool {
 	foundIntersection := false
 	if node.Axis == Leaf {
-		for triangle := range node.Triangles {
+		for _, triangle := range node.Triangles {
 			if m.intersectTriangle(ray, &m.Faces[triangle], intersectionInfo) {
 				foundIntersection = true
 			}

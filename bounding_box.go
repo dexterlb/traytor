@@ -5,14 +5,14 @@ import (
 )
 
 type BoundingBox struct {
-	MaxVolume, MinVolume *Vec3
+	MaxVolume, MinVolume Vec3
 }
 
 //NewBoundingBox creates a bounding box with no volume (min > max)
 func NewBoundingBox() *BoundingBox {
 	return &BoundingBox{
-		MinVolume: NewVec3(Inf, Inf, Inf),
-		MaxVolume: NewVec3(-Inf, -Inf, -Inf),
+		MinVolume: *NewVec3(Inf, Inf, Inf),
+		MaxVolume: *NewVec3(-Inf, -Inf, -Inf),
 	}
 }
 
@@ -56,7 +56,7 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 		return false
 	}
 	//or if the ray isn't moving in this direction at all
-	if ray.Direction.GetDimension(axis) < Epsilon {
+	if math.Abs(ray.Direction.GetDimension(axis)) < Epsilon {
 		return false
 	}
 	//we take the other two axes
@@ -109,10 +109,10 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 	}
 	//we construct the ray from A->B, A->C, etc and check whether it intersects with the box
 	triangle := [3]*Vec3{A, B, C}
-	var ray *Ray
+	ray := &Ray{}
 	for rayStart := 0; rayStart < 3; rayStart++ {
 		for rayEnd := rayStart + 1; rayEnd < 3; rayEnd++ {
-			ray.Start = *triangle[rayStart]
+			ray.Start = *(triangle[rayStart])
 			ray.Direction = *MinusVectors(triangle[rayEnd], triangle[rayStart])
 			//Check if there's intersection between AB and the box (example)
 			if b.Intersect(ray) {
@@ -134,7 +134,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 	AC := MinusVectors(C, A)
 	ABxAC := CrossProduct(AB, AC)
 	distance := DotProduct(A, ABxAC)
-	var rayEnd *Vec3
+	rayEnd := &Vec3{}
 
 	for edgeMask := 0; edgeMask < 7; edgeMask++ {
 		for axis := uint(0); axis < 3; axis++ {
@@ -177,11 +177,12 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 }
 
 func (b *BoundingBox) Split(axis int, median float64) (*BoundingBox, *BoundingBox) {
-	left := b
-	right := b
+	left := &BoundingBox{}
+	*left = *b
+	right := &BoundingBox{}
+	*right = *b
 	left.MaxVolume.SetDimension(axis, median)
 	right.MinVolume.SetDimension(axis, median)
-
 	return left, right
 }
 

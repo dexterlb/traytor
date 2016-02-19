@@ -34,17 +34,7 @@ func (b *BoundingBox) Inside(point *Vec3) bool {
 		Between(b.MinVolume.Z, b.MaxVolume.Z, point.Z))
 }
 
-func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
-	//if the ray isn't pointing at the box there wouldn't be an intersection
-	if (ray.Direction.GetDimension(axis) > 0 && ray.Start.GetDimension(axis) > b.MaxVolume.GetDimension(axis)) ||
-		(ray.Direction.GetDimension(axis) < 0 && ray.Start.GetDimension(axis) < b.MinVolume.GetDimension(axis)) {
-		return false
-	}
-	//or if the ray isn't moving in this direction at all
-	if ray.Direction.GetDimension(axis) < Epsilon {
-		return false
-	}
-	//we take the other two axes
+func otherAxes(axis int) (int, int) {
 	var otherAxis1, otherAxis2 int
 	if axis == 0 {
 		otherAxis1 = 1
@@ -56,6 +46,22 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	} else {
 		otherAxis2 = 2
 	}
+	return otherAxis1, otherAxis2
+}
+
+func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
+	//if the ray isn't pointing at the box there wouldn't be an intersection
+	if (ray.Direction.GetDimension(axis) > 0 && ray.Start.GetDimension(axis) > b.MaxVolume.GetDimension(axis)) ||
+		(ray.Direction.GetDimension(axis) < 0 && ray.Start.GetDimension(axis) < b.MinVolume.GetDimension(axis)) {
+		return false
+	}
+	//or if the ray isn't moving in this direction at all
+	if ray.Direction.GetDimension(axis) < Epsilon {
+		return false
+	}
+	//we take the other two axes
+	otherAxis1, otherAxis2 := otherAxes(axis)
+
 	multiplier := ray.Direction.Inverse().GetDimension(axis)
 	var intersectionX, intersectionY float64
 
@@ -177,4 +183,33 @@ func (b *BoundingBox) Split(axis int, median float64) (*BoundingBox, *BoundingBo
 	right.MinVolume.SetDimension(axis, median)
 
 	return left, right
+}
+
+// IntersectWall checks if a ray intersects a wall inside the bounding box
+// (the wall is defined by the axis and median, as with Split)
+func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
+	if math.Abs(ray.Direction.GetDimension(axis)) < Epsilon {
+		return (math.Abs(ray.Start.GetDimension(axis)-median) < Epsilon)
+	}
+
+	otherAxis1, otherAxis2 := otherAxes(axis)
+	distance := median - ray.Start.GetDimension(axis)
+	directionInAxis := ray.Direction.GetDimension(axis)
+
+	if (distance * directionInAxis) < 0 {
+		return false
+	}
+
+	fac := distance * directionInAxis
+	distanceOnAxis1 := ray.Start.GetDimension(otherAxis1) +
+		ray.Direction.GetDimension(otherAxis1)*fac
+	if b.MinVolume.GetDimension(otherAxis1) <= distanceOnAxis1 &&
+		distanceOnAxis1 <= b.MaxVolume.GetDimension(otherAxis1) {
+
+		distanceOnAxis2 := ray.Start.GetDimension(otherAxis1) +
+			ray.Direction.GetDimension(otherAxis2)*fac
+		return b.MinVolume.GetDimension(otherAxis2) <= distanceOnAxis2 &&
+			distanceOnAxis2 <= b.MaxVolume.GetDimension(otherAxis2)
+	}
+	return false
 }

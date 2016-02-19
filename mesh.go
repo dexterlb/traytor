@@ -73,20 +73,15 @@ func (m *Mesh) Init() {
 // and returns their intersection and the surface material.
 // Returns nil and -1 if they don't intersect
 func (m *Mesh) Intersect(ray *Ray) (*Intersection, int) {
-	maxDistance := Inf
 	intersection := &Intersection{}
-	tempIntersection := &Intersection{}
+	intersection.Distance = Inf
 	material := -1
-	var distance float64
 	for _, triangle := range m.Faces {
-		tempIntersection, distance = m.intersectTriangle(ray, &triangle)
-		if distance < maxDistance {
-			maxDistance = distance
-			intersection = tempIntersection
+		if m.intersectTriangle(ray, &triangle, intersection) {
 			material = triangle.Material
 		}
 	}
-	if maxDistance >= Inf-Epsilon {
+	if material == -1 {
 		return nil, -1
 	}
 	return intersection, material
@@ -118,7 +113,6 @@ func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 
 func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Intersection) bool {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
-	intersection := &Intersection{}
 	//If the triangle is ABC, this gives you A
 	A := &m.Vertices[triangle.Vertices[0]].Coordinates
 	distToA := MinusVectors(&ray.Start, A)
@@ -220,8 +214,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 	foundIntersection := false
 	if node.Axis == Leaf {
 		for triangle := range node.Triangles {
-			intersected = m.intersectTriangle(ray, triangle, intersectionInfo)
-			if intersected {
+			if m.intersectTriangle(ray, &m.Faces[triangle], intersectionInfo) {
 				foundIntersection = true
 			}
 		}
@@ -243,7 +236,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 		secondNodeChild = node.Children[0]
 	}
 
-	if boundingBox.IntersectWall() {
+	if boundingBox.IntersectWall(node.Axis, node.Median, ray) {
 		if m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo) {
 			return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
 		}

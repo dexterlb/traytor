@@ -1,6 +1,9 @@
 package traytor
 
-import "fmt"
+import (
+	"fmt"
+	"testing"
+)
 
 func ExampleBoundingBox_AddPoint() {
 	box := NewBoundingBox()
@@ -65,4 +68,21 @@ func ExampleBoundingBox_Intersect() {
 	// ray 2: true
 	// ray 3: false
 	// ray 4: false
+}
+
+func TestIntersectBoundingBoxZeroVolume(t *testing.T) {
+	box := NewBoundingBox()
+	box.AddPoint(NewVec3(0, 0, 0))
+	box.AddPoint(NewVec3(1, 0, 0))
+	box.AddPoint(NewVec3(0, 1, 0))
+	box.AddPoint(NewVec3(1, 1, 0))
+
+	ray := &Ray{
+		Start:     *NewVec3(0.5, 0.5, 1),
+		Direction: *NewVec3(0, 0, -1),
+	}
+
+	if !box.Intersect(ray) {
+		t.Error("Ray must intersect box")
+	}
 }

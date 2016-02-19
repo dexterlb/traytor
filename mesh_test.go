@@ -47,8 +47,8 @@ func TestGetBoundingBox(t *testing.T) {
 	mesh.Init()
 
 	bbox := mesh.GetBoundingBox()
-	asserEqualVectors(t, NewVec3(1, 5, 0), bbox.MaxVolume)
-	asserEqualVectors(t, NewVec3(-1, -2, -8), bbox.MinVolume)
+	asserEqualVectors(t, NewVec3(1, 5, 0), &bbox.MaxVolume)
+	asserEqualVectors(t, NewVec3(-1, -2, -8), &bbox.MinVolume)
 }
 
 func ExampleMesh_Intersect() {
@@ -93,9 +93,8 @@ func ExampleMesh_Intersect() {
 
 	var (
 		intersection *Intersection
-		material     int
 	)
-	intersection, material = mesh.Intersect(ray)
+	intersection = mesh.Intersect(ray)
 
 	if intersection == nil {
 		fmt.Printf("no intersection\n")
@@ -108,7 +107,7 @@ func ExampleMesh_Intersect() {
 		fmt.Printf("surface normal: %s\n", intersection.Normal)
 		fmt.Printf("surface coordinate system: Ox: %s, Oy: %s\n",
 			intersection.SurfaceOx, intersection.SurfaceOy)
-		fmt.Printf("surface material: %d\n", material)
+		fmt.Printf("surface material: %d\n", intersection.Material)
 	}
 
 	// Output:

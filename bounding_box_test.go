@@ -12,7 +12,7 @@ func ExampleBoundingBox_AddPoint() {
 	box.AddPoint(NewVec3(0, 5, -0.5))
 	box.AddPoint(NewVec3(1, 0, 2))
 
-	fmt.Printf("min: %s, max: %s\n", box.MinVolume, box.MaxVolume)
+	fmt.Printf("min: %s, max: %s\n", &box.MinVolume, &box.MaxVolume)
 
 	// Output:
 	// min: (-1, -1, -1), max: (1, 5, 2)
@@ -20,8 +20,8 @@ func ExampleBoundingBox_AddPoint() {
 
 func ExampleBoundingBox_Inside() {
 	box := &BoundingBox{
-		MinVolume: NewVec3(-1, -1, -1),
-		MaxVolume: NewVec3(1, 1, 1),
+		MinVolume: *NewVec3(-1, -1, -1),
+		MaxVolume: *NewVec3(1, 1, 1),
 	}
 
 	fmt.Printf("0, 0, 0: %v\n", box.Inside(NewVec3(0, 0, 0)))
@@ -34,8 +34,8 @@ func ExampleBoundingBox_Inside() {
 
 func ExampleBoundingBox_Intersect() {
 	box := &BoundingBox{
-		MinVolume: NewVec3(-1, -1, -1),
-		MaxVolume: NewVec3(1, 1, 1),
+		MinVolume: *NewVec3(-1, -1, -1),
+		MaxVolume: *NewVec3(1, 1, 1),
 	}
 
 	ray1 := &Ray{

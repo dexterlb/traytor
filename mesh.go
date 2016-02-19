@@ -192,9 +192,10 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
 	if depth > MaxTreeDepth || len(trianglesIndices) < 2 {
 		node := NewLeaf(trianglesIndices)
+
 		return node
 	}
-	axis := depth % 3
+	axis := (depth + 2) % 3
 	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
 	righLimit := boundingBox.MinVolume.GetDimension(axis)
 
@@ -238,7 +239,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 	leftBoundingBoxChild, rightBoundingBoxChild := boundingBox.Split(node.Axis, node.Median)
 	var firstBoundingBox, secondBoundingBox *BoundingBox
 	var firstNodeChild, secondNodeChild *KDtree
-	if ray.Start.GetDimension(node.Axis) > node.Median {
+	if ray.Start.GetDimension(node.Axis) < node.Median {
 		firstBoundingBox = leftBoundingBoxChild
 		secondBoundingBox = rightBoundingBoxChild
 		firstNodeChild = node.Children[0]

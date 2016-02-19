@@ -508,7 +508,7 @@ func TestIntersectOverlappingTriangles(t *testing.T) {
 		t.Fatalf("Error reading json: %s\n", err)
 	}
 
-	ray := camera.ShootRay(520.0/800.0, 200.0/450.0)
+	ray := camera.ShootRay(590.0/800.0, 195.0/450.0)
 
 	intersection := mesh.Intersect(ray)
 	if intersection == nil {

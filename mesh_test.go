@@ -3,7 +3,53 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
+	"testing"
 )
+
+func TestGetBoundingBox(t *testing.T) {
+	meshData := []byte(`{
+		"vertices": [
+			{
+				"normal": [0, 0, 1],
+				"coordinates": [-1, -2, 0]
+			},
+			{
+				"normal": [0, 0, 1],
+				"coordinates": [1, 5, -8]
+			},
+			{
+				"normal": [0, 0, 1],
+				"coordinates": [1, 2, 0]
+			},
+			{
+				"normal": [0, 0, 1],
+				"coordinates": [1, 1, 0]
+			}
+		],
+		"faces": [
+			{
+				"vertices": [0, 1, 2],
+				"material": 42
+			},
+			{
+				"vertices": [1, 2, 3],
+				"material": 42
+			}
+		]
+	}`)
+	mesh := &Mesh{}
+	err := json.Unmarshal(meshData, &mesh)
+	if err != nil {
+		t.Fatalf("Error reading json: %s\n", err)
+		return
+	}
+
+	mesh.Init()
+
+	bbox := mesh.GetBoundingBox()
+	asserEqualVectors(t, NewVec3(1, 5, 0), bbox.MaxVolume)
+	asserEqualVectors(t, NewVec3(-1, -2, -8), bbox.MinVolume)
+}
 
 func ExampleMesh_Intersect() {
 	meshData := []byte(`{

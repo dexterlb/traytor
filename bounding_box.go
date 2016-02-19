@@ -6,33 +6,33 @@ import (
 )
 
 type BoundingBox struct {
-	MaxVolume, MinVolume Vec3
+	MaxVolume, MinVolume [3]float64
 }
 
 //NewBoundingBox creates a bounding box with no volume (min > max)
 func NewBoundingBox() *BoundingBox {
 	return &BoundingBox{
-		MinVolume: *NewVec3(Inf, Inf, Inf),
-		MaxVolume: *NewVec3(-Inf, -Inf, -Inf),
+		MinVolume: [3]float64{Inf, Inf, Inf},
+		MaxVolume: [3]float64{-Inf, -Inf, -Inf},
 	}
 }
 
 //AddPoint expands the volume of the box, if the point isn't already in the box
 func (b *BoundingBox) AddPoint(point *Vec3) {
-	b.MinVolume.X = math.Min(b.MinVolume.X, point.X)
-	b.MinVolume.Y = math.Min(b.MinVolume.Y, point.Y)
-	b.MinVolume.Z = math.Min(b.MinVolume.Z, point.Z)
+	b.MinVolume[0] = math.Min(b.MinVolume[0], point.X)
+	b.MinVolume[1] = math.Min(b.MinVolume[1], point.Y)
+	b.MinVolume[2] = math.Min(b.MinVolume[2], point.Z)
 
-	b.MaxVolume.X = math.Max(b.MaxVolume.X, point.X)
-	b.MaxVolume.Y = math.Max(b.MaxVolume.Y, point.Y)
-	b.MaxVolume.Z = math.Max(b.MaxVolume.Z, point.Z)
+	b.MaxVolume[0] = math.Max(b.MaxVolume[0], point.X)
+	b.MaxVolume[1] = math.Max(b.MaxVolume[1], point.Y)
+	b.MaxVolume[2] = math.Max(b.MaxVolume[2], point.Z)
 }
 
 //Inside checks if a point is inside the box
 func (b *BoundingBox) Inside(point *Vec3) bool {
-	return (Between(b.MinVolume.X, b.MaxVolume.X, point.X) &&
-		Between(b.MinVolume.Y, b.MaxVolume.Y, point.Y) &&
-		Between(b.MinVolume.Z, b.MaxVolume.Z, point.Z))
+	return (Between(b.MinVolume[0], b.MaxVolume[0], point.X) &&
+		Between(b.MinVolume[1], b.MaxVolume[1], point.Y) &&
+		Between(b.MinVolume[2], b.MaxVolume[2], point.Z))
 }
 
 func otherAxes(axis int) (int, int) {
@@ -51,13 +51,16 @@ func otherAxes(axis int) (int, int) {
 }
 
 func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
+	directions := [3]float64{ray.Direction.X, ray.Direction.Y, ray.Direction.Z}
+	start := [3]float64{ray.Start.X, ray.Start.Y, ray.Start.Z}
+
 	//if the ray isn't pointing at the box there wouldn't be an intersection
-	if (ray.Direction.GetDimension(axis) > 0 && ray.Start.GetDimension(axis) > b.MaxVolume.GetDimension(axis)) ||
-		(ray.Direction.GetDimension(axis) < 0 && ray.Start.GetDimension(axis) < b.MinVolume.GetDimension(axis)) {
+	if (directions[axis] > 0 && start[axis] > b.MaxVolume[axis]) ||
+		(directions[axis] < 0 && start[axis] < b.MinVolume[axis]) {
 		return false
 	}
 	//or if the ray isn't moving in this direction at all
-	if math.Abs(ray.Direction.GetDimension(axis)) < Epsilon {
+	if math.Abs(directions[axis]) < Epsilon {
 		return false
 	}
 	//we take the other two axes
@@ -66,26 +69,26 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	multiplier := ray.Inverse.GetDimension(axis)
 	var intersectionX, intersectionY float64
 
-	distance := (b.MinVolume.GetDimension(axis) - ray.Start.GetDimension(axis)) * multiplier
+	distance := (b.MinVolume[axis] - start[axis]) * multiplier
 	if distance < 0 {
 		return false
 	}
-	intersectionX = ray.Start.GetDimension(otherAxis1) + ray.Direction.GetDimension(otherAxis1)*distance
-	if Between(b.MinVolume.GetDimension(otherAxis1), b.MaxVolume.GetDimension(otherAxis1), intersectionX) {
-		intersectionY = ray.Start.GetDimension(otherAxis2) + ray.Direction.GetDimension(otherAxis2)*distance
-		if Between(b.MinVolume.GetDimension(otherAxis2), b.MaxVolume.GetDimension(otherAxis2), intersectionY) {
+	intersectionX = start[otherAxis1] + directions[otherAxis1]*distance
+	if Between(b.MinVolume[otherAxis1], b.MaxVolume[otherAxis1], intersectionX) {
+		intersectionY = start[otherAxis2] + directions[otherAxis2]*distance
+		if Between(b.MinVolume[otherAxis2], b.MaxVolume[otherAxis2], intersectionY) {
 			return true
 		}
 	}
 
-	distance = (b.MaxVolume.GetDimension(axis) - ray.Start.GetDimension(axis)) * multiplier
+	distance = (b.MaxVolume[axis] - start[axis]) * multiplier
 	if distance < 0 {
 		return false
 	}
-	intersectionX = ray.Start.GetDimension(otherAxis1) + ray.Direction.GetDimension(otherAxis1)*distance
-	if Between(b.MinVolume.GetDimension(otherAxis1), b.MaxVolume.GetDimension(otherAxis1), intersectionX) {
-		intersectionY = ray.Start.GetDimension(otherAxis2) + ray.Direction.GetDimension(otherAxis2)*distance
-		if Between(b.MinVolume.GetDimension(otherAxis2), b.MaxVolume.GetDimension(otherAxis2), intersectionY) {
+	intersectionX = start[otherAxis1] + directions[otherAxis1]*distance
+	if Between(b.MinVolume[otherAxis1], b.MaxVolume[otherAxis1], intersectionX) {
+		intersectionY = start[otherAxis2] + directions[otherAxis2]*distance
+		if Between(b.MinVolume[otherAxis2], b.MaxVolume[otherAxis2], intersectionY) {
 			return true
 		}
 	}
@@ -146,25 +149,25 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 			}
 
 			if edgeMask&1 != 0 {
-				ray.Start.X = b.MaxVolume.X
+				ray.Start.X = b.MaxVolume[0]
 			} else {
-				ray.Start.X = b.MinVolume.X
+				ray.Start.X = b.MinVolume[0]
 			}
 
 			if edgeMask&2 != 0 {
-				ray.Start.Y = b.MaxVolume.Y
+				ray.Start.Y = b.MaxVolume[1]
 			} else {
-				ray.Start.Y = b.MinVolume.Y
+				ray.Start.Y = b.MinVolume[1]
 			}
 
 			if edgeMask&4 != 0 {
-				ray.Start.Z = b.MaxVolume.Z
+				ray.Start.Z = b.MaxVolume[2]
 			} else {
-				ray.Start.Z = b.MinVolume.Z
+				ray.Start.Z = b.MinVolume[2]
 			}
 
 			*rayEnd = ray.Start
-			rayEnd.SetDimension(int(axis), b.MaxVolume.GetDimension(int(axis)))
+			rayEnd.SetDimension(int(axis), b.MaxVolume[axis])
 
 			if (DotProduct(&ray.Start, ABxAC)-distance)*(DotProduct(rayEnd, ABxAC)-distance) <= 0 {
 				ray.Direction = *MinusVectors(rayEnd, &ray.Start)
@@ -185,20 +188,22 @@ func (b *BoundingBox) Split(axis int, median float64) (*BoundingBox, *BoundingBo
 	*left = *b
 	right := &BoundingBox{}
 	*right = *b
-	left.MaxVolume.SetDimension(axis, median)
-	right.MinVolume.SetDimension(axis, median)
+	left.MaxVolume[axis] = median
+	right.MinVolume[axis] = median
 	return left, right
 }
 
 // IntersectWall checks if a ray intersects a wall inside the bounding box
 // (the wall is defined by the axis and median, as with Split)
 func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
-	if math.Abs(ray.Direction.GetDimension(axis)) < Epsilon {
-		return (math.Abs(ray.Start.GetDimension(axis)-median) < Epsilon)
+	directions := [3]float64{ray.Direction.X, ray.Direction.Y, ray.Direction.Z}
+	start := [3]float64{ray.Start.X, ray.Start.Y, ray.Start.Z}
+	if math.Abs(directions[axis]) < Epsilon {
+		return (math.Abs(start[axis]-median) < Epsilon)
 	}
 
 	otherAxis1, otherAxis2 := otherAxes(axis)
-	distance := median - ray.Start.GetDimension(axis)
+	distance := median - start[axis]
 	directionInAxis := ray.Inverse.GetDimension(axis)
 
 	if (distance * directionInAxis) < 0 {
@@ -206,19 +211,19 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 	}
 
 	fac := distance * directionInAxis
-	distanceOnAxis1 := ray.Start.GetDimension(otherAxis1) +
-		ray.Direction.GetDimension(otherAxis1)*fac
-	if b.MinVolume.GetDimension(otherAxis1) <= distanceOnAxis1 &&
-		distanceOnAxis1 <= b.MaxVolume.GetDimension(otherAxis1) {
+	distanceOnAxis1 := start[otherAxis1] +
+		directions[otherAxis1]*fac
+	if b.MinVolume[otherAxis1] <= distanceOnAxis1 &&
+		distanceOnAxis1 <= b.MaxVolume[otherAxis1] {
 
-		distanceOnAxis2 := ray.Start.GetDimension(otherAxis2) +
-			ray.Direction.GetDimension(otherAxis2)*fac
-		return b.MinVolume.GetDimension(otherAxis2) <= distanceOnAxis2 &&
-			distanceOnAxis2 <= b.MaxVolume.GetDimension(otherAxis2)
+		distanceOnAxis2 := start[otherAxis2] +
+			directions[otherAxis2]*fac
+		return b.MinVolume[otherAxis2] <= distanceOnAxis2 &&
+			distanceOnAxis2 <= b.MaxVolume[otherAxis2]
 	}
 	return false
 }
 
 func (b *BoundingBox) String() string {
-	return fmt.Sprintf("bbox[min: %s, max: %s]", &b.MinVolume, &b.MaxVolume)
+	return fmt.Sprintf("bbox[min: %s, max: %s]", NewVec3Array(b.MinVolume), NewVec3Array(b.MaxVolume))
 }

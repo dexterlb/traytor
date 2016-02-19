@@ -201,8 +201,8 @@ func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth
 		return node
 	}
 	axis := (depth + 2) % 3
-	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
-	righLimit := boundingBox.MinVolume.GetDimension(axis)
+	leftLimit := boundingBox.MaxVolume[axis]
+	righLimit := boundingBox.MinVolume[axis]
 
 	median := (leftLimit + righLimit) / 2
 

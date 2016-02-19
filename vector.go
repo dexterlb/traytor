@@ -21,6 +21,15 @@ func (v *Vec3) MakeZero() {
 	v.X, v.Y, v.Z = 0, 0, 0
 }
 
+//NewVec3Array makes vector from array
+func NewVec3Array(values [3]float64) *Vec3 {
+	return &Vec3{
+		X: values[0],
+		Y: values[1],
+		Z: values[2],
+	}
+}
+
 //Length return the lenght of a vector
 func (v *Vec3) Length() float64 {
 	return math.Sqrt(v.LengthSquared())

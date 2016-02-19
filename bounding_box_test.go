@@ -12,16 +12,16 @@ func ExampleBoundingBox_AddPoint() {
 	box.AddPoint(NewVec3(0, 5, -0.5))
 	box.AddPoint(NewVec3(1, 0, 2))
 
-	fmt.Printf("min: %s, max: %s\n", &box.MinVolume, &box.MaxVolume)
+	fmt.Printf("%s\n", box)
 
 	// Output:
-	// min: (-1, -1, -1), max: (1, 5, 2)
+	// bbox[min: (-1, -1, -1), max: (1, 5, 2)]
 }
 
 func ExampleBoundingBox_Inside() {
 	box := &BoundingBox{
-		MinVolume: *NewVec3(-1, -1, -1),
-		MaxVolume: *NewVec3(1, 1, 1),
+		MinVolume: [3]float64{-1, -1, -1},
+		MaxVolume: [3]float64{1, 1, 1},
 	}
 
 	fmt.Printf("0, 0, 0: %v\n", box.Inside(NewVec3(0, 0, 0)))
@@ -34,8 +34,8 @@ func ExampleBoundingBox_Inside() {
 
 func ExampleBoundingBox_Intersect() {
 	box := &BoundingBox{
-		MinVolume: *NewVec3(-1, -1, -1),
-		MaxVolume: *NewVec3(1, 1, 1),
+		MinVolume: [3]float64{-1, -1, -1},
+		MaxVolume: [3]float64{1, 1, 1},
 	}
 
 	ray1 := &Ray{
@@ -93,8 +93,8 @@ func TestIntersectBoundingBoxZeroVolume(t *testing.T) {
 
 func TestBoundingBoxSplit(t *testing.T) {
 	box := &BoundingBox{
-		MinVolume: *NewVec3(-3.18, -3.96, -1.77),
-		MaxVolume: *NewVec3(4.58, 1.74, 4.56),
+		MinVolume: [3]float64{-3.18, -3.96, -1.77},
+		MaxVolume: [3]float64{4.58, 1.74, 4.56},
 	}
 
 	ray := &Ray{
@@ -109,10 +109,10 @@ func TestBoundingBoxSplit(t *testing.T) {
 
 	left, right := box.Split(2, 1.39)
 
-	asserEqualVectors(t, NewVec3(-3.18, -3.96, -1.77), &left.MinVolume)
-	asserEqualVectors(t, NewVec3(-3.18, -3.96, 1.39), &right.MinVolume)
-	asserEqualVectors(t, NewVec3(4.58, 1.74, 1.39), &left.MaxVolume)
-	asserEqualVectors(t, NewVec3(4.58, 1.74, 4.56), &right.MaxVolume)
+	asserEqualVectors(t, NewVec3(-3.18, -3.96, -1.77), NewVec3Array(left.MinVolume))
+	asserEqualVectors(t, NewVec3(-3.18, -3.96, 1.39), NewVec3Array(right.MinVolume))
+	asserEqualVectors(t, NewVec3(4.58, 1.74, 1.39), NewVec3Array(left.MaxVolume))
+	asserEqualVectors(t, NewVec3(4.58, 1.74, 4.56), NewVec3Array(right.MaxVolume))
 
 	if box.IntersectWall(2, 1.39, ray) {
 		t.Error("ray shouldn't intersect the wall")

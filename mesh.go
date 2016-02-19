@@ -39,7 +39,7 @@ func (m *Mesh) Init() {
 
 	m.BoundingBox = m.GetBoundingBox()
 	m.tree = m.newKDtree(m.BoundingBox, allIndices, 0)
-
+	// fmt.Fprintf(os.Stderr, "tree: %s\n", m.tree)
 	for i := range m.Faces {
 		triangle := &m.Faces[i]
 
@@ -190,9 +190,10 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
 	if depth > MaxTreeDepth || len(trianglesIndices) < 2 {
 		node := NewLeaf(trianglesIndices)
-
+		// log.Printf("made leaf %v", trianglesIndices)
 		return node
 	}
+	// log.Printf("made child")
 	axis := (depth + 2) % 3
 	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
 	righLimit := boundingBox.MinVolume.GetDimension(axis)
@@ -231,28 +232,29 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 				foundIntersection = true
 			}
 		}
-		return foundIntersection
+		return foundIntersection && boundingBox.Inside(intersectionInfo.Point)
 	}
 
 	leftBoundingBoxChild, rightBoundingBoxChild := boundingBox.Split(node.Axis, node.Median)
 	var firstBoundingBox, secondBoundingBox *BoundingBox
 	var firstNodeChild, secondNodeChild *KDtree
-	if ray.Start.GetDimension(node.Axis) < node.Median {
+	if ray.Start.GetDimension(node.Axis) <= node.Median {
 		firstBoundingBox = leftBoundingBoxChild
 		secondBoundingBox = rightBoundingBoxChild
 		firstNodeChild = node.Children[0]
 		secondNodeChild = node.Children[1]
 	} else {
-		firstBoundingBox = leftBoundingBoxChild
-		secondBoundingBox = rightBoundingBoxChild
+		firstBoundingBox = rightBoundingBoxChild
+		secondBoundingBox = leftBoundingBoxChild
 		firstNodeChild = node.Children[1]
 		secondNodeChild = node.Children[0]
 	}
 
 	if boundingBox.IntersectWall(node.Axis, node.Median, ray) {
 		if m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo) {
-			return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
+			return true
 		}
+		return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
 	} else {
 		if firstBoundingBox.Intersect(ray) {
 			return m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo)

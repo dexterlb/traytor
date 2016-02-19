@@ -1,6 +1,9 @@
 package traytor
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 type BoundingBox struct {
 	MaxVolume, MinVolume Vec3
@@ -193,7 +196,7 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 
 	otherAxis1, otherAxis2 := otherAxes(axis)
 	distance := median - ray.Start.GetDimension(axis)
-	directionInAxis := ray.Direction.GetDimension(axis)
+	directionInAxis := ray.Direction.Inverse().GetDimension(axis)
 
 	if (distance * directionInAxis) < 0 {
 		return false
@@ -205,10 +208,14 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 	if b.MinVolume.GetDimension(otherAxis1) <= distanceOnAxis1 &&
 		distanceOnAxis1 <= b.MaxVolume.GetDimension(otherAxis1) {
 
-		distanceOnAxis2 := ray.Start.GetDimension(otherAxis1) +
+		distanceOnAxis2 := ray.Start.GetDimension(otherAxis2) +
 			ray.Direction.GetDimension(otherAxis2)*fac
 		return b.MinVolume.GetDimension(otherAxis2) <= distanceOnAxis2 &&
 			distanceOnAxis2 <= b.MaxVolume.GetDimension(otherAxis2)
 	}
 	return false
+}
+
+func (b *BoundingBox) String() string {
+	return fmt.Sprintf("bbox[min: %s, max: %s]", &b.MinVolume, &b.MaxVolume)
 }

@@ -86,3 +86,38 @@ func TestIntersectBoundingBoxZeroVolume(t *testing.T) {
 		t.Error("Ray must intersect box")
 	}
 }
+
+func TestBoundingBoxSplit(t *testing.T) {
+	box := &BoundingBox{
+		MinVolume: *NewVec3(-3.18, -3.96, -1.77),
+		MaxVolume: *NewVec3(4.58, 1.74, 4.56),
+	}
+
+	ray := &Ray{
+		Start:     *NewVec3(4.49, -7.3, 5.53),
+		Direction: *NewVec3(-0.60, 0.5, -0.62),
+	}
+
+	if !box.Intersect(ray) {
+		t.Error("ray should intersect big box")
+	}
+
+	left, right := box.Split(2, 1.39)
+
+	asserEqualVectors(t, NewVec3(-3.18, -3.96, -1.77), &left.MinVolume)
+	asserEqualVectors(t, NewVec3(-3.18, -3.96, 1.39), &right.MinVolume)
+	asserEqualVectors(t, NewVec3(4.58, 1.74, 1.39), &left.MaxVolume)
+	asserEqualVectors(t, NewVec3(4.58, 1.74, 4.56), &right.MaxVolume)
+
+	if box.IntersectWall(2, 1.39, ray) {
+		t.Error("ray shouldn't intersect the wall")
+	}
+
+	if right.Intersect(ray) {
+		t.Error("ray shouldn't intersect right")
+	}
+
+	if !left.Intersect(ray) {
+		t.Error("ray should intersect left")
+	}
+}

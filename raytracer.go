@@ -11,11 +11,11 @@ func (r *Raytracer) Raytrace(ray *Ray) *Colour {
 	if ray.Depth > r.MaxDepth {
 		return NewColour(0, 0, 0)
 	}
-	intersectionInfo, material := r.Scene.Mesh.Intersect(ray)
+	intersectionInfo := r.Scene.Mesh.Intersect(ray)
 	if intersectionInfo == nil {
 		return NewColour(0, 0, 0)
 	} else {
-		return r.Scene.Materials[material].Shade(intersectionInfo, r)
+		return r.Scene.Materials[intersectionInfo.Material].Shade(intersectionInfo, r)
 	}
 }
 

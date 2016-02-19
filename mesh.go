@@ -1,6 +1,8 @@
 package traytor
 
-import "math"
+import (
+	"math"
+)
 
 const (
 	MaxTreeDepth = 10
@@ -77,7 +79,7 @@ func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 	intersection.Distance = Inf
 	found := false
 	for _, triangle := range m.Faces {
-		if m.intersectTriangle(ray, &triangle, intersection) {
+		if m.intersectTriangle(ray, &triangle, intersection, nil) {
 			found = true
 		}
 	}
@@ -122,7 +124,7 @@ func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 	return true, gamma
 }
 
-func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Intersection) bool {
+func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Intersection, boundingBox *BoundingBox) bool {
 	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
 	//If the triangle is ABC, this gives you A
 	A := &m.Vertices[triangle.Vertices[0]].Coordinates
@@ -148,8 +150,12 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 		return false
 	}
 
+	ip := AddVectors(&ray.Start, (&rayDir).Scaled(intersectDist))
+	if boundingBox != nil && !boundingBox.Inside(ip) {
+		return false
+	}
+	intersection.Point = ip
 	intersection.Distance = intersectDist
-	intersection.Point = AddVectors(&ray.Start, (&rayDir).Scaled(intersectDist))
 	if triangle.Normal != nil {
 		intersection.Normal = triangle.Normal
 	} else {
@@ -190,10 +196,8 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
 	if depth > MaxTreeDepth || len(trianglesIndices) < 2 {
 		node := NewLeaf(trianglesIndices)
-		// log.Printf("made leaf %v", trianglesIndices)
 		return node
 	}
-	// log.Printf("made child")
 	axis := (depth + 2) % 3
 	leftLimit := boundingBox.MaxVolume.GetDimension(axis)
 	righLimit := boundingBox.MinVolume.GetDimension(axis)
@@ -228,7 +232,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 	foundIntersection := false
 	if node.Axis == Leaf {
 		for _, triangle := range node.Triangles {
-			if m.intersectTriangle(ray, &m.Faces[triangle], intersectionInfo) {
+			if m.intersectTriangle(ray, &m.Faces[triangle], intersectionInfo, boundingBox) {
 				foundIntersection = true
 			}
 		}
@@ -236,6 +240,7 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 	}
 
 	leftBoundingBoxChild, rightBoundingBoxChild := boundingBox.Split(node.Axis, node.Median)
+
 	var firstBoundingBox, secondBoundingBox *BoundingBox
 	var firstNodeChild, secondNodeChild *KDtree
 	if ray.Start.GetDimension(node.Axis) <= node.Median {

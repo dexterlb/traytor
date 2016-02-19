@@ -90,6 +90,7 @@ func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 }
 
 func (m *Mesh) Intersect(ray *Ray) *Intersection {
+	ray.Init()
 	if !m.BoundingBox.Intersect(ray) {
 		return nil
 	}

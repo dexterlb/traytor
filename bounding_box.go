@@ -63,7 +63,7 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	//we take the other two axes
 	otherAxis1, otherAxis2 := otherAxes(axis)
 
-	multiplier := ray.Direction.Inverse().GetDimension(axis)
+	multiplier := ray.Inverse.GetDimension(axis)
 	var intersectionX, intersectionY float64
 
 	distance := (b.MinVolume.GetDimension(axis) - ray.Start.GetDimension(axis)) * multiplier
@@ -115,6 +115,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 		for rayEnd := rayStart + 1; rayEnd < 3; rayEnd++ {
 			ray.Start = *(triangle[rayStart])
 			ray.Direction = *MinusVectors(triangle[rayEnd], triangle[rayStart])
+			ray.Init()
 			//Check if there's intersection between AB and the box (example)
 			if b.Intersect(ray) {
 				//we check whether there's intersection between BA and the Box too
@@ -124,6 +125,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 				//   |____|
 				ray.Start = *triangle[rayEnd]
 				ray.Direction = *MinusVectors(triangle[rayStart], triangle[rayEnd])
+				ray.Init()
 				if b.Intersect(ray) {
 					return true
 				}
@@ -166,6 +168,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 
 			if (DotProduct(&ray.Start, ABxAC)-distance)*(DotProduct(rayEnd, ABxAC)-distance) <= 0 {
 				ray.Direction = *MinusVectors(rayEnd, &ray.Start)
+				ray.Init()
 				intersected, distance := IntersectTriangle(ray, A, B, C)
 				if intersected && distance < 1.0000001 {
 					return true
@@ -196,7 +199,7 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 
 	otherAxis1, otherAxis2 := otherAxes(axis)
 	distance := median - ray.Start.GetDimension(axis)
-	directionInAxis := ray.Direction.Inverse().GetDimension(axis)
+	directionInAxis := ray.Inverse.GetDimension(axis)
 
 	if (distance * directionInAxis) < 0 {
 		return false

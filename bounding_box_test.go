@@ -57,6 +57,10 @@ func ExampleBoundingBox_Intersect() {
 		Start:     *NewVec3(-5, 0, 0),
 		Direction: *NewVec3(1, 0, 5),
 	}
+	ray1.Init()
+	ray2.Init()
+	ray3.Init()
+	ray4.Init()
 
 	fmt.Printf("ray 1: %v\n", box.Intersect(ray1))
 	fmt.Printf("ray 2: %v\n", box.Intersect(ray2))
@@ -97,6 +101,7 @@ func TestBoundingBoxSplit(t *testing.T) {
 		Start:     *NewVec3(4.49, -7.3, 5.53),
 		Direction: *NewVec3(-0.60, 0.5, -0.62),
 	}
+	ray.Init()
 
 	if !box.Intersect(ray) {
 		t.Error("ray should intersect big box")

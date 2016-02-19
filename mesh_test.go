@@ -179,7 +179,7 @@ func TestIntersectTwoTriangles(t *testing.T) {
 		Direction: *NewVec3(0, 0, -1),
 	}
 
-	intersection := mesh.Intesect(ray)
+	intersection := mesh.Intersect(ray)
 	if intersection == nil {
 		t.Fatal("Intersection shouldn't be nil")
 	}

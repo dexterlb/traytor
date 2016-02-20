@@ -86,7 +86,7 @@ func (v *Vec3) Reflect(normal *Vec3) {
 func (v *Vec3) Reflected(normal *Vec3) *Vec3 {
 	reflectedVector := NewVec3(v.X, v.Y, v.Z)
 	reflectedVector.Normalise()
-	reflectedVector.Add(normal.Scaled(2 * DotProduct(normal, reflectedVector.Negative())))
+	reflectedVector = MinusVectors(reflectedVector, normal.Scaled(2*DotProduct(normal, reflectedVector.Negative())))
 	return reflectedVector.Normalised()
 }
 

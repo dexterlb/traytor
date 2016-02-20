@@ -97,7 +97,7 @@ func (m *ReflectiveMaterial) Shade(intersection *Intersection, raytracer *Raytra
 	ray := intersection.Incoming
 	reflectedRay := &Ray{Depth: ray.Depth + 1}
 	reflectedRay.Direction = *ray.Direction.Reflected(intersection.Normal)
-	reflectedRay.Start = *AddVectors(&ray.Start, intersection.Normal.Scaled(Epsilon))
+	reflectedRay.Start = *AddVectors(intersection.Point, intersection.Normal.Scaled(Epsilon))
 	return raytracer.Raytrace(reflectedRay)
 }
 

@@ -3,12 +3,33 @@ package main
 import (
 	"log"
 	"os"
+	"runtime"
 	"time"
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/gui"
 	"github.com/pkg/profile"
 )
+
+func renderBucket(scene *traytor.Scene, width int, height int,
+	samples chan<- *traytor.Image, threadId int) {
+
+	raytracer := &traytor.Raytracer{
+		Scene:    scene,
+		Random:   traytor.NewRandom(int64(threadId)),
+		MaxDepth: 5,
+	}
+
+	for {
+		image := traytor.NewImage(width, height)
+		startTime := time.Now()
+		raytracer.Sample(image)
+		log.Printf("thread %d rendered sample for %s\n",
+			threadId, time.Since(startTime))
+
+		samples <- image
+	}
+}
 
 func main() {
 	defer profile.Start().Stop()
@@ -24,12 +45,6 @@ func main() {
 	}
 	scene.Init()
 
-	raytracer := &traytor.Raytracer{
-		Scene:    scene,
-		Random:   traytor.NewRandom(42),
-		MaxDepth: 4,
-	}
-
 	width := 800
 	height := 450
 
@@ -40,13 +55,21 @@ func main() {
 	}
 	defer display.Close()
 
+	samples := make(chan *traytor.Image, runtime.NumCPU())
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go renderBucket(scene, width, height, samples, i)
+	}
+
 	image := traytor.NewImage(width, height)
 	image.Divisor = 0
 
 	for i := 0; true; i++ {
-		startTime := time.Now()
-		raytracer.Sample(image)
-		log.Printf("rendered sample %d for %s\n", i, time.Since(startTime))
+		sample := <-samples
+		image.Add(sample)
+		image.Divisor++
+
+		log.Printf("displayed sample %d\n", i)
+
 		display.ShowImage(0, 0, image)
 		display.Update()
 		if display.CheckExit() {

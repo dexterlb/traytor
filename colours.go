@@ -141,6 +141,7 @@ func AddColours(first, other *Colour) *Colour {
 	return NewColour(r, g, b)
 }
 
+//MultiplyColours returns the Product of two colours
 func MultiplyColours(first, other *Colour) *Colour {
 	r := first.R * other.R
 	g := first.G * other.G
@@ -148,6 +149,7 @@ func MultiplyColours(first, other *Colour) *Colour {
 	return NewColour(r, g, b)
 }
 
+//MultiplyBy other colour sets the given vector to its product with the other colour
 func (c *Colour) MultiplyBy(other *Colour) {
 	c.R *= other.R
 	c.G *= other.G

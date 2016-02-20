@@ -93,6 +93,7 @@ func (v *Vec3) Negative() *Vec3 {
 	return v.Scaled(-1)
 }
 
+//GetDimension return X, Y, or Z depending on the given axis (or INF for wrong axis)
 func (v *Vec3) GetDimension(axis int) float64 {
 	switch axis {
 	case Ox:
@@ -105,6 +106,7 @@ func (v *Vec3) GetDimension(axis int) float64 {
 	return Inf
 }
 
+//SetDimension makes the axis dimension of the vector equal to the value.
 func (v *Vec3) SetDimension(axis int, value float64) {
 	switch axis {
 	case Ox:
@@ -168,6 +170,7 @@ func MixedProduct(a, b, c *Vec3) float64 {
 	return DotProduct(CrossProduct(a, b), c)
 }
 
+//Refract returns vector which is the refraction of incoming vector in relation with the normal with this ior
 func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
 	cosAlpha := DotProduct(incoming, normal)
 	coeff := 1 - (ior*ior)*(1-cosAlpha*cosAlpha)
@@ -178,6 +181,7 @@ func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
 	return MinusVectors(incoming.Scaled(ior), normal.Scaled((ior*cosAlpha + math.Sqrt(coeff))))
 }
 
+//FaceForward changes the normal so that the normal is poing to the ray
 func FaceForward(normal *Vec3, ray *Vec3) *Vec3 {
 	if DotProduct(normal, ray) < 0 {
 		return normal
@@ -218,6 +222,7 @@ func (r *Ray) String() string {
 	return fmt.Sprintf("%s -> %s", &r.Start, &r.Direction)
 }
 
+//Init fills the Inverse field of ray
 func (r *Ray) Init() {
 	for i := 0; i < 3; i++ {
 		r.Inverse[i] = 0

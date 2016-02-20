@@ -18,7 +18,6 @@ func (m *AnyMaterial) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	// Here comes code duplication
 	switch materialType {
 	case "emissive":
 		material := &EmissiveMaterial{}

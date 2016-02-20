@@ -35,6 +35,8 @@ func (b *BoundingBox) Inside(point *Vec3) bool {
 		Between(b.MinVolume[2], b.MaxVolume[2], point.Z))
 }
 
+//otherAxes returns the two other axis of the given and we can get (0, 1, 2), (1, 0, 2), (2, 0, 1)
+//if axis is the first of the tree, otherAxis1 is the second, and otherAxis2 the third
 func otherAxes(axis int) (int, int) {
 	var otherAxis1, otherAxis2 int
 	if axis == 0 {
@@ -50,6 +52,7 @@ func otherAxes(axis int) (int, int) {
 	return otherAxis1, otherAxis2
 }
 
+//IntersectAxis checks whether there's interaction between the ray and the box.
 func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	directions := [3]float64{ray.Direction.X, ray.Direction.Y, ray.Direction.Z}
 	start := [3]float64{ray.Start.X, ray.Start.Y, ray.Start.Z}
@@ -73,6 +76,7 @@ func (b *BoundingBox) IntersectAxis(ray *Ray, axis int) bool {
 	if distance < 0 {
 		return false
 	}
+
 	intersectionX = start[otherAxis1] + directions[otherAxis1]*distance
 	if Between(b.MinVolume[otherAxis1], b.MaxVolume[otherAxis1], intersectionX) {
 		intersectionY = start[otherAxis2] + directions[otherAxis2]*distance
@@ -183,6 +187,7 @@ func (b *BoundingBox) IntersectTriangle(A, B, C *Vec3) bool {
 	return false
 }
 
+//Split returns two new bounding boxes which are the result of spliting the original on the given axis and median
 func (b *BoundingBox) Split(axis int, median float64) (*BoundingBox, *BoundingBox) {
 	left := &BoundingBox{}
 	*left = *b
@@ -224,6 +229,7 @@ func (b *BoundingBox) IntersectWall(axis int, median float64, ray *Ray) bool {
 	return false
 }
 
+////String returns the string representation of the boundingBox in the form of bbox[min: _, max: _]
 func (b *BoundingBox) String() string {
 	return fmt.Sprintf("bbox[min: %s, max: %s]", NewVec3Array(b.MinVolume), NewVec3Array(b.MaxVolume))
 }

@@ -5,8 +5,11 @@ import (
 	"math"
 )
 
+//If the depth of the KDtree reaches MaxTreeDepth, the node becomes leaf
+//whith node.Triangles the remaining triangles
 const (
-	MaxTreeDepth = 10
+	MaxTreeDepth     = 10
+	TrianglesPerLeaf = 20
 )
 
 // Vertex is a single vertex in a mesh
@@ -34,6 +37,8 @@ type Mesh struct {
 	BoundingBox *BoundingBox
 }
 
+//Init  of Mesh sets the Triangle indices in the Faces array, calculates the bounding box
+//and KD tree, sets the surfaceOx and Oy and Cross Products of the sides of each triangle
 func (m *Mesh) Init() {
 	allIndices := make([]int, len(m.Faces))
 	for i := range allIndices {
@@ -63,6 +68,13 @@ func (m *Mesh) Init() {
 		surfaceAB := MinusVectors(surfaceB, surfaceA)
 		surfaceAC := MinusVectors(surfaceC, surfaceA)
 
+		//Solve using Cramer:
+		//|surfaceAB.X * px + surfaceAX.X *qx + 1 = 0
+		//|surfaceAB.Y * px + surfaceAX.Y *qx = 0
+		//and
+		//surfaceAB.X * py + surfaceAX.X *qy = 0
+		//surfaceAB.X * py + surfaceAX.X *qy + 1 = 0
+
 		px, qx := SolveEquation(surfaceAB, surfaceAC, NewVec3(1, 0, 0))
 		py, qy := SolveEquation(surfaceAB, surfaceAC, NewVec3(0, 1, 0))
 
@@ -89,8 +101,10 @@ func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 	return intersection
 }
 
+//Intersect returns IntersectionInfo for the intersection with the ray using KDtrees
 func (m *Mesh) Intersect(ray *Ray) *Intersection {
 	ray.Init()
+	//There wouldn't be intersection if the ray doesn't cross the bounding box
 	if !m.BoundingBox.Intersect(ray) {
 		return nil
 	}
@@ -101,7 +115,8 @@ func (m *Mesh) Intersect(ray *Ray) *Intersection {
 	return nil
 }
 
-//Intersect triangle looks very similar to mesh.IntersectTriangle
+//IntersectTriangle find whether there's an intersection point between the ray and the triangle
+//using barycentric coordinates and calculate the distance
 func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 	AB := MinusVectors(B, A)
 	AC := MinusVectors(C, A)
@@ -125,8 +140,11 @@ func IntersectTriangle(ray *Ray, A, B, C *Vec3) (bool, float64) {
 	return true, gamma
 }
 
+//IntersectTriangle returns whether there's an intersection between the ray and the triangle,
+//using barycentric coordinates and takes the point only if it's closer to the
+//previously found intersection and the point is within the bounding box
 func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Intersection, boundingBox *BoundingBox) bool {
-	//lambda2(B - A) + lambda3(C - A) - intersectDist*rayDir = distToA
+	//lambda2 * AB + lambda3 * AC - intersectDist*rayDir = distToA
 	//If the triangle is ABC, this gives you A
 	A := &m.Vertices[triangle.Vertices[0]].Coordinates
 	distToA := MinusVectors(&ray.Start, A)
@@ -153,6 +171,8 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 
 	ip := AddVectors(&ray.Start, (&rayDir).Scaled(intersectDist))
 
+	//If we aren't inside the bounding box, there could be a closer intersection
+	//within the bounding box
 	if boundingBox != nil && !boundingBox.Inside(ip) {
 		return false
 	}
@@ -161,6 +181,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 	if triangle.Normal != nil {
 		intersection.Normal = triangle.Normal
 	} else {
+		//We solve intersection.normal = Anormal + AB normal * lambda2 + ACnormal * lambda 3
 		Anormal := &m.Vertices[triangle.Vertices[0]].Normal
 		Bnormal := &m.Vertices[triangle.Vertices[1]].Normal
 		Cnormal := &m.Vertices[triangle.Vertices[2]].Normal
@@ -172,6 +193,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 	uvB := &m.Vertices[triangle.Vertices[1]].UV
 	uvC := &m.Vertices[triangle.Vertices[2]].UV
 
+	//We solve intersection.uv = uvA + uvAB * lambda2 + uvAC * lambda 3
 	uvABxlambda2 := MinusVectors(uvB, uvA).Scaled(lambda2)
 	uvACxlambda3 := MinusVectors(uvC, uvA).Scaled(lambda3)
 	uv := AddVectors(uvA, AddVectors(uvABxlambda2, uvACxlambda3))
@@ -187,6 +209,7 @@ func (m *Mesh) intersectTriangle(ray *Ray, triangle *Triangle, intersection *Int
 	return true
 }
 
+//GetBoundingBox returns the boundig box of the mesh, adding every vertex to the box
 func (m *Mesh) GetBoundingBox() *BoundingBox {
 	boundingBox := NewBoundingBox()
 	for _, vertex := range m.Vertices {
@@ -195,11 +218,15 @@ func (m *Mesh) GetBoundingBox() *BoundingBox {
 	return boundingBox
 }
 
+//NewKDtree returns the KD tree for the mesh with MaxTreeDepth by slicing the bouindingBox
+//and including the triangles in the bounding box (if it's in the middle of two bounding boxes, we include it in both)
 func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth int) *KDtree {
-	if depth > MaxTreeDepth || len(trianglesIndices) < 2 {
+	if depth > MaxTreeDepth || len(trianglesIndices) < TrianglesPerLeaf {
 		node := NewLeaf(trianglesIndices)
 		return node
 	}
+	//We take the (axis + 2) % 3 to alternate between Ox, Oy and Oz on each turn
+	//it's not the best decision in every case
 	axis := (depth + 2) % 3
 	leftLimit := boundingBox.MaxVolume[axis]
 	righLimit := boundingBox.MinVolume[axis]
@@ -230,6 +257,8 @@ func (m *Mesh) newKDtree(boundingBox *BoundingBox, trianglesIndices []int, depth
 	return node
 }
 
+//IntersectKD returns whether there's an intersection with the ray. The the current node is leaf
+//we check each of its triangles and divide the bounding box and check for each child
 func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, intersectionInfo *Intersection) bool {
 	foundIntersection := false
 	if node.Axis == Leaf {

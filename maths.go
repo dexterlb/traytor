@@ -55,6 +55,7 @@ func SnapZero(x float64) float64 {
 	return x
 }
 
+//Between check whether point is between min and max (+- Epsilon)
 func Between(min, max, point float64) bool {
 	return (min-Epsilon <= point && max+Epsilon >= point)
 }

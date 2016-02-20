@@ -17,7 +17,7 @@ T-ray-tor is a raytracer written in Go which uses the Path Tracing algorithm
 
 Then export your scene from Blender with the [exporter](https://github.com/DexterLB/traytor/tree/master/blender_exporter) and run the live renderer:
 
-	$ traytor-gui my-scene.json.gz
+	$ traytor–gui my-scene.json.gz
 
 Note: currently the textures are loaded from the working directory, so you must be in a folder relative to the texture paths in the scene.
 

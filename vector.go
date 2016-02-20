@@ -84,10 +84,8 @@ func (v *Vec3) Reflect(normal *Vec3) {
 
 //Reflected returns a new Vec3 witch is the normalised reflected vector of the given vector by the normal
 func (v *Vec3) Reflected(normal *Vec3) *Vec3 {
-	reflectedVector := NewVec3(v.X, v.Y, v.Z)
-	reflectedVector.Normalise()
-	reflectedVector = MinusVectors(reflectedVector, normal.Scaled(2*DotProduct(normal, reflectedVector.Negative())))
-	return reflectedVector.Normalised()
+	ray := v.Normalised()
+	return AddVectors(ray, normal.Scaled(2*DotProduct(normal, ray.Negative()))).Normalised()
 }
 
 //Negative returns the opposite of the given vector

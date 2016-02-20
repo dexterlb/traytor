@@ -95,7 +95,7 @@ type ReflectiveMaterial struct {
 // Shade returns the emitted colour after intersecting the material
 func (m *ReflectiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
 	ray := intersection.Incoming
-	reflectedRay := &Ray{}
+	reflectedRay := &Ray{Depth: ray.Depth + 1}
 	reflectedRay.Direction = *ray.Direction.Reflected(intersection.Normal)
 	reflectedRay.Start = *AddVectors(&ray.Start, intersection.Normal.Scaled(Epsilon))
 	return raytracer.Raytrace(reflectedRay)

@@ -17,7 +17,7 @@ func renderBucket(scene *traytor.Scene, width int, height int,
 	raytracer := &traytor.Raytracer{
 		Scene:    scene,
 		Random:   traytor.NewRandom(int64(threadId)),
-		MaxDepth: 4,
+		MaxDepth: 5,
 	}
 
 	for {

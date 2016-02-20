@@ -111,18 +111,20 @@ type RefractiveMaterial struct {
 func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
 	ray := intersection.Incoming
 	normal := intersection.Normal
-	eta := m.IOR.GetFac(intersection)
-	if DotProduct(normal, &ray.Direction) < 0 {
-		eta = 1 / eta
+	ior := m.IOR.GetFac(intersection)
+	colour := m.Colour.GetColour(intersection)
+	refracted := &Vec3{}
+	if DotProduct(&ray.Direction, normal) < 0 {
+		refracted = Refract(&ray.Direction, normal, 1/ior)
+	} else {
+		refracted = Refract(&ray.Direction, normal.Negative(), ior)
 	}
-	forwardNormal := FaceForward(normal, &ray.Direction)
-	refracted := Refract(&ray.Direction, forwardNormal, eta)
-	if math.Abs(refracted.Length()) < Epsilon {
-		return NewColour(0, 0, 0)
+	if math.Abs(refracted.LengthSquared()) < Epsilon {
+		return NewColour(1, 0, 0)
 	}
-	newRay := &Ray{}
-	newRay.Start = *AddVectors(intersection.Point, ray.Direction.Scaled(Epsilon))
+	newRay := &Ray{Depth: ray.Depth + 1}
+	newRay.Start = *MinusVectors(intersection.Point, FaceForward(normal, &ray.Direction).Scaled(Epsilon))
 	newRay.Direction = *refracted
-	newRay.Depth = ray.Depth + 1
-	return raytracer.Raytrace(newRay)
+	return MultiplyColours(raytracer.Raytrace(newRay), colour)
+
 }

@@ -175,7 +175,7 @@ func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
 	cosAlpha := DotProduct(incoming, normal)
 	coeff := 1 - (ior*ior)*(1-cosAlpha*cosAlpha)
 	// Check for total inner reflectionreturn
-	if coeff < Epsilon {
+	if coeff < 0 {
 		return NewVec3(0, 0, 0)
 	}
 	return MinusVectors(incoming.Scaled(ior), normal.Scaled((ior*cosAlpha + math.Sqrt(coeff))))

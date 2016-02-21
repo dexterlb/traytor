@@ -48,8 +48,8 @@ func TestGetBoundingBox(t *testing.T) {
 
 	bbox := mesh.GetBoundingBox()
 
-	asserEqualVectors(t, NewVec3(1, 5, 0), NewVec3Array(bbox.MaxVolume))
-	asserEqualVectors(t, NewVec3(-1, -2, -8), NewVec3Array(bbox.MinVolume))
+	assertEqualVectors(t, NewVec3(1, 5, 0), NewVec3Array(bbox.MaxVolume))
+	assertEqualVectors(t, NewVec3(-1, -2, -8), NewVec3Array(bbox.MinVolume))
 }
 
 func ExampleMesh_Intersect() {

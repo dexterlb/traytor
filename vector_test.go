@@ -60,7 +60,7 @@ func ExampleVec3_Add() {
 	//
 }
 
-func asserEqualVectors(t *testing.T, expected *Vec3, v *Vec3) {
+func assertEqualVectors(t *testing.T, expected *Vec3, v *Vec3) {
 	assert := assert.New(t)
 	assert.InEpsilon(expected.X, v.X, Epsilon)
 	assert.InEpsilon(expected.Y, v.Y, Epsilon)
@@ -71,7 +71,7 @@ func TestScaling(t *testing.T) {
 	v := NewVec3(1, 0, 3)
 	scaled := v.Scaled(2)
 
-	asserEqualVectors(t, NewVec3(2, 0, 6), scaled)
+	assertEqualVectors(t, NewVec3(2, 0, 6), scaled)
 }
 
 func TestNormalising(t *testing.T) {
@@ -90,8 +90,8 @@ func TestReflecting(t *testing.T) {
 	reflected := v.Reflected(normal)
 	v.Reflect(normal)
 
-	asserEqualVectors(t, NewVec3(1, 1, 0).Normalised(), v)
-	asserEqualVectors(t, NewVec3(1, 1, 0).Normalised(), reflected)
+	assertEqualVectors(t, NewVec3(1, 1, 0).Normalised(), v)
+	assertEqualVectors(t, NewVec3(1, 1, 0).Normalised(), reflected)
 }
 
 func TestNegative(t *testing.T) {
@@ -99,8 +99,8 @@ func TestNegative(t *testing.T) {
 	negative := v.Negative()
 	v.Negate()
 
-	asserEqualVectors(t, NewVec3(-1, 2, 0), v)
-	asserEqualVectors(t, NewVec3(-1, 2, 0), negative)
+	assertEqualVectors(t, NewVec3(-1, 2, 0), v)
+	assertEqualVectors(t, NewVec3(-1, 2, 0), negative)
 }
 
 func ExampleVec3_Negate() {
@@ -120,12 +120,12 @@ func TestSettingLength(t *testing.T) {
 	v := NewVec3(3, 4, 0)
 	assert.InEpsilon(5, v.Length(), Epsilon, "Vector's length should be 5")
 	v.SetLength(10)
-	asserEqualVectors(t, NewVec3(6, 8, 0), v)
+	assertEqualVectors(t, NewVec3(6, 8, 0), v)
 }
 
 func TestAddingVectors(t *testing.T) {
 	sum := AddVectors(NewVec3(1, 2, 3), NewVec3(2, -2, 3))
-	asserEqualVectors(t, NewVec3(3, 0, 6), sum)
+	assertEqualVectors(t, NewVec3(3, 0, 6), sum)
 }
 
 func ExampleAddVectors() {
@@ -141,7 +141,7 @@ func ExampleAddVectors() {
 
 func TestMinusingVectors(t *testing.T) {
 	sum := MinusVectors(NewVec3(1, 2, 3), NewVec3(2, 2, 2))
-	asserEqualVectors(t, NewVec3(-1, 0, 1), sum)
+	assertEqualVectors(t, NewVec3(-1, 0, 1), sum)
 }
 
 func ExampleMinusVectors() {
@@ -174,7 +174,7 @@ func ExampleDotProduct() {
 
 func TestCrossProduct(t *testing.T) {
 	crossProduct := CrossProduct(NewVec3(1, 0, 0), NewVec3(0, 1, 0))
-	asserEqualVectors(t, NewVec3(0, 0, 1), crossProduct)
+	assertEqualVectors(t, NewVec3(0, 0, 1), crossProduct)
 }
 
 func ExampleCrossProduct() {
@@ -202,10 +202,10 @@ func ExampleMixedProduct() {
 func TestFacingForward(t *testing.T) {
 	normal := NewVec3(0, 0, -1)
 	newNormal := normal.FaceForward(NewVec3(0, 0, 1))
-	asserEqualVectors(t, NewVec3(0, 0, -1), newNormal)
+	assertEqualVectors(t, NewVec3(0, 0, -1), newNormal)
 	normal = NewVec3(0, 0, 1)
 	newNormal = normal.FaceForward(NewVec3(0, 0, 1))
-	asserEqualVectors(t, NewVec3(0, 0, -1), newNormal)
+	assertEqualVectors(t, NewVec3(0, 0, -1), newNormal)
 
 }
 
@@ -215,5 +215,5 @@ func TestVectorJson(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	asserEqualVectors(t, NewVec3(0.4, 0.5, 1), v)
+	assertEqualVectors(t, NewVec3(0.4, 0.5, 1), v)
 }

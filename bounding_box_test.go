@@ -109,10 +109,10 @@ func TestBoundingBoxSplit(t *testing.T) {
 
 	left, right := box.Split(2, 1.39)
 
-	asserEqualVectors(t, NewVec3(-3.18, -3.96, -1.77), NewVec3Array(left.MinVolume))
-	asserEqualVectors(t, NewVec3(-3.18, -3.96, 1.39), NewVec3Array(right.MinVolume))
-	asserEqualVectors(t, NewVec3(4.58, 1.74, 1.39), NewVec3Array(left.MaxVolume))
-	asserEqualVectors(t, NewVec3(4.58, 1.74, 4.56), NewVec3Array(right.MaxVolume))
+	assertEqualVectors(t, NewVec3(-3.18, -3.96, -1.77), NewVec3Array(left.MinVolume))
+	assertEqualVectors(t, NewVec3(-3.18, -3.96, 1.39), NewVec3Array(right.MinVolume))
+	assertEqualVectors(t, NewVec3(4.58, 1.74, 1.39), NewVec3Array(left.MaxVolume))
+	assertEqualVectors(t, NewVec3(4.58, 1.74, 4.56), NewVec3Array(right.MaxVolume))
 
 	if box.IntersectWall(2, 1.39, ray) {
 		t.Error("ray shouldn't intersect the wall")

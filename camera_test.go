@@ -57,10 +57,10 @@ func TestPinholeCameraJson(t *testing.T) {
 		t.Error(err)
 	}
 
-	asserEqualVectors(t, NewVec3(1, 2, 3), &c.Focus)
-	asserEqualVectors(t, NewVec3(4, 5, 6), &c.TopLeft)
-	asserEqualVectors(t, NewVec3(7, 8, 9), &c.TopRight)
-	asserEqualVectors(t, NewVec3(10, 11, 12), &c.BottomLeft)
+	assertEqualVectors(t, NewVec3(1, 2, 3), &c.Focus)
+	assertEqualVectors(t, NewVec3(4, 5, 6), &c.TopLeft)
+	assertEqualVectors(t, NewVec3(7, 8, 9), &c.TopRight)
+	assertEqualVectors(t, NewVec3(10, 11, 12), &c.BottomLeft)
 }
 
 func TestAnyCameraJson(t *testing.T) {
@@ -79,6 +79,6 @@ func TestAnyCameraJson(t *testing.T) {
 
 	ray := c.ShootRay(0.5, 0.5)
 
-	asserEqualVectors(t, NewVec3(0, 1, 0), &ray.Direction)
-	asserEqualVectors(t, NewVec3(0, 0, 0), &ray.Start)
+	assertEqualVectors(t, NewVec3(0, 1, 0), &ray.Direction)
+	assertEqualVectors(t, NewVec3(0, 0, 0), &ray.Start)
 }

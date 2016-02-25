@@ -75,7 +75,7 @@ func (v *Vec3) Normalised() *Vec3 {
 	return normalisedVector
 }
 
-//Reflected makes the given vector equal to its reflected vector by the normal and is also normalised
+//Reflect makes the given vector equal to its reflected vector by the normal and is also normalised
 func (v *Vec3) Reflect(normal *Vec3) {
 	v.Normalise()
 	v.Add(normal.Scaled(2 * DotProduct(normal, v.Negative())))
@@ -133,7 +133,7 @@ func (v *Vec3) String() string {
 	return fmt.Sprintf("(%.3g, %.3g, %.3g)", SnapZero(v.X), SnapZero(v.Y), SnapZero(v.Z))
 }
 
-//AddVector returns a new vector which is the sum of the two given vectors
+//AddVectors returns a new vector which is the sum of the two given vectors
 func AddVectors(first, second *Vec3) *Vec3 {
 	return NewVec3(first.X+second.X, first.Y+second.Y, first.Z+second.Z)
 }
@@ -157,12 +157,12 @@ func CrossProduct(first, second *Vec3) *Vec3 {
 	)
 }
 
-//FaceForward returns a new Vec3 which is the normal vector directed so that the ray is facing forward
-func (normal *Vec3) FaceForward(ray *Vec3) *Vec3 {
-	if DotProduct(ray, normal) < 0 {
-		return normal
+//FaceForward flips the vector so that it's in the same hemispace as ray
+func (v *Vec3) FaceForward(ray *Vec3) *Vec3 {
+	if DotProduct(ray, v) < 0 {
+		return v
 	}
-	return normal.Negative()
+	return v.Negative()
 }
 
 //MixedProduct returns (a^b)*c
@@ -185,9 +185,8 @@ func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
 func FaceForward(normal *Vec3, ray *Vec3) *Vec3 {
 	if DotProduct(normal, ray) < 0 {
 		return normal
-	} else {
-		return normal.Negative()
 	}
+	return normal.Negative()
 }
 
 //UnmarshalJSON implements the json.Unmarshaler interface

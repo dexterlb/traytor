@@ -3,9 +3,13 @@ package traytor
 import "math"
 
 const (
+	// Ox represents the X axis
 	Ox = iota
+	// Oy represents the Y axis
 	Oy
+	// Oz represents the Z axis
 	Oz
+	// Leaf represents a leaf in a tree enumerated with axes
 	Leaf
 )
 

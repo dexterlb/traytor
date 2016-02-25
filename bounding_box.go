@@ -5,6 +5,11 @@ import (
 	"math"
 )
 
+// BoundingBox represents a cuboid which surrounds a part of the mesh.
+// The points in the cuboid are those (x, y, z), for which is true:
+// MinVolume[0] < x < MaxVolume[0]
+// MinVolume[1] < y < MaxVolume[1]
+// MinVolume[2] < z , MaxVolume[2]
 type BoundingBox struct {
 	MaxVolume, MinVolume [3]float64
 }

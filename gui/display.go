@@ -30,8 +30,7 @@ func (d *Display) SetPixel(x int, y int, colour color.Color) {
 
 	var pix = uintptr(unsafe.Pointer(&d.screen.Pixels()[0]))
 	pix += uintptr(((y * int(d.screen.W)) + x)) * unsafe.Sizeof(value)
-	var pu = unsafe.Pointer(pix)
-	var pp *uint32 = (*uint32)(pu)
+	var pp *uint32 = (*uint32)(unsafe.Pointer(pix))
 	*pp = value
 }
 

@@ -201,10 +201,10 @@ func (i *ImageTexture) GetColour(intersection *Intersection) *Colour {
 	v -= math.Floor(v)
 
 	if u < 0 {
-		u += 1
+		u++
 	}
 	if v < 0 {
-		v += 1
+		v++
 	}
 
 	v = 1 - v // (0, 0) is at the topleft corner of images

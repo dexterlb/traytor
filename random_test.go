@@ -12,7 +12,7 @@ func TestVectors(t *testing.T) {
 
 	rnd := NewRandom(42)
 
-	var vec *Vec3 = rnd.Vec3Sphere()
+	vec := rnd.Vec3Sphere()
 
 	assert.InEpsilon(1, vec.Length(), Epsilon, "Random unit vector's length should be 1")
 
@@ -31,7 +31,7 @@ func TestVectors(t *testing.T) {
 
 func TestFloats(t *testing.T) {
 	rnd := NewRandom(42)
-	var number float64 = rnd.Float01()
+	number := rnd.Float01()
 	if number < 0 || number > 1 {
 		t.Error("Float01 should be in [0..1]")
 	}
@@ -60,7 +60,7 @@ func TestFloats(t *testing.T) {
 func TestInts(t *testing.T) {
 	rnd := NewRandom(42)
 
-	var number32 int32 = rnd.Int320N(15)
+	number32 := rnd.Int320N(15)
 	if number32 < 0 || number32 > 15 {
 		t.Error("Int320N should be in [0..n]")
 	}
@@ -70,7 +70,7 @@ func TestInts(t *testing.T) {
 		t.Error("Int32AB should be in [a..b]")
 	}
 
-	var number64 int64 = rnd.Int640N(15)
+	number64 := rnd.Int640N(15)
 	if number64 < 0 || number64 > 15 {
 		t.Error("Int640N should be in [0..n]")
 	}
@@ -80,7 +80,7 @@ func TestInts(t *testing.T) {
 		t.Error("Int64AB should be in [a..b]")
 	}
 
-	var number int = rnd.Int0N(15)
+	number := rnd.Int0N(15)
 	if number < 0 || number > 15 {
 		t.Error("Int0N should be in [0..n]")
 	}
@@ -94,22 +94,22 @@ func TestInts(t *testing.T) {
 func TestBools(t *testing.T) {
 	rnd := NewRandom(42)
 
-	var b bool = rnd.Bool()
+	b := rnd.Bool()
 	if b != true && b != false {
 		t.Error("The world is going to end.")
 	}
 
-	var sign int = rnd.Sign()
+	sign := rnd.Sign()
 	if sign != -1 && sign != 1 {
 		t.Error("Sign should be -1 or 1")
 	}
 
-	var sign32 int32 = rnd.Sign32()
+	sign32 := rnd.Sign32()
 	if sign32 != -1 && sign32 != 1 {
 		t.Error("Sign should be -1 or 1")
 	}
 
-	var sign64 int64 = rnd.Sign64()
+	sign64 := rnd.Sign64()
 	if sign64 != -1 && sign64 != 1 {
 		t.Error("Sign should be -1 or 1")
 	}

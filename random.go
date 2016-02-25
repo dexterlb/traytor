@@ -18,7 +18,7 @@ func NewRandom(seed int64) *Random {
 	return r
 }
 
-// Vec3SPhere returns a random unit vector
+// Vec3Sphere returns a random unit vector
 func (r *Random) Vec3Sphere() *Vec3 {
 	u := r.FloatAB(-1, 1)
 	theta := r.Float02Pi()
@@ -120,34 +120,30 @@ func (r *Random) IntAB(a, b int) int {
 func (r *Random) Bool() bool {
 	if r.Int0N(1) == 0 {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // Sign returns -1 or 1 at random
 func (r *Random) Sign() int {
 	if r.Bool() {
 		return 1
-	} else {
-		return -1
 	}
+	return -1
 }
 
 // Sign32 returns -1 or 1 at random
 func (r *Random) Sign32() int32 {
 	if r.Bool() {
 		return 1
-	} else {
-		return -1
 	}
+	return -1
 }
 
 // Sign64 returns -1 or 1 at random
 func (r *Random) Sign64() int64 {
 	if r.Bool() {
 		return 1
-	} else {
-		return -1
 	}
+	return -1
 }

@@ -83,9 +83,10 @@ func (m *Mesh) Init() {
 	}
 }
 
-// Intersect finds the intersection between a ray and the mesh
+// SlowIntersect finds the intersection between a ray and the mesh
 // and returns their intersection and the surface material.
 // Returns nil and -1 if they don't intersect
+// Has O(n) complexity.
 func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 	intersection := &Intersection{}
 	intersection.Distance = Inf
@@ -101,7 +102,10 @@ func (m *Mesh) SlowIntersect(ray *Ray) *Intersection {
 	return intersection
 }
 
-//Intersect returns IntersectionInfo for the intersection with the ray using KDtrees
+// Intersect finds the intersection between a ray and the mesh
+// and returns their intersection and the surface material.
+// Returns nil and -1 if they don't intersect
+// Has O(log(n)) amortised complexity.
 func (m *Mesh) Intersect(ray *Ray) *Intersection {
 	ray.Init()
 	//There wouldn't be intersection if the ray doesn't cross the bounding box
@@ -291,12 +295,9 @@ func (m *Mesh) IntersectKD(ray *Ray, boundingBox *BoundingBox, node *KDtree, int
 			return true
 		}
 		return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
-	} else {
-		if firstBoundingBox.Intersect(ray) {
-			return m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo)
-		} else {
-			return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
-		}
 	}
-	return false
+	if firstBoundingBox.Intersect(ray) {
+		return m.IntersectKD(ray, firstBoundingBox, firstNodeChild, intersectionInfo)
+	}
+	return m.IntersectKD(ray, secondBoundingBox, secondNodeChild, intersectionInfo)
 }

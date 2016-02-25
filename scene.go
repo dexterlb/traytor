@@ -45,9 +45,8 @@ func LoadScene(filename string) (*Scene, error) {
 	err = decoder.Decode(&scene)
 	if err != nil {
 		return nil, err
-	} else {
-		return scene, nil
 	}
+	return scene, nil
 }
 
 // Init performs all necessary preprocessing on the scene

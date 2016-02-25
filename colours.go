@@ -71,9 +71,8 @@ func sRGBToLinear(i uint32) float32 {
 	x := float32(i) / 65535.0
 	if x <= 0.04045 {
 		return x / 12.92
-	} else {
-		return Pow32((x+0.055)/1.055, 2.4)
 	}
+	return Pow32((x+0.055)/1.055, 2.4)
 }
 
 //ToColour takes any colour that implements the color.Color interface and turns it into RGB colout(r, g, b are between 0 and 1)

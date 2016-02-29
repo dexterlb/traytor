@@ -62,9 +62,9 @@ func ExampleVec3_Add() {
 
 func assertEqualVectors(t *testing.T, expected *Vec3, v *Vec3) {
 	assert := assert.New(t)
-	assert.InEpsilon(expected.X, v.X, Epsilon)
-	assert.InEpsilon(expected.Y, v.Y, Epsilon)
-	assert.InEpsilon(expected.Z, v.Z, Epsilon)
+	assert.InDelta(expected.X, v.X, Epsilon)
+	assert.InDelta(expected.Y, v.Y, Epsilon)
+	assert.InDelta(expected.Z, v.Z, Epsilon)
 }
 
 func TestScaling(t *testing.T) {
@@ -80,8 +80,8 @@ func TestNormalising(t *testing.T) {
 	normalised := v.Normalised()
 	v.Normalise()
 
-	assert.InEpsilon(1, v.Length(), Epsilon, "Normalising should make vector's lenght 1")
-	assert.InEpsilon(1, normalised.Length(), Epsilon, "Normalised should return vector with length 1")
+	assert.InDelta(1, v.Length(), Epsilon, "Normalising should make vector's lenght 1")
+	assert.InDelta(1, normalised.Length(), Epsilon, "Normalised should return vector with length 1")
 }
 
 func TestReflecting(t *testing.T) {
@@ -118,7 +118,7 @@ func ExampleVec3_Negate() {
 func TestSettingLength(t *testing.T) {
 	assert := assert.New(t)
 	v := NewVec3(3, 4, 0)
-	assert.InEpsilon(5, v.Length(), Epsilon, "Vector's length should be 5")
+	assert.InDelta(5, v.Length(), Epsilon, "Vector's length should be 5")
 	v.SetLength(10)
 	assertEqualVectors(t, NewVec3(6, 8, 0), v)
 }
@@ -158,7 +158,7 @@ func ExampleMinusVectors() {
 func TestDotProduct(t *testing.T) {
 	assert := assert.New(t)
 	dotProduct := DotProduct(NewVec3(1, 2, 1), NewVec3(-1, 0, 43))
-	assert.InEpsilon(42, dotProduct, Epsilon)
+	assert.InDelta(42, dotProduct, Epsilon)
 }
 
 func ExampleDotProduct() {

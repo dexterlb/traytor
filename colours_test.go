@@ -3,17 +3,18 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
 	assert := assert.New(t)
 	colourEpsilon := 0.0001
 
-	assert.InEpsilon(expected.R, c.R, colourEpsilon)
-	assert.InEpsilon(expected.G, c.G, colourEpsilon)
-	assert.InEpsilon(expected.B, c.B, colourEpsilon)
+	assert.InDelta(expected.R, c.R, colourEpsilon)
+	assert.InDelta(expected.G, c.G, colourEpsilon)
+	assert.InDelta(expected.B, c.B, colourEpsilon)
 }
 
 func TestTo32Bit(t *testing.T) {

@@ -14,7 +14,7 @@ func TestVectors(t *testing.T) {
 
 	vec := rnd.Vec3Sphere()
 
-	assert.InEpsilon(1, vec.Length(), Epsilon, "Random unit vector's length should be 1")
+	assert.InDelta(1, vec.Length(), Epsilon, "Random unit vector's length should be 1")
 
 	norm := vec
 

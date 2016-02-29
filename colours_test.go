@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func asserEqualColours(t *testing.T, expected *Colour, c *Colour) {
+func assertEqualColours(t *testing.T, expected *Colour, c *Colour) {
 	assert := assert.New(t)
 	colourEpsilon := 0.0001
 
@@ -67,10 +67,10 @@ func ExampleColour_String() {
 
 func TestToColour(t *testing.T) {
 	c := NewColour32Bit(0, 0, 0)
-	asserEqualColours(t, NewColour(0, 0, 0), ToColour(c))
+	assertEqualColours(t, NewColour(0, 0, 0), ToColour(c))
 
 	c = NewColour32Bit(0xdab3, 0x7c0a, 0xbc40)
-	asserEqualColours(t, NewColour(0.7, 0.2, 0.5), ToColour(c))
+	assertEqualColours(t, NewColour(0.7, 0.2, 0.5), ToColour(c))
 }
 
 func TestColourJson(t *testing.T) {
@@ -79,5 +79,5 @@ func TestColourJson(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	asserEqualColours(t, NewColour(0.4, 0.5, 1), c)
+	assertEqualColours(t, NewColour(0.4, 0.5, 1), c)
 }

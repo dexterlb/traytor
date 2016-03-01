@@ -123,7 +123,7 @@ func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytra
 		return NewColour(1, 0, 0)
 	}
 	newRay := &Ray{Depth: intersection.Incoming.Depth + 1}
-	newRay.Start = *MinusVectors(intersection.Point, FaceForward(normal, ray).Scaled(Epsilon))
+	newRay.Start = *MinusVectors(intersection.Point, normal.FaceForward(ray).Scaled(Epsilon))
 	newRay.Direction = *refracted
 	return MultiplyColours(raytracer.Raytrace(newRay), colour)
 

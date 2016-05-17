@@ -3,7 +3,13 @@
 - architecture
     - [ ] move all the code into neat separate packages
 
-- paralellism
+- thread paralellism
+    - [ ] make a simple `traytor_render` executable which takes a scene,
+      number of samples and number of threads to render it on, and spits
+      out an image (so we can use it to measure time for rendering on
+      1, 2, ... n threads)
+
+- network paralellism
     - [ ] try out RPC libraries:
       [rpc](https://golang.org/pkg/net/rpc/),
       [jsonrpc](https://golang.org/pkg/net/rpc/jsonrpc/),
@@ -22,6 +28,7 @@
       and start rendering the next 4 while the first 4 are being sent
       back to the client). This should be much easier than it sounds,
       because buffered channels are awesome.
+
 - GUI
     - [ ] try out [QML](http://doc.qt.io/qt-5/qtqml-index.html) without
       Go - for example use [qmlscene](http://doc.qt.io/qt-5/qtquick-qmlscene.html)

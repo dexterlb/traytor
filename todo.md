@@ -4,6 +4,7 @@
     - [ ] move all the code into neat separate packages
 
 - thread paralellism
+    - [x] make traytor render in multiple threads at once
     - [ ] make a simple `traytor_render` executable which takes a scene,
       number of samples and number of threads to render it on, and spits
       out an image (so we can use it to measure time for rendering on

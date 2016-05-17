@@ -34,6 +34,7 @@
     - [ ] try out [QML](http://doc.qt.io/qt-5/qtqml-index.html) without
       Go - for example use [qmlscene](http://doc.qt.io/qt-5/qtquick-qmlscene.html)
     - [ ] make the same thing run under Go with [go-qml](https://github.com/go-qml/qml)
+    - [ ] figure out how the Go code will communicate with QML (shared variables?)
     - [ ] find a way to display our Image in the GUI (QPainter still not
       available in Go? Maybe need to use QLabel with a custom image? Or OpenGL?)
     - [ ] huge RENDER button!

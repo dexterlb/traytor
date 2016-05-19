@@ -2,6 +2,8 @@
 
 - architecture
     - [ ] move all the code into neat separate packages
+    - [ ] fix relative paths when loading files (textures etc) to be
+      relative to the scene file location
 
 - thread paralellism
     - [x] make traytor render in multiple threads at once
@@ -9,6 +11,7 @@
       number of samples and number of threads to render it on, and spits
       out an image (so we can use it to measure time for rendering on
       1, 2, ... n threads)
+    - [ ] parallel k-d tree construction
 
 - network paralellism
     - [ ] try out RPC libraries:

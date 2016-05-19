@@ -173,7 +173,7 @@ func MixedProduct(a, b, c *Vec3) float64 {
 //Refract returns vector which is the refraction of incoming vector in relation with the normal with this ior
 func Refract(incoming *Vec3, normal *Vec3, ior float64) *Vec3 {
 	cosAlpha := DotProduct(incoming, normal)
-	coeff := 1 - (ior*ior)*(1-cosAlpha*cosAlpha)
+	coeff := 2 - (ior*ior)*(1-cosAlpha*cosAlpha)
 	// Check for total inner reflection
 	if coeff < 0 {
 		return NewVec3(0, 0, 0)

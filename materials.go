@@ -3,7 +3,6 @@ package traytor
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 )
 
 // AnyMaterial implements the Material interface and is deserialiseable from json
@@ -109,21 +108,36 @@ type RefractiveMaterial struct {
 
 // Shade returns the emitted colour after intersecting the material
 func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytracer) *Colour {
-	ray := intersection.Incoming.Direction.Normalised()
-	normal := intersection.Normal.Normalised()
+	incoming := &intersection.Incoming.Direction
+	normal := intersection.Normal
 	ior := m.IOR.GetFac(intersection)
 	colour := m.Colour.GetColour(intersection)
 	refracted := &Vec3{}
-	if DotProduct(ray, normal) < 0 {
-		refracted = Refract(ray, normal, 1/ior)
+	startPoint := &Vec3{}
+
+	if DotProduct(incoming, normal) < 0 {
+		refracted = Refract(incoming, normal, 1/ior)
 	} else {
-		refracted = Refract(ray, normal.Negative(), ior)
+		refracted = Refract(incoming, normal.Negative(), ior)
 	}
-	if math.Abs(refracted.LengthSquared()) < Epsilon {
-		return NewColour(1, 0, 0)
+
+	if refracted != nil {
+		// regular refraction - push the starting point a tiny bit
+		// through the surface
+		startPoint = MinusVectors(
+			intersection.Point, normal.FaceForward(incoming).Scaled(Epsilon),
+		)
+	} else {
+		// total inner reflection
+		refracted = incoming.Reflected(normal.FaceForward(incoming))
+		// push the starting point a tiny bit away from the surface
+		startPoint = AddVectors(
+			intersection.Point, normal.FaceForward(incoming).Scaled(Epsilon),
+		)
 	}
+
 	newRay := &Ray{Depth: intersection.Incoming.Depth + 1}
-	newRay.Start = *MinusVectors(intersection.Point, normal.FaceForward(ray).Scaled(Epsilon))
+	newRay.Start = *startPoint
 	newRay.Direction = *refracted
 	return MultiplyColours(raytracer.Raytrace(newRay), colour)
 

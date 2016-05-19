@@ -49,7 +49,8 @@
     - [ ] make a stormtrooper logo (maybe render it in Traytor?)
 
 - rendering
-    - [ ] fix the goddamn refraction
+    - [x] fix the goddamn refraction
+    - [ ] bicubic texture sampling
     - [ ] add mix shader/add shader
     - [ ] add a fresnel sampler
     - [ ] implement lamp sampling or bidirectional path tracing to speed

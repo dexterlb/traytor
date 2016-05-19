@@ -115,7 +115,7 @@ func (m *RefractiveMaterial) Shade(intersection *Intersection, raytracer *Raytra
 	colour := m.Colour.GetColour(intersection)
 	refracted := &Vec3{}
 	if DotProduct(ray, normal) < 0 {
-		refracted = Refract(ray, normal, 1/ior)
+		refracted = Refract(ray, normal.Negative(), 1/ior)
 	} else {
 		refracted = Refract(ray, normal.Negative(), ior)
 	}

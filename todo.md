@@ -2,7 +2,7 @@
 
 - architecture
     - [ ] move all the code into neat separate packages
-    - [ ] fix relative paths when loading files (textures etc) to be
+    - [x] fix relative paths when loading files (textures etc) to be
       relative to the scene file location
 
 - thread paralellism

@@ -3,6 +3,9 @@ import json
 import bmesh
 import mathutils
 import gzip
+import base64
+import os
+from tempfile import mkstemp
 
 def make_material_index(mesh, face_material_index):
     material = mesh.materials[face_material_index]
@@ -63,9 +66,41 @@ def get_vertices(mesh):
 def get_faces(mesh, vertex_index_offset):
     return [make_face(mesh, face, vertex_index_offset) for face in mesh.polygons]
 
+def image_data(image_name, format = None):
+    image = bpy.data.images[image_name]
+    if format:
+        image.file_format = format
+    else:
+        format = image.file_format
+    
+    f, filename = mkstemp()
+    os.close(f)
+    
+    try:
+        image.filepath_raw = filename
+        image.save()
+        
+        with open(filename, "rb") as f:
+            return format, base64.b64encode(f.read()).decode('utf-8')
+    finally:
+        os.remove(filename)
+    
+def walk_materials(data):
+    if not isinstance(data, dict):
+        return
+    
+    if data.get('type') == 'image_texture' and 'image' in data:
+        data['format'], data['data'] = image_data(
+            data['image'], data.get('format')
+        )
+        
+    for _, item in data.items():
+        walk_materials(item)
+
 def expand_materials(materials):
     material_defs = bpy.data.texts['traytor_materials'].as_string()
     material_data = json.loads(material_defs)
+    walk_materials(material_data)
     return [material_data[material['name']] for material in materials]
 
 def triangulate(mesh):

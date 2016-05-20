@@ -1,13 +1,14 @@
 package traytor
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"math"
-	"os"
-	"path/filepath"
+	"strings"
 )
 
 // AnySampler implements the Sampler interface and is deserialiseable from json
@@ -144,9 +145,10 @@ func (n *NumberSampler) GetFac(intersection *Intersection) float64 {
 // UnmarshalJSON implements the json.Unmarshaler interface
 func (i *ImageTexture) UnmarshalJSON(data []byte) error {
 	textureSettings := &struct {
-		Scale    *Vec3
-		Offset   *Vec3
-		Filename string
+		Scale  *Vec3
+		Offset *Vec3
+		Format string
+		Data   []byte
 	}{}
 
 	err := json.Unmarshal(data, textureSettings)
@@ -154,24 +156,26 @@ func (i *ImageTexture) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	f, err := os.Open(textureSettings.Filename)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	fileType := filepath.Ext(textureSettings.Filename)
+	reader := bytes.NewReader(textureSettings.Data)
 
 	var ldrImage image.Image
 
-	switch fileType {
-	case ".png":
-		ldrImage, err = png.Decode(f)
+	switch strings.ToLower(textureSettings.Format) {
+	case "png":
+		ldrImage, err = png.Decode(reader)
+		if err != nil {
+			return err
+		}
+	case "jpeg":
+		ldrImage, err = jpeg.Decode(reader)
 		if err != nil {
 			return err
 		}
 	default:
-		return fmt.Errorf("Unknown filetype for image texture: %s\n", fileType)
+		return fmt.Errorf(
+			"Unknown format for image texture: %s\n",
+			textureSettings.Format,
+		)
 	}
 
 	i.Image = ToImage(ldrImage)

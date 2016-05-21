@@ -1,9 +1,10 @@
 package main
 
 import (
+	"log"
+
 	"github.com/DexterLB/traytor/rpc-test/dispatcher"
 	"github.com/valyala/gorpc"
-	"log"
 )
 
 type NumberList struct {
@@ -18,6 +19,7 @@ func main() {
 
 		Handler: d.NewHandlerFunc(),
 	}
+	log.Printf("serving :)")
 	if err := s.Serve(); err != nil {
 		log.Fatalf("Cannot start rpc server: %s", err)
 	}

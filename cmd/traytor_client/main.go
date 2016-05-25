@@ -23,11 +23,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error when sending request to server: %s", err)
 	}
-	var image *traytor.Image
-	image, err = d.Call("Sample", [2]int{800, 600})
+	resp, err := d.Call("Sample", [2]int{800, 600})
 	file, _ := os.Create("name")
-
-	err = png.Encode(file, image)
+	if err != nil {
+		log.Fatalf("Error when sending request to server: %s", err)
+	}
+	png.Encode(file, resp.(*traytor.Image))
 	file.Close()
 	if err != nil {
 		log.Fatalf("Error when sending request to server: %s", err)

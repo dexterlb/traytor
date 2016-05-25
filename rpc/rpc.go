@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"fmt"
 	"github.com/DexterLB/traytor"
 	"github.com/valyala/gorpc"
 )
@@ -33,11 +34,15 @@ func NewRemoteRaytracer(randomSeed int64) *RemoteRaytracer {
 func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	var err error
 	rr.Raytracer.Scene, err = traytor.LoadSceneFromBytes(data)
+	rr.Raytracer.Scene.Init()
 	return err
 }
 
 func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 	image := traytor.NewImage(size[0], size[1])
+	if rr.Raytracer.Scene == nil {
+		return nil, fmt.Errorf("errorerror error roroor")
+	}
 	rr.Raytracer.Sample(image)
 	return image, nil
 }

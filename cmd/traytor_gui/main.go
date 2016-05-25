@@ -39,7 +39,7 @@ func main() {
 		log.Fatal("Please supply a scene file (.json.gz) as an argument.")
 	}
 
-	scene, err := traytor.LoadScene(os.Args[1])
+	scene, err := traytor.LoadSceneFromFile(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}

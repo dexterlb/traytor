@@ -1,8 +1,10 @@
 package traytor
 
 import (
+	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"io"
 	"os"
 )
 
@@ -25,15 +27,25 @@ type Intersection struct {
 	SurfaceOy *Vec3
 }
 
-// LoadScene loads the scene from a gzipped json file
-func LoadScene(filename string) (*Scene, error) {
+// LoadSceneFromFile loads the scene from a gzipped json file
+func LoadSceneFromFile(filename string) (*Scene, error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
 
-	gzReader, err := gzip.NewReader(f)
+	return LoadScene(f)
+}
+
+// LoadSceneFromBytes loads the scene from a gzipped json byte array
+func LoadSceneFromBytes(data []byte) (*Scene, error) {
+	return LoadScene(bytes.NewReader(data))
+}
+
+// LoadScene loads the scene from a reader which outputs gzipped json data
+func LoadScene(reader io.Reader) (*Scene, error) {
+	gzReader, err := gzip.NewReader(reader)
 	if err != nil {
 		return nil, err
 	}

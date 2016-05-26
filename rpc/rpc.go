@@ -40,6 +40,7 @@ func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 
 func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 	image := traytor.NewImage(size[0], size[1])
+	image.Divisor = 0
 	if rr.Raytracer.Scene == nil {
 		return nil, fmt.Errorf("errorerror error roroor")
 	}

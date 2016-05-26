@@ -48,10 +48,10 @@ func main() {
 			},
 		},
 		{
-			Name:    "server",
-			Aliases: []string{"srv", "s"},
-			Usage:   "start an RPC server",
-			Action:  runServer,
+			Name:    "worker",
+			Aliases: []string{"wrk", "w"},
+			Usage:   "start a rendering server which takes requests from the client",
+			Action:  runWorker,
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "listen-address, l",
@@ -63,13 +63,13 @@ func main() {
 		{
 			Name:      "client",
 			Aliases:   []string{"cli", "c"},
-			Usage:     "render a scene remotly on RPC servers",
+			Usage:     "render a scene remotely on RPC workers",
 			ArgsUsage: "<scene file> <output image file>",
 			Action:    runClient,
 			Flags: []cli.Flag{
 				cli.StringSliceFlag{
-					Name:  "server, s",
-					Usage: "server to connect to - can be added multiple times",
+					Name:  "worker, w",
+					Usage: "address of worker to connect to - can be added multiple times",
 				},
 				cli.IntFlag{
 					Name:  "width, x",

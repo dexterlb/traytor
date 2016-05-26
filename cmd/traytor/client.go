@@ -16,20 +16,20 @@ import (
 
 func runClient(c *cli.Context) error {
 	scene, image := getArguments(c)
-	servers := c.StringSlice("server")
-	if len(servers) == 0 {
-		showError(c, "can't render on zero servers :(")
+	workers := c.StringSlice("worker")
+	if len(workers) == 0 {
+		showError(c, "can't render on zero workers :(")
 	}
 
 	fmt.Printf(
-		"will render %s to %s of size %dx%d with %d threads on those servers: %s\n",
+		"will render %s to %s of size %dx%d with %d threads on those workers: %s\n",
 		scene, image,
 		c.Int("width"), c.Int("height"),
 		c.GlobalInt("max-jobs"),
-		strings.Join(servers, ", "),
+		strings.Join(workers, ", "),
 	)
 	width, height := c.Int("width"), c.Int("height")
-	address := servers[0]
+	address := workers[0]
 	client := &gorpc.Client{
 		Addr: address,
 	}

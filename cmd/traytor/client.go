@@ -1,24 +1,56 @@
 package main
 
 import (
-	"log"
-	"strings"
-
+	"fmt"
 	"github.com/codegangsta/cli"
+	"image/png"
+	"io/ioutil"
+	"os"
+	"strings"
+	"time"
+
+	"github.com/DexterLB/traytor"
+	"github.com/DexterLB/traytor/rpc"
+	"github.com/valyala/gorpc"
 )
 
-func runClient(c *cli.Context) {
+func runClient(c *cli.Context) error {
 	scene, image := getArguments(c)
 	servers := c.StringSlice("server")
 	if len(servers) == 0 {
 		showError(c, "can't render on zero servers :(")
 	}
 
-	log.Printf(
-		"will render %s to %s of size %dx%d with %d threads on those servers: %v",
+	fmt.Printf(
+		"will render %s to %s of size %dx%d with %d threads on those servers: %s\n",
 		scene, image,
 		c.Int("width"), c.Int("height"),
 		c.GlobalInt("max-jobs"),
 		strings.Join(servers, ", "),
 	)
+	width, height := c.Int("width"), c.Int("height")
+	address := servers[0]
+	client := &gorpc.Client{
+		Addr: address,
+	}
+	client.Start()
+	rr := rpc.NewRemoteRaytracer(3)
+	d := rr.Dispatcher.NewFuncClient(client)
+
+	data, _ := ioutil.ReadFile(scene)
+	_, err := d.CallTimeout("LoadScene", data, 10*time.Minute)
+	if err != nil {
+		return fmt.Errorf("Error when sending request to server: %s", err)
+	}
+	resp, err := d.CallTimeout("Sample", [2]int{width, height}, 10*time.Minute)
+	file, _ := os.Create(image)
+	if err != nil {
+		return fmt.Errorf("Error when sending request to server: %s", err)
+	}
+	png.Encode(file, resp.(*traytor.Image))
+	file.Close()
+	if err != nil {
+		return fmt.Errorf("Error when sending request to server: %s", err)
+	}
+	return nil
 }

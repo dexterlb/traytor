@@ -88,8 +88,8 @@ func runClient(c *cli.Context) error {
 	rr := rpc.NewRemoteRaytracer(time.Now().Unix())
 
 	width, height := c.Int("width"), c.Int("height")
-	sampleCounter := NewSampleCounter(30)
-	renderedImages := make(chan *traytor.Image, 30)
+	sampleCounter := NewSampleCounter(50)
+	renderedImages := make(chan *traytor.Image, 50)
 	clients := make([]*gorpc.Client, len(workers))
 
 	data, err := ioutil.ReadFile(scene)

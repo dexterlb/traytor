@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
 	"image/png"
 	"io/ioutil"
 	"log"
@@ -10,6 +9,8 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/codegangsta/cli"
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/rpc"
@@ -85,7 +86,12 @@ func runClient(c *cli.Context) error {
 		c.GlobalInt("max-jobs"),
 		strings.Join(workers, ", "),
 	)
-	rr := rpc.NewRemoteRaytracer(time.Now().Unix(), c.GlobalInt("max-jobs"), c.GlobalInt("max-jobs")*2)
+	rr := rpc.NewRemoteRaytracer(
+		time.Now().Unix(),
+		c.GlobalInt("max-jobs"),
+		c.GlobalInt("max-jobs")*2,
+		1,
+	)
 
 	width, height := c.Int("width"), c.Int("height")
 	sampleCounter := NewSampleCounter(400)

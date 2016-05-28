@@ -14,15 +14,17 @@ type RemoteRaytracer struct {
 	Dispatcher      *gorpc.Dispatcher
 	Locker          chan struct{}
 	Requests        int
+	Samples         int
 }
 
-func NewRemoteRaytracer(randomSeed int64, cores int, requests int) *RemoteRaytracer {
+func NewRemoteRaytracer(randomSeed int64, cores int, requests int, samples int) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
 		Scene:           nil,
 		Dispatcher:      gorpc.NewDispatcher(),
 		Requests:        requests,
 		Locker:          make(chan struct{}, cores),
 		RandomGenerator: traytor.NewRandom(randomSeed),
+		Samples:         samples,
 	}
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
@@ -52,7 +54,11 @@ func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 	if rr.Scene == nil {
 		return nil, fmt.Errorf("Empty scene")
 	}
-	raytracer.Sample(image)
+
+	for i := 0; i < rr.Samples; i++ {
+		raytracer.Sample(image)
+	}
+
 	return image, nil
 }
 

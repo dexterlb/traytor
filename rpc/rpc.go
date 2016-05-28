@@ -17,6 +17,13 @@ type RemoteRaytracer struct {
 	Samples         int
 }
 
+// SampleSettings contains parameters for making a sample
+type SampleSettings struct {
+	Width         int
+	Height        int
+	SamplesAtOnce int
+}
+
 func NewRemoteRaytracer(randomSeed int64, cores int, requests int, samples int) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
 		Scene:           nil,
@@ -29,8 +36,10 @@ func NewRemoteRaytracer(randomSeed int64, cores int, requests int, samples int) 
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
 	rr.Dispatcher.AddFunc("Sample", rr.Sample)
-	rr.Dispatcher.AddFunc("RequestsNumber", rr.RequestsNumber)
+	rr.Dispatcher.AddFunc("MaxRequestsAtOnce", rr.MaxRequestsAtOnce)
+	rr.Dispatcher.AddFunc("MaxSamplesAtOnce", rr.MaxSamplesAtOnce)
 	gorpc.RegisterType(&traytor.Image{})
+	gorpc.RegisterType(&SampleSettings{})
 	return rr
 }
 
@@ -41,7 +50,7 @@ func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	return err
 }
 
-func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
+func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*traytor.Image, error) {
 	rr.Locker <- struct{}{}
 	defer func() { <-rr.Locker }()
 	raytracer := &traytor.Raytracer{
@@ -49,19 +58,23 @@ func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 		Random:   traytor.NewRandom(rr.RandomGenerator.NewSeed()),
 		MaxDepth: 10,
 	}
-	image := traytor.NewImage(size[0], size[1])
+	image := traytor.NewImage(settings.Width, settings.Height)
 	image.Divisor = 0
 	if rr.Scene == nil {
 		return nil, fmt.Errorf("Empty scene")
 	}
 
-	for i := 0; i < rr.Samples; i++ {
+	for i := 0; i < settings.SamplesAtOnce; i++ {
 		raytracer.Sample(image)
 	}
 
 	return image, nil
 }
 
-func (rr *RemoteRaytracer) RequestsNumber() (int, error) {
+func (rr *RemoteRaytracer) MaxRequestsAtOnce() (int, error) {
 	return rr.Requests, nil
+}
+
+func (rr *RemoteRaytracer) MaxSamplesAtOnce() (int, error) {
+	return rr.Samples, nil
 }

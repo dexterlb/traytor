@@ -10,7 +10,7 @@ import (
 
 func runWorker(c *cli.Context) error {
 	fmt.Printf(
-		"will start worker with %d threads on this address: %s\n",
+		"will start worker with %d threads with max requests %d on this address: %s\n",
 		c.GlobalInt("max-jobs"),
 		c.Int("max-requests"),
 		c.String("listen-address"),

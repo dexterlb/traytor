@@ -85,7 +85,7 @@ func runClient(c *cli.Context) error {
 		c.GlobalInt("max-jobs"),
 		strings.Join(workers, ", "),
 	)
-	rr := rpc.NewRemoteRaytracer(time.Now().Unix())
+	rr := rpc.NewRemoteRaytracer(time.Now().Unix(), c.GlobalInt("max-jobs"))
 
 	width, height := c.Int("width"), c.Int("height")
 	sampleCounter := NewSampleCounter(400)
@@ -103,16 +103,16 @@ func runClient(c *cli.Context) error {
 		clients[i] = &gorpc.Client{Addr: workers[i]}
 		clients[i].Start()
 		dispatcher := rr.Dispatcher.NewFuncClient(clients[i])
-		cores, err := dispatcher.CallTimeout("CoresNumber")
+		cores, err := dispatcher.CallTimeout("CoresNumber", nil, 10*time.Minute)
 		if err != nil {
 			return fmt.Errorf("Problem with calculating client cores: %s", err)
 		}
-		finishRender.Add(cores)
+		finishRender.Add(cores.(int))
 		_, err = dispatcher.CallTimeout("LoadScene", data, 10*time.Minute)
 		if err != nil {
 			return fmt.Errorf("Can't load scene: %s", err)
 		}
-		for core := range cores {
+		for core := 0; core < cores.(int); core++ {
 			go func() {
 				RenderLoop(sampleCounter, dispatcher, renderedImages, width, height)
 				finishRender.Done()

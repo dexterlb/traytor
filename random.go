@@ -147,3 +147,8 @@ func (r *Random) Sign64() int64 {
 	}
 	return -1
 }
+
+// NewSeed returns a random seed
+func (r *Random) NewSeed() int64 {
+	return r.generator.Int63()
+}

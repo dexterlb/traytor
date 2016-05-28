@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"fmt"
+
 	"github.com/DexterLB/traytor"
 	"github.com/valyala/gorpc"
 )
@@ -10,9 +11,10 @@ import (
 type RemoteRaytracer struct {
 	Raytracer  *traytor.Raytracer
 	Dispatcher *gorpc.Dispatcher
+	Cores      int
 }
 
-func NewRemoteRaytracer(randomSeed int64) *RemoteRaytracer {
+func NewRemoteRaytracer(randomSeed int64, cores int) *RemoteRaytracer {
 	raytracer := &traytor.Raytracer{
 		Scene:    nil,
 		Random:   traytor.NewRandom(int64(randomSeed)),
@@ -23,10 +25,12 @@ func NewRemoteRaytracer(randomSeed int64) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
 		Raytracer:  raytracer,
 		Dispatcher: dispatcher,
+		Cores:      cores,
 	}
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
 	rr.Dispatcher.AddFunc("Sample", rr.Sample)
+	rr.Dispatcher.AddFunc("CoresNumber", rr.CoresNumber)
 	gorpc.RegisterType(&traytor.Image{})
 	return rr
 }
@@ -46,4 +50,8 @@ func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 	}
 	rr.Raytracer.Sample(image)
 	return image, nil
+}
+
+func (rr *RemoteRaytracer) CoresNumber() (int, error) {
+	return rr.Cores
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/DexterLB/traytor/rpc"
 	"github.com/codegangsta/cli"
 	"github.com/valyala/gorpc"
@@ -14,7 +15,7 @@ func runWorker(c *cli.Context) error {
 		c.String("listen-address"),
 	)
 	address := c.String("listen-address")
-	rr := rpc.NewRemoteRaytracer(3)
+	rr := rpc.NewRemoteRaytracer(3, c.GlobalInt("max-jobs"))
 
 	w := &gorpc.Server{
 		Addr:    address,

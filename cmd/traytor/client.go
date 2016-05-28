@@ -85,7 +85,7 @@ func runClient(c *cli.Context) error {
 		c.GlobalInt("max-jobs"),
 		strings.Join(workers, ", "),
 	)
-	rr := rpc.NewRemoteRaytracer(time.Now().Unix(), c.GlobalInt("max-jobs"))
+	rr := rpc.NewRemoteRaytracer(time.Now().Unix(), c.GlobalInt("max-jobs"), c.GlobalInt("max-jobs")*2)
 
 	width, height := c.Int("width"), c.Int("height")
 	sampleCounter := NewSampleCounter(400)
@@ -103,7 +103,7 @@ func runClient(c *cli.Context) error {
 		clients[i] = &gorpc.Client{Addr: workers[i]}
 		clients[i].Start()
 		dispatcher := rr.Dispatcher.NewFuncClient(clients[i])
-		cores, err := dispatcher.CallTimeout("CoresNumber", nil, 10*time.Minute)
+		cores, err := dispatcher.CallTimeout("RequestsNumber", nil, 10*time.Minute)
 		if err != nil || cores.(int) < 1 {
 			return fmt.Errorf("Problem with calculating client cores: %s", err)
 		}

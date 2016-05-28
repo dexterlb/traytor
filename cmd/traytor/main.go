@@ -58,7 +58,12 @@ func main() {
 					Value: ":1234",
 					Usage: "local network address (interface) to bind the server to",
 				},
-			},
+
+				cli.IntFlag{
+					Name:  "max-requests, r",
+					Value: runtime.NumCPU() * 2,
+					Usage: "max number of parallel requests to the worker",
+				}},
 		},
 		{
 			Name:      "client",

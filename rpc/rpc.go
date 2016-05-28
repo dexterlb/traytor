@@ -12,20 +12,22 @@ type RemoteRaytracer struct {
 	Scene           *traytor.Scene
 	RandomGenerator *traytor.Random
 	Dispatcher      *gorpc.Dispatcher
-	Cores           int
+	Locker          chan struct{}
+	Requests        int
 }
 
-func NewRemoteRaytracer(randomSeed int64, cores int) *RemoteRaytracer {
+func NewRemoteRaytracer(randomSeed int64, cores int, requests int) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
 		Scene:           nil,
 		Dispatcher:      gorpc.NewDispatcher(),
-		Cores:           cores,
+		Requests:        requests,
+		Locker:          make(chan struct{}, cores),
 		RandomGenerator: traytor.NewRandom(randomSeed),
 	}
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
 	rr.Dispatcher.AddFunc("Sample", rr.Sample)
-	rr.Dispatcher.AddFunc("CoresNumber", rr.CoresNumber)
+	rr.Dispatcher.AddFunc("RequestsNumber", rr.RequestsNumber)
 	gorpc.RegisterType(&traytor.Image{})
 	return rr
 }
@@ -38,6 +40,8 @@ func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 }
 
 func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
+	rr.Locker <- struct{}{}
+	defer func() { <-rr.Locker }()
 	raytracer := &traytor.Raytracer{
 		Scene:    rr.Scene,
 		Random:   traytor.NewRandom(rr.RandomGenerator.NewSeed()),
@@ -46,12 +50,12 @@ func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 	image := traytor.NewImage(size[0], size[1])
 	image.Divisor = 0
 	if rr.Scene == nil {
-		return nil, fmt.Errorf("errorerror error roroor")
+		return nil, fmt.Errorf("Empty scene")
 	}
 	raytracer.Sample(image)
 	return image, nil
 }
 
-func (rr *RemoteRaytracer) CoresNumber() (int, error) {
-	return rr.Cores, nil
+func (rr *RemoteRaytracer) RequestsNumber() (int, error) {
+	return rr.Requests, nil
 }

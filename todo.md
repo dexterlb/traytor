@@ -14,19 +14,19 @@
     - [ ] parallel k-d tree construction
 
 - network paralellism
-    - [ ] try out RPC libraries:
+    - [x] try out RPC libraries:
       [rpc](https://golang.org/pkg/net/rpc/),
       [jsonrpc](https://golang.org/pkg/net/rpc/jsonrpc/),
       [gorrilla rpc](http://www.gorillatoolkit.org/pkg/rpc)
       and decide which one is easiest to work with
-    - [ ] make the scene serialiseable, so we can call a function that takes
+    - [x] make the scene serialiseable, so we can call a function that takes
       the scene as an argument remotely (maybe base64 encode the scene
       and pass a single string?)
-    - [ ] create a "worker" command which acts as an RPC server, and
+    - [x] create a "worker" command which acts as an RPC server, and
       has `uploadScene(scene)` and `renderSample() Image` RPC methods
-    - [ ] create a "client" command which tells multiple workers to render
+    - [x] create a "client" command which tells multiple workers to render
       samples and adds their results together, forming an image
-    - [ ] multi-threaded workers - make workers accept several requests at
+    - [x] multi-threaded workers - make workers accept several requests at
       once, with a limit on active renders (so that a worker with 4
       processors can accept 8 requests at once, render 4 at once
       and start rendering the next 4 while the first 4 are being sent

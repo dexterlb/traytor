@@ -104,7 +104,7 @@ func runClient(c *cli.Context) error {
 		clients[i].Start()
 		dispatcher := rr.Dispatcher.NewFuncClient(clients[i])
 		cores, err := dispatcher.CallTimeout("CoresNumber", nil, 10*time.Minute)
-		if err != nil {
+		if err != nil || cores.(int) < 1 {
 			return fmt.Errorf("Problem with calculating client cores: %s", err)
 		}
 		finishRender.Add(cores.(int))

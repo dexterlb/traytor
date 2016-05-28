@@ -88,8 +88,8 @@ func runClient(c *cli.Context) error {
 	rr := rpc.NewRemoteRaytracer(time.Now().Unix())
 
 	width, height := c.Int("width"), c.Int("height")
-	sampleCounter := NewSampleCounter(50)
-	renderedImages := make(chan *traytor.Image, 50)
+	sampleCounter := NewSampleCounter(400)
+	renderedImages := make(chan *traytor.Image, 400)
 	clients := make([]*gorpc.Client, len(workers))
 
 	data, err := ioutil.ReadFile(scene)
@@ -98,20 +98,26 @@ func runClient(c *cli.Context) error {
 	}
 
 	finishRender := &sync.WaitGroup{}
-	finishRender.Add(len(workers))
 
 	for i := range workers {
 		clients[i] = &gorpc.Client{Addr: workers[i]}
 		clients[i].Start()
 		dispatcher := rr.Dispatcher.NewFuncClient(clients[i])
+		cores, err := dispatcher.CallTimeout("CoresNumber")
+		if err != nil {
+			return fmt.Errorf("Problem with calculating client cores: %s", err)
+		}
+		finishRender.Add(cores)
 		_, err = dispatcher.CallTimeout("LoadScene", data, 10*time.Minute)
 		if err != nil {
 			return fmt.Errorf("Can't load scene: %s", err)
 		}
-		go func() {
-			RenderLoop(sampleCounter, dispatcher, renderedImages, width, height)
-			finishRender.Done()
-		}()
+		for core := range cores {
+			go func() {
+				RenderLoop(sampleCounter, dispatcher, renderedImages, width, height)
+				finishRender.Done()
+			}()
+		}
 	}
 
 	go func() {

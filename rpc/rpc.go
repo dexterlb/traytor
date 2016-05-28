@@ -53,5 +53,5 @@ func (rr *RemoteRaytracer) Sample(size [2]int) (*traytor.Image, error) {
 }
 
 func (rr *RemoteRaytracer) CoresNumber() (int, error) {
-	return rr.Cores
+	return rr.Cores, nil
 }

@@ -13,6 +13,7 @@ type Scene struct {
 	Camera    *AnyCamera     `json:"camera"`
 	Materials []*AnyMaterial `json:"materials"`
 	Mesh      Mesh           `json:"mesh"`
+	MaxDepth  int            `json:"max_depth"`
 }
 
 // Intersection represents a point on a surface struck by a ray
@@ -64,4 +65,7 @@ func LoadScene(reader io.Reader) (*Scene, error) {
 // Init performs all necessary preprocessing on the scene
 func (s *Scene) Init() {
 	s.Mesh.Init()
+	if s.MaxDepth < 1 {
+		s.MaxDepth = 5
+	}
 }

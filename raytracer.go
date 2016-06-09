@@ -2,14 +2,13 @@ package traytor
 
 // Raytracer represents a single rendering unit
 type Raytracer struct {
-	Scene    *Scene
-	Random   *Random
-	MaxDepth int
+	Scene  *Scene
+	Random *Random
 }
 
 // Raytrace returns the colour obtained by tracing the given ray
 func (r *Raytracer) Raytrace(ray *Ray) *Colour {
-	if ray.Depth > r.MaxDepth {
+	if ray.Depth > r.Scene.MaxDepth {
 		return NewColour(0, 0, 0)
 	}
 	intersectionInfo := r.Scene.Mesh.Intersect(ray)
@@ -25,7 +24,10 @@ func (r *Raytracer) Sample(image *Image) {
 	var colour *Colour
 	for i := 0; i < image.Width; i++ {
 		for j := 0; j < image.Height; j++ {
-			ray = r.Scene.Camera.ShootRay((float64(i)+r.Random.Float01())/float64(image.Width), (float64(j)+r.Random.Float01())/float64(image.Height))
+			ray = r.Scene.Camera.ShootRay(
+				(float64(i)+r.Random.Float01())/float64(image.Width),
+				(float64(j)+r.Random.Float01())/float64(image.Height),
+			)
 			colour = r.Raytrace(ray)
 			image.Pixels[i][j].Add(colour)
 		}

@@ -36,9 +36,8 @@ func NewConcurrentRaytracer(
 	for i := 0; i < parallelSamples; i++ {
 		cr.units <- &renderUnit{
 			raytracer: traytor.Raytracer{
-				Scene:    scene,
-				Random:   traytor.NewRandom(random.NewSeed()),
-				MaxDepth: 10, // FIXME
+				Scene:  scene,
+				Random: traytor.NewRandom(random.NewSeed()),
 			},
 			image: nil,
 		}
@@ -47,11 +46,11 @@ func NewConcurrentRaytracer(
 	return cr
 }
 
-// Sample renders the scene into an internal image. You can (and should)
+// StoreSample renders the scene into an internal image. You can (and should)
 // call it multiple times, in parallel, and when you're finished you can get
-// the merged samples with GetImage(). Sample will block if the parallel
+// the merged samples with GetImage(). StoreSample will block if the parallel
 // calls exceed the parallelSamples value, and wait for other samples to finish.
-func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) {
+func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) {
 	unit := <-cr.units
 
 	if unit.image == nil {
@@ -66,9 +65,9 @@ func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) {
 	cr.units <- unit
 }
 
-// InstantSample works like Sample(), but instead of storing the image internally,
+// Sample works like StoreSample(), but instead of storing the image internally,
 // returns a new image.
-func (cr *ConcurrentRaytracer) InstantSample(settings *SampleSettings) *traytor.Image {
+func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) *traytor.Image {
 	unit := <-cr.units
 
 	image := traytor.NewImage(settings.Width, settings.Height)
@@ -85,7 +84,7 @@ func (cr *ConcurrentRaytracer) InstantSample(settings *SampleSettings) *traytor.
 
 // GetImage collects all samples up to this moment (and waits for those that
 // are currently being rendered to finish), and merges them.
-// Sample() can be called during calling this function, and will block until
+// StoreSample() can be called during calling this function, and will block until
 // it finishes. Next samples will start from zero (e.g. the base image is reset)
 func (cr *ConcurrentRaytracer) GetImage() *traytor.Image {
 	var mergedSamples *traytor.Image

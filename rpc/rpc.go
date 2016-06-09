@@ -54,9 +54,8 @@ func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*traytor.Image, err
 	rr.Locker <- struct{}{}
 	defer func() { <-rr.Locker }()
 	raytracer := &traytor.Raytracer{
-		Scene:    rr.Scene,
-		Random:   traytor.NewRandom(rr.RandomGenerator.NewSeed()),
-		MaxDepth: 10,
+		Scene:  rr.Scene,
+		Random: traytor.NewRandom(rr.RandomGenerator.NewSeed()),
 	}
 	image := traytor.NewImage(settings.Width, settings.Height)
 	image.Divisor = 0

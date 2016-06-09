@@ -129,13 +129,15 @@ def get_scene(scene):
             finally:                
                 bpy.data.meshes.remove(mesh)
     
-    data = {
-        'mesh': {
-            'vertices': vertices,
-            'faces': faces,
-        },
-        'materials': expand_materials([make_material(mesh, m) for m in bpy.data.materials])
+    data = json.loads(bpy.data.texts['traytor_settings'].as_string())
+    
+    data['mesh'] = {
+        'vertices': vertices,
+        'faces': faces,
     }
+    data['materials'] = expand_materials(
+        [make_material(mesh, m) for m in bpy.data.materials]
+    )
     
     if scene.camera:
         data['camera'] = make_camera(scene.camera, scene)

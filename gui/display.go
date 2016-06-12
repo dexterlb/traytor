@@ -27,7 +27,6 @@ func (d *Display) SetPixel(x int, y int, colour color.Color) {
 		uint8(g>>8),
 		uint8(b>>8),
 	)
-
 	var pix = uintptr(unsafe.Pointer(&d.screen.Pixels()[0]))
 	pix += uintptr(((y * int(d.screen.W)) + x)) * unsafe.Sizeof(value)
 	var pp *uint32 = (*uint32)(unsafe.Pointer(pix))
@@ -65,6 +64,8 @@ func NewDisplay(width, height int, title string) (*Display, error) {
 
 	d.width = width
 	d.height = height
+
+	d.CheckExit()
 
 	var err error
 	d.window, err = sdl.CreateWindow(

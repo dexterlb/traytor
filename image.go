@@ -1,8 +1,11 @@
 package traytor
 
 import (
+	"encoding/binary"
+	"fmt"
 	"image"
 	"image/color"
+	"io"
 )
 
 //Image is a stuct which will display images via its 2D colour array, wich represents the screen
@@ -22,6 +25,33 @@ func NewImage(width, height int) *Image {
 		}
 	}
 	return &Image{Pixels: pixels, Width: width, Height: height, Divisor: 1}
+}
+
+//DecodeImage reads data in the simple traytor_hdr format and produces an
+//image.
+func DecodeImage(reader io.Reader) (*Image, error) {
+	size := [2]uint16{}
+	err := binary.Read(reader, binary.LittleEndian, &size)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read header from image data: %s", err)
+	}
+
+	im := NewImage(int(size[0]), int(size[1]))
+	var rgba [4]float32
+
+	for i := im.Width - 1; i > 0; i-- {
+		for j := 0; j < im.Height; j++ {
+			err = binary.Read(reader, binary.LittleEndian, &rgba)
+			if err != nil {
+				return nil, fmt.Errorf("cannot read image data: %s", err)
+			}
+			im.Pixels[j][i].R = rgba[0]
+			im.Pixels[j][i].G = rgba[1]
+			im.Pixels[j][i].B = rgba[2]
+		}
+	}
+
+	return im, nil
 }
 
 //String returns a string which is the representaton of image: {r, g, b}, ... {r, g, b}\n ...\n {r, g, b},...{r, g, b}

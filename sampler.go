@@ -171,6 +171,11 @@ func (i *ImageTexture) UnmarshalJSON(data []byte) error {
 		if err != nil {
 			return err
 		}
+	case "traytor_hdr":
+		i.Image, err = DecodeImage(reader)
+		if err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf(
 			"Unknown format for image texture: %s\n",
@@ -178,7 +183,9 @@ func (i *ImageTexture) UnmarshalJSON(data []byte) error {
 		)
 	}
 
-	i.Image = ToImage(ldrImage)
+	if ldrImage != nil {
+		i.Image = ToImage(ldrImage)
+	}
 
 	i.ScaleU = textureSettings.Scale.X
 	i.ScaleV = textureSettings.Scale.Y

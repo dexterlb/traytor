@@ -5,6 +5,7 @@ import mathutils
 import gzip
 import base64
 import os
+from array import array
 from tempfile import mkstemp
 
 def make_material_index(mesh, face_material_index):
@@ -66,10 +67,30 @@ def get_vertices(mesh):
 def get_faces(mesh, vertex_index_offset):
     return [make_face(mesh, face, vertex_index_offset) for face in mesh.polygons]
 
+def srgb_to_linear(value):
+    if value < 0.04045:
+        return value / 12.92
+    return pow((value + 0.055)/1.055, 2.4)
+
+def encode_traytor_hdr(format, image):
+    size = array('h', image.size)
+    pixels = array('f', image.pixels)   # note: this is huge!
+    
+    if format == 'traytor_srgb':
+        for i in range(len(pixels)):
+            pixels[i] = srgb_to_linear(pixels[i])
+
+    return size.tobytes() + pixels.tobytes()
+
 def image_data(image_name, format = None):
     image = bpy.data.images[image_name]
     if format:
-        image.file_format = format
+        if format == 'traytor_hdr' or format == 'traytor_srgb':
+            return 'traytor_hdr', base64.b64encode(
+                encode_traytor_hdr(format, image)
+            ).decode('utf-8')
+        else:
+            image.file_format = format
     else:
         format = image.file_format
     

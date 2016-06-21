@@ -84,8 +84,8 @@ func (rr *RemoteRaytracer) MaxSamplesAtOnce() (int, error) {
 	return rr.Samples, nil
 }
 
-func (rr *RemoteRaytracer) StoreSample(settings *SampleSettings) {
-	rr.Raytracer.StoreSample(settings)
+func (rr *RemoteRaytracer) StoreSample(settings *SampleSettings) error {
+	return rr.Raytracer.StoreSample(settings)
 }
 
 func (rr *RemoteRaytracer) GetImage() *traytor.Image {

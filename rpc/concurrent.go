@@ -54,8 +54,11 @@ func NewConcurrentRaytracer(
 // call it multiple times, in parallel, and when you're finished you can get
 // the merged samples with GetImage(). StoreSample will block if the parallel
 // calls exceed the parallelSamples value, and wait for other samples to finish.
-func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) {
+func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) error {
 	unit := <-cr.units
+	if unit.raytracer.Scene == nil {
+		return fmt.Errorf("N/A scene")
+	}
 
 	if unit.image == nil {
 		unit.image = traytor.NewImage(settings.Width, settings.Height)
@@ -67,6 +70,7 @@ func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) {
 	}
 
 	cr.units <- unit
+	return nil
 }
 
 // Sample works like StoreSample(), but instead of storing the image internally,

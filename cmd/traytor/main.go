@@ -87,6 +87,10 @@ func main() {
 			ArgsUsage: "<scene file> <output image file>",
 			Action:    runClient,
 			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "synchronous, s",
+					Usage: "workers don't wait until the end to synchronise images",
+				},
 				cli.StringSliceFlag{
 					Name:  "worker, w",
 					Usage: "address of worker to connect to - can be added multiple times",

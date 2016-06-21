@@ -52,3 +52,16 @@ func (rrc *RemoteRaytracerCaller) Sample(settings *SampleSettings) (*traytor.Ima
 	}
 	return image.(*traytor.Image), nil
 }
+
+func (rrc *RemoteRaytracerCaller) StoreSample(settings *SampleSettings) error {
+	_, err := rrc.funcClient.CallTimeout("StoreSample", settings, rrc.timeout)
+	return err
+}
+
+func (rrc *RemoteRaytracerCaller) GetImage() (*traytor.Image, error) {
+	image, err := rrc.funcClient.CallTimeout("GetImage", nil, rrc.timeout)
+	if err != nil {
+		return nil, err
+	}
+	return image.(*traytor.Image), nil
+}

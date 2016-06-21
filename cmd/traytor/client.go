@@ -43,19 +43,29 @@ func RenderLoop(
 	client *rpc.RemoteRaytracerCaller,
 	renderedImages chan<- *traytor.Image,
 	globalSettings *rpc.SampleSettings,
+	synchronous bool,
 ) {
 	settings := *globalSettings
-
 	for {
 		settings.SamplesAtOnce = sampleCounter.Dec(globalSettings.SamplesAtOnce)
 		if settings.SamplesAtOnce == 0 {
 			return
 		}
+		var err error
+		var image *traytor.Image
 
-		image, err := client.Sample(&settings)
+		if synchronous {
+			image, err = client.Sample(&settings)
+		} else {
+			err = client.StoreSample(&settings)
+		}
+		//both samples log the error, but only synchronous sample pushes
+		//image into the channel
 		if err == nil {
-			renderedImages <- image
-			log.Printf("Rendered %d samples :)\n", settings.SamplesAtOnce)
+			if synchronous {
+				renderedImages <- image
+			}
+			log.Printf("Rendered samples :)\n")
 		} else {
 			log.Printf("No sample :( %s\n", err)
 		}
@@ -78,22 +88,25 @@ func JoinSamples(
 
 func runClient(c *cli.Context) error {
 	scene, image := getArguments(c)
-	workers := c.StringSlice("worker")
-	if len(workers) == 0 {
+	workerAdresses := c.StringSlice("worker")
+
+	if len(workerAdresses) == 0 {
 		showError(c, "can't render on zero workers :(")
 	}
+	synchronous := c.Bool("synchronous")
 
 	fmt.Printf(
-		"will render %s to %s of size %dx%d on those workers: %s\n",
+		"will render %s to %s of size %dx%d on those workers: %s, synchronous %v\n",
 		scene, image,
 		c.Int("width"), c.Int("height"),
-		strings.Join(workers, ", "),
+		strings.Join(workerAdresses, ", "),
+		synchronous,
 	)
 
 	width, height := c.Int("width"), c.Int("height")
 	sampleCounter := NewSampleCounter(20)
 	renderedImages := make(chan *traytor.Image, 20)
-	clients := make([]*rpc.RemoteRaytracerCaller, len(workers))
+	workers := make([]*rpc.RemoteRaytracerCaller, len(workerAdresses))
 
 	data, err := ioutil.ReadFile(scene)
 	if err != nil {
@@ -102,16 +115,16 @@ func runClient(c *cli.Context) error {
 
 	finishRender := &sync.WaitGroup{}
 
-	for i := range workers {
-		clients[i] = rpc.NewRemoteRaytracerCaller(workers[i], 10*time.Minute)
+	for i := range workerAdresses {
+		workers[i] = rpc.NewRemoteRaytracerCaller(workerAdresses[i], 10*time.Minute)
 
-		requests, err := clients[i].MaxRequestsAtOnce()
+		requests, err := workers[i].MaxRequestsAtOnce()
 		if err != nil || requests < 1 {
 			return fmt.Errorf("Can't get worker's allowed requests: %s", err)
 		}
 		finishRender.Add(requests)
 
-		samples, err := clients[i].MaxSamplesAtOnce()
+		samples, err := workers[i].MaxSamplesAtOnce()
 		if err != nil || samples < 1 {
 			return fmt.Errorf("Can't get worker's allowed samples: %s", err)
 		}
@@ -122,14 +135,14 @@ func runClient(c *cli.Context) error {
 			SamplesAtOnce: samples,
 		}
 
-		err = clients[i].LoadScene(data)
+		err = workers[i].LoadScene(data)
 		if err != nil {
 			return fmt.Errorf("Can't load scene: %s", err)
 		}
 
 		for request := 0; request < requests; request++ {
 			go func() {
-				RenderLoop(sampleCounter, clients[i], renderedImages, settings)
+				RenderLoop(sampleCounter, workers[i], renderedImages, settings, synchronous)
 				finishRender.Done()
 			}()
 		}
@@ -137,6 +150,17 @@ func runClient(c *cli.Context) error {
 
 	go func() {
 		finishRender.Wait()
+		if !synchronous {
+			fmt.Printf("Combining images...")
+			for i := range workerAdresses {
+				image, err := workers[i].GetImage()
+				if err == nil {
+					renderedImages <- image
+				} else {
+					fmt.Printf("Smelly image x_x %s\n", err)
+				}
+			}
+		}
 		close(renderedImages)
 	}()
 

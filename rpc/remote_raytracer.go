@@ -55,6 +55,8 @@ func (rr *RemoteRaytracer) registerFunctions() {
 	rr.Dispatcher.AddFunc("Sample", rr.Sample)
 	rr.Dispatcher.AddFunc("MaxRequestsAtOnce", rr.MaxRequestsAtOnce)
 	rr.Dispatcher.AddFunc("MaxSamplesAtOnce", rr.MaxSamplesAtOnce)
+	rr.Dispatcher.AddFunc("StoreSample", rr.StoreSample)
+	rr.Dispatcher.AddFunc("GetImage", rr.GetImage)
 	gorpc.RegisterType(&traytor.Image{})
 	gorpc.RegisterType(&SampleSettings{})
 }
@@ -80,4 +82,12 @@ func (rr *RemoteRaytracer) MaxRequestsAtOnce() (int, error) {
 
 func (rr *RemoteRaytracer) MaxSamplesAtOnce() (int, error) {
 	return rr.Samples, nil
+}
+
+func (rr *RemoteRaytracer) StoreSample(settings *SampleSettings) {
+	rr.Raytracer.StoreSample(settings)
+}
+
+func (rr *RemoteRaytracer) GetImage() *traytor.Image {
+	return rr.Raytracer.GetImage()
 }

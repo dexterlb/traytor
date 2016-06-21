@@ -104,17 +104,18 @@ func runClient(c *cli.Context) error {
 	)
 
 	width, height := c.Int("width"), c.Int("height")
-	sampleCounter := NewSampleCounter(20)
-	renderedImages := make(chan *traytor.Image, 20)
+	totalSamples := c.Int("total-samples")
+	sampleCounter := NewSampleCounter(totalSamples)
+	renderedImages := make(chan *traytor.Image, len(workerAdresses))
 	workers := make([]*rpc.RemoteRaytracerCaller, len(workerAdresses))
 	finishWorker := &sync.WaitGroup{}
-	finishWorker.Add(len(workerAdresses))
 	data, err := ioutil.ReadFile(scene)
 	if err != nil {
 		return fmt.Errorf("Error when loading scene: %s", err)
 	}
 	for i := range workerAdresses {
 		workers[i] = rpc.NewRemoteRaytracerCaller(workerAdresses[i], 10*time.Minute)
+		finishWorker.Add(1)
 
 		requests, err := workers[i].MaxRequestsAtOnce()
 		if err != nil || requests < 1 {
@@ -137,7 +138,7 @@ func runClient(c *cli.Context) error {
 			return fmt.Errorf("Can't load scene: %s", err)
 		}
 
-		go func() {
+		go func(i int) {
 			finishRender := &sync.WaitGroup{}
 			finishRender.Add(requests)
 			for request := 0; request < requests; request++ {
@@ -157,7 +158,7 @@ func runClient(c *cli.Context) error {
 				}
 			}
 			finishWorker.Done()
-		}()
+		}(i)
 	}
 
 	go func() {

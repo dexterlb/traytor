@@ -91,6 +91,11 @@ func main() {
 					Name:  "synchronous, s",
 					Usage: "workers don't wait until the end to synchronise images",
 				},
+				cli.IntFlag{
+					Name:  "total-samples, t",
+					Usage: "total samples to render",
+					Value: 20,
+				},
 				cli.StringSliceFlag{
 					Name:  "worker, w",
 					Usage: "address of worker to connect to - can be added multiple times",

@@ -12,6 +12,6 @@ func runRender(c *cli.Context) {
 		"will render %s to %s of size %dx%d with %d threads",
 		scene, image,
 		c.Int("width"), c.Int("height"),
-		c.GlobalInt("max-jobs"),
+		c.Int("max-jobs"),
 	)
 }

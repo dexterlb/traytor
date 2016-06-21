@@ -45,6 +45,11 @@ func main() {
 					Usage: "height of the output image",
 					Value: 450,
 				},
+				cli.IntFlag{
+					Name:  "max-jobs, j",
+					Value: runtime.NumCPU(),
+					Usage: "number of parallel rendering threads",
+				},
 			},
 		},
 		{
@@ -67,6 +72,11 @@ func main() {
 					Name:  "multisample, m",
 					Value: 1,
 					Usage: "number of samples to send at once to the server (reduces network load)",
+				},
+				cli.IntFlag{
+					Name:  "max-jobs, j",
+					Value: runtime.NumCPU(),
+					Usage: "number of parallel rendering threads",
 				},
 			},
 		},
@@ -95,13 +105,7 @@ func main() {
 		},
 	}
 
-	app.Flags = []cli.Flag{
-		cli.IntFlag{
-			Name:  "max-jobs, j",
-			Value: runtime.NumCPU(),
-			Usage: "limit the number of parallel render jobs",
-		},
-	}
+	app.Flags = []cli.Flag{}
 
 	app.Run(os.Args)
 }

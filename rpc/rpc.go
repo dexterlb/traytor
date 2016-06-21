@@ -24,14 +24,19 @@ type SampleSettings struct {
 	SamplesAtOnce int
 }
 
-func NewRemoteRaytracer(randomSeed int64, cores int, requests int, samples int) *RemoteRaytracer {
+func NewRemoteRaytracer(
+	randomSeed int64,
+	threads int, // number of threads that render simoultaneously
+	maxRequestsAtOnce int, // the requests we accept at once (2*threads is a good number)
+	samplesAtOnce int, // number of samples to send at once to the client
+) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
 		Scene:           nil,
 		Dispatcher:      gorpc.NewDispatcher(),
-		Requests:        requests,
-		Locker:          make(chan struct{}, cores),
+		Requests:        maxRequestsAtOnce,
+		Locker:          make(chan struct{}, threads),
 		RandomGenerator: traytor.NewRandom(randomSeed),
-		Samples:         samples,
+		Samples:         samplesAtOnce,
 	}
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)

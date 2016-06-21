@@ -33,13 +33,30 @@ func NewRemoteRaytracer(
 		Requests:   maxRequestsAtOnce,
 	}
 
+	rr.registerFunctions()
+
+	return rr
+}
+
+// NewDispatcher returns only the dispatcher
+// useful on the client, where you don't need the entire RemoteRaytracer
+func NewDispatcher() *gorpc.Dispatcher {
+	rr := &RemoteRaytracer{
+		Dispatcher: gorpc.NewDispatcher(),
+	}
+
+	rr.registerFunctions()
+
+	return rr.Dispatcher
+}
+
+func (rr *RemoteRaytracer) registerFunctions() {
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
 	rr.Dispatcher.AddFunc("Sample", rr.Sample)
 	rr.Dispatcher.AddFunc("MaxRequestsAtOnce", rr.MaxRequestsAtOnce)
 	rr.Dispatcher.AddFunc("MaxSamplesAtOnce", rr.MaxSamplesAtOnce)
 	gorpc.RegisterType(&traytor.Image{})
 	gorpc.RegisterType(&SampleSettings{})
-	return rr
 }
 
 func (rr *RemoteRaytracer) LoadScene(data []byte) error {

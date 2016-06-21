@@ -14,7 +14,6 @@ import (
 
 	"github.com/DexterLB/traytor"
 	"github.com/DexterLB/traytor/rpc"
-	"github.com/valyala/gorpc"
 )
 
 type SampleCounter struct {
@@ -41,7 +40,7 @@ func (sc *SampleCounter) Dec(value int) int {
 
 func RenderLoop(
 	sampleCounter *SampleCounter,
-	client *gorpc.DispatcherClient,
+	client *rpc.RemoteRaytracerCaller,
 	renderedImages chan<- *traytor.Image,
 	globalSettings *rpc.SampleSettings,
 ) {
@@ -53,9 +52,9 @@ func RenderLoop(
 			return
 		}
 
-		image, err := client.CallTimeout("Sample", settings, 10*time.Minute)
+		image, err := client.Sample(&settings)
 		if err == nil {
-			renderedImages <- image.(*traytor.Image)
+			renderedImages <- image
 			log.Printf("Rendered %d samples :)\n", settings.SamplesAtOnce)
 		} else {
 			log.Printf("No sample :( %s\n", err)
@@ -85,24 +84,16 @@ func runClient(c *cli.Context) error {
 	}
 
 	fmt.Printf(
-		"will render %s to %s of size %dx%d with %d threads on those workers: %s\n",
+		"will render %s to %s of size %dx%d on those workers: %s\n",
 		scene, image,
 		c.Int("width"), c.Int("height"),
-		c.GlobalInt("max-jobs"),
 		strings.Join(workers, ", "),
-	)
-
-	rr := rpc.NewRemoteRaytracer(
-		time.Now().Unix(),
-		c.GlobalInt("max-jobs"),
-		c.GlobalInt("max-jobs")*2,
-		1,
 	)
 
 	width, height := c.Int("width"), c.Int("height")
 	sampleCounter := NewSampleCounter(20)
 	renderedImages := make(chan *traytor.Image, 20)
-	clients := make([]*gorpc.Client, len(workers))
+	clients := make([]*rpc.RemoteRaytracerCaller, len(workers))
 
 	data, err := ioutil.ReadFile(scene)
 	if err != nil {
@@ -112,34 +103,33 @@ func runClient(c *cli.Context) error {
 	finishRender := &sync.WaitGroup{}
 
 	for i := range workers {
-		clients[i] = &gorpc.Client{Addr: workers[i]}
-		clients[i].Start()
-		dispatcher := rr.Dispatcher.NewFuncClient(clients[i])
+		clients[i] = rpc.NewRemoteRaytracerCaller(workers[i], 10*time.Minute)
 
-		requests, err := dispatcher.CallTimeout("MaxRequestsAtOnce", nil, 10*time.Minute)
-		if err != nil || requests.(int) < 1 {
+		requests, err := clients[i].MaxRequestsAtOnce()
+		if err != nil || requests < 1 {
 			return fmt.Errorf("Can't get worker's allowed requests: %s", err)
 		}
-		finishRender.Add(requests.(int))
+		finishRender.Add(requests)
 
-		samples, err := dispatcher.CallTimeout("MaxSamplesAtOnce", nil, 10*time.Minute)
-		if err != nil || samples.(int) < 1 {
+		samples, err := clients[i].MaxSamplesAtOnce()
+		if err != nil || samples < 1 {
 			return fmt.Errorf("Can't get worker's allowed samples: %s", err)
 		}
 
 		settings := &rpc.SampleSettings{
 			Width:         width,
 			Height:        height,
-			SamplesAtOnce: samples.(int),
+			SamplesAtOnce: samples,
 		}
 
-		_, err = dispatcher.CallTimeout("LoadScene", data, 10*time.Minute)
+		err = clients[i].LoadScene(data)
 		if err != nil {
 			return fmt.Errorf("Can't load scene: %s", err)
 		}
-		for request := 0; request < requests.(int); request++ {
+
+		for request := 0; request < requests; request++ {
 			go func() {
-				RenderLoop(sampleCounter, dispatcher, renderedImages, settings)
+				RenderLoop(sampleCounter, clients[i], renderedImages, settings)
 				finishRender.Done()
 			}()
 		}

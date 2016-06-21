@@ -1,6 +1,10 @@
 package rpc
 
-import "github.com/DexterLB/traytor"
+import (
+	"fmt"
+
+	"github.com/DexterLB/traytor"
+)
 
 // ConcurrentRaytracer can render image samples on a scene in parallel,
 // and has locks to ensure a maximum number of parallel renders.
@@ -67,9 +71,12 @@ func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) {
 
 // Sample works like StoreSample(), but instead of storing the image internally,
 // returns a new image.
-func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) *traytor.Image {
+func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) (*traytor.Image, error) {
 	unit := <-cr.units
 
+	if unit.raytracer.Scene == nil {
+		return nil, fmt.Errorf("N/A scene")
+	}
 	image := traytor.NewImage(settings.Width, settings.Height)
 	image.Divisor = 0
 
@@ -79,7 +86,32 @@ func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) *traytor.Image {
 
 	cr.units <- unit
 
-	return image
+	return image, nil
+}
+
+func (cr *ConcurrentRaytracer) getAllUnits() []*renderUnit {
+	units := make([]*renderUnit, cr.parallelSamples)
+	for i := range units {
+		unit := <-cr.units
+		units[i] = unit
+	}
+	return units
+}
+
+func (cr *ConcurrentRaytracer) pushAllUnits(units []*renderUnit) {
+	for i := range units {
+		cr.units <- units[i]
+	}
+}
+
+func (cr *ConcurrentRaytracer) SetScene(scene *traytor.Scene) {
+	units := cr.getAllUnits()
+	for _, unit := range units {
+		unit.image = nil
+		unit.raytracer.Scene = scene
+	}
+	fmt.Printf("%d - %d\n", len(units), cr.ParallelSamples())
+	cr.pushAllUnits(units)
 }
 
 // GetImage collects all samples up to this moment (and waits for those that
@@ -89,26 +121,21 @@ func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) *traytor.Image {
 func (cr *ConcurrentRaytracer) GetImage() *traytor.Image {
 	var mergedSamples *traytor.Image
 
-	units := make([]*renderUnit, cr.parallelSamples)
-
-	for i := range units {
-		unit := <-cr.units
-
+	units := cr.getAllUnits()
+	for _, unit := range units {
 		if mergedSamples == nil {
 			mergedSamples = unit.image
 		} else if unit.image != nil {
 			mergedSamples.Add(unit.image)
 			mergedSamples.Divisor += unit.image.Divisor
 		}
-
 		unit.image = nil
-
-		units[i] = unit
 	}
-
-	for i := range units {
-		cr.units <- units[i]
-	}
+	cr.pushAllUnits(units)
 
 	return mergedSamples
+}
+
+func (cr *ConcurrentRaytracer) ParallelSamples() int {
+	return cr.parallelSamples
 }

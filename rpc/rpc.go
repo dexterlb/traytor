@@ -1,20 +1,16 @@
 package rpc
 
 import (
-	"fmt"
-
 	"github.com/DexterLB/traytor"
 	"github.com/valyala/gorpc"
 )
 
 // RemoteRaytracer represents a remote raytracer and a dispatcher
 type RemoteRaytracer struct {
-	Scene           *traytor.Scene
-	RandomGenerator *traytor.Random
-	Dispatcher      *gorpc.Dispatcher
-	Locker          chan struct{}
-	Requests        int
-	Samples         int
+	Raytracer  *ConcurrentRaytracer
+	Requests   int
+	Dispatcher *gorpc.Dispatcher
+	Samples    int
 }
 
 // SampleSettings contains parameters for making a sample
@@ -31,12 +27,10 @@ func NewRemoteRaytracer(
 	samplesAtOnce int, // number of samples to send at once to the client
 ) *RemoteRaytracer {
 	rr := &RemoteRaytracer{
-		Scene:           nil,
-		Dispatcher:      gorpc.NewDispatcher(),
-		Requests:        maxRequestsAtOnce,
-		Locker:          make(chan struct{}, threads),
-		RandomGenerator: traytor.NewRandom(randomSeed),
-		Samples:         samplesAtOnce,
+		Samples:    samplesAtOnce,
+		Raytracer:  NewConcurrentRaytracer(threads, nil, randomSeed),
+		Dispatcher: gorpc.NewDispatcher(),
+		Requests:   maxRequestsAtOnce,
 	}
 
 	rr.Dispatcher.AddFunc("LoadScene", rr.LoadScene)
@@ -50,29 +44,17 @@ func NewRemoteRaytracer(
 
 func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	var err error
-	rr.Scene, err = traytor.LoadSceneFromBytes(data)
-	rr.Scene.Init()
-	return err
+	scene, err := traytor.LoadSceneFromBytes(data)
+	if err != nil {
+		return err
+	}
+	scene.Init()
+	rr.Raytracer.SetScene(scene)
+	return nil
 }
 
 func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*traytor.Image, error) {
-	rr.Locker <- struct{}{}
-	defer func() { <-rr.Locker }()
-	raytracer := &traytor.Raytracer{
-		Scene:  rr.Scene,
-		Random: traytor.NewRandom(rr.RandomGenerator.NewSeed()),
-	}
-	image := traytor.NewImage(settings.Width, settings.Height)
-	image.Divisor = 0
-	if rr.Scene == nil {
-		return nil, fmt.Errorf("Empty scene")
-	}
-
-	for i := 0; i < settings.SamplesAtOnce; i++ {
-		raytracer.Sample(image)
-	}
-
-	return image, nil
+	return rr.Raytracer.Sample(settings)
 }
 
 func (rr *RemoteRaytracer) MaxRequestsAtOnce() (int, error) {

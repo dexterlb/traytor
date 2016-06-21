@@ -2,7 +2,7 @@ import QtQuick 2.0
 
 Item {
     id: container
-    property alias active: rectangle.color
+    property alias active: circle.color
     property alias workerAddress: worker.text
     signal clicked(color active)
     function changeColor(active) {
@@ -16,19 +16,22 @@ Item {
     Text {
         id: worker
         text : "gs, gs"
-        anchors.left : rectangle.right
+        anchors.left : circle.right
+        y : 5
         height : 25
         width : 75
         anchors.margins : 10
     }
 
     Rectangle {
-        id: rectangle
-        border.color: "white"
-        width : 25
-        height : 25
-        anchors.left : parent.left
-    }
+     id : circle
+     width: parent.width<parent.height?parent.width:parent.height
+     height: width
+     border.color: "white"
+     border.width: 1
+     anchors.left : parent.left
+     radius: width*0.5
+}
 
     MouseArea {
         anchors.fill: parent

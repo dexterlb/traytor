@@ -1,78 +1,75 @@
 package main
 
+//go:generate genqrc ui
+
 import (
+	"image"
+	"image/png"
 	"log"
 	"os"
-	"runtime"
-	"time"
 
-	"github.com/DexterLB/traytor"
-	"github.com/DexterLB/traytor/gui"
-	"github.com/pkg/profile"
+	qml "gopkg.in/qml.v1"
 )
 
-func renderBucket(scene *traytor.Scene, width int, height int,
-	samples chan<- *traytor.Image, threadId int) {
+type Interface struct {
+	qml.Object
+	lastImageID int
+	lastImage   image.Image
+}
 
-	raytracer := &traytor.Raytracer{
-		Scene:  scene,
-		Random: traytor.NewRandom(int64(threadId)),
+func (i *Interface) Init(engine *qml.Engine) {
+	log.Printf("QML has started!")
+	engine.AddImageProvider("renderedImage", i.loadImage)
+}
+
+func (i *Interface) ShowImage(image image.Image) {
+	i.lastImage = image
+	i.lastImageID++
+	i.Call("showImage", i.lastImageID)
+}
+
+func (i *Interface) loadImage(id string, width int, height int) image.Image {
+	log.Printf("loading image")
+	return i.lastImage
+}
+
+func (i *Interface) DoStuff() {
+	log.Printf("doing stuff")
+	pngFile, err := os.Open("/tmp/foo.png")
+	if err != nil {
+		log.Printf("error opening png file: %s", err)
+		return
 	}
-
-	for {
-		image := traytor.NewImage(width, height)
-		startTime := time.Now()
-		raytracer.Sample(image)
-		log.Printf("thread %d rendered sample for %s\n",
-			threadId, time.Since(startTime))
-
-		samples <- image
+	defer pngFile.Close()
+	image, err := png.Decode(pngFile)
+	if err != nil {
+		log.Printf("error decoding png file: %s", err)
+		return
 	}
+	i.ShowImage(image)
+}
+
+func qtLoop() error {
+	engine := qml.NewEngine()
+
+	qml.RegisterTypes("GoGui", 1, 0, []qml.TypeSpec{{
+		Init: func(i *Interface, obj qml.Object) { i.Object = obj; i.Init(engine) },
+	}})
+
+	component, err := engine.LoadFile("qrc:///ui/main.qml")
+	if err != nil {
+		return err
+	}
+	win := component.CreateWindow(nil)
+	win.Show()
+	win.Wait()
+
+	return nil
 }
 
 func main() {
-	defer profile.Start().Stop()
-	defer gui.Quit()
-
-	if len(os.Args) <= 1 {
-		log.Fatal("Please supply a scene file (.json.gz) as an argument.")
-	}
-
-	scene, err := traytor.LoadSceneFromFile(os.Args[1])
+	err := qml.Run(qtLoop)
 	if err != nil {
-		log.Fatal(err)
-	}
-	scene.Init()
-
-	width := 800
-	height := 450
-
-	display, err := gui.NewDisplay(width, height, "shite")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	defer display.Close()
-
-	samples := make(chan *traytor.Image, runtime.NumCPU())
-	for i := 0; i < runtime.NumCPU(); i++ {
-		go renderBucket(scene, width, height, samples, i)
-	}
-
-	image := traytor.NewImage(width, height)
-	image.Divisor = 0
-
-	for i := 0; true; i++ {
-		sample := <-samples
-		image.Add(sample)
-		image.Divisor++
-
-		log.Printf("displayed sample %d\n", i)
-
-		display.ShowImage(0, 0, image)
-		display.Update()
-		if display.CheckExit() {
-			return
-		}
+		log.Fatalf("can't start Qt: %s", err)
 	}
 }

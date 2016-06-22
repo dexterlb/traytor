@@ -4,44 +4,44 @@ import QtQuick.Window 2.2
 
 Window {
     id: window
-    width: image.sourceSize.width + 50
-    height: image.sourceSize.height + 120
+    width: 800
+    height: 600
+
+
+    ListModel {
+        id: workers
+        ListElement {
+            address: "hoth"
+            activeColour: "green"
+        }
+        ListElement {
+            address: "do"
+            activeColour: "red"
+        }
+    }
+
     Rectangle {
         id: page
         width: window.width
         height: window.height
         color: "lightgray"
 
-        ListModel {
-            id: workers
-            ListElement {
-                address: "hoth"
-                activeColour: "green"
-            }
-            ListElement {
-                address: "do"
-                activeColour: "red"
-            }
-        }
-
-        Component {
-            id: workerListDelegate
-            Cell {
-                active: activeColour
-                workerAddress: address
-            }
-        }
 
         Rectangle{
+            color: "lightgray"
             id : frame
-            anchors.horizontalCenter: page.horizontalCenter
-            width : image.sourceSize.width
-            height : image.sourceSize.height
-            y : 30
+            z: 15
+            anchors.margins: 15
+            anchors.top: page.top
+            anchors.bottom: workerGrid.top
+            anchors.left: page.left
+            anchors.right: page.right
         }
+
 
         Image {
             id : image
+            z: 20
             source: "foo.png"
             fillMode: Image.PreserveAspectFit
             anchors.left : frame.left
@@ -51,17 +51,25 @@ Window {
         }
 
         Rectangle {
-            color: "transparent"
-            anchors.top: frame.bottom
+            id: workerGrid
+            color: "lightgray"
             anchors.bottom: newAddress.top
-            anchors.margins: 30
-            width: page.width
+            anchors.left: page.left
+            anchors.right: page.right
+            anchors.margins: 15
+
+            height: 100
 
             GridView {
-                cellHeight: 50
+                cellHeight: 30
+                cellWidth: 150
                 anchors.fill: parent
                 model: workers
-                delegate: workerListDelegate
+                delegate: Cell {
+                    active: activeColour
+                    workerAddress: address
+                }
+                boundsBehavior: Flickable.StopAtBounds
             }
         }
 

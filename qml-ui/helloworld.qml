@@ -50,22 +50,18 @@ Window {
             height : frame.height
         }
 
-        ListView {
-            anchors.fill: parent
-            model: workers
-            delegate: workerListDelegate
-        }
+        Rectangle {
+            color: "transparent"
+            anchors.top: frame.bottom
+            anchors.bottom: newAddress.top
+            anchors.margins: 30
+            width: page.width
 
-
-        Grid {
-            id: addresses
-            x: 4; 
-            property int items : 0
-            anchors.top : frame.bottom
-            anchors.margins : 3
-            rows: 2
-            columns: 4
-            spacing: 3
+            GridView {
+                anchors.fill: parent
+                model: workers
+                delegate: workerListDelegate
+            }
         }
 
         Rectangle {

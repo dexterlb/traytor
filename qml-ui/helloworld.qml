@@ -12,6 +12,26 @@ Window {
         height: window.height
         color: "lightgray"
 
+        ListModel {
+            id: workers
+            ListElement {
+                address: "hoth"
+                activeColour: "green"
+            }
+            ListElement {
+                address: "do"
+                activeColour: "red"
+            }
+        }
+
+        Component {
+            id: workerListDelegate
+            Cell {
+                active: activeColour
+                workerAddress: address
+            }
+        }
+
         Rectangle{
             id : frame
             anchors.horizontalCenter: page.horizontalCenter
@@ -29,6 +49,13 @@ Window {
             width : frame.width
             height : frame.height
         }
+
+        ListView {
+            anchors.fill: parent
+            model: workers
+            delegate: workerListDelegate
+        }
+
 
         Grid {
             id: addresses
@@ -48,27 +75,13 @@ Window {
             height : 30
             anchors.left : page.left
             function addWorker(){
-                            var worker = inputAddress.text
-                            var newCell = 'import QtQuick 2.6;
-                                    Cell {
-                                        active: "green"; workerAddress : "' +  String(worker) + '"
-                                    }'
-                            if (worker != "" && addresses.items <= 12){
-                                if(addresses.items == addresses.rows * addresses.columns
-                                    && 
-                                addresses.items <= 8) {
-                                    addresses.rows += 1;
-                                    window.height += Math.max(0, addresses.rows - 2) * 100;
-                                    newAddress.anchors.bottom = page.bottom;
-                                }
-                                var newObject = Qt.createQmlObject(
-                                    newCell,
-                                    addresses, "dynamicSnippet1"
-                                );
-                                addresses.items = addresses.items + 1;
-                                inputAddress.text = "";
-                            }
-                        }
+                var workerAddress = inputAddress.text
+                workers.append({
+                    address: workerAddress,
+                    activeColour: "green",
+                })
+            }
+
 
             TextInput {
                 id : inputAddress

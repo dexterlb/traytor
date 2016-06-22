@@ -18,10 +18,6 @@ Window {
                 address: "hoth"
                 activeColour: "green"
             }
-            ListElement {
-                address: "do"
-                activeColour: "red"
-            }
         }
 
         Component {
@@ -50,8 +46,8 @@ Window {
             height : frame.height
         }
 
-        ListView {
-            anchors.fill: parent
+        GridView {
+            anchors.top : frame.bottom
             model: workers
             delegate: workerListDelegate
         }
@@ -80,6 +76,7 @@ Window {
                     address: workerAddress,
                     activeColour: "green",
                 })
+                inputAddress.text = "";
             }
 
 
@@ -87,7 +84,7 @@ Window {
                 id : inputAddress
                 anchors.fill : newAddress
                 Keys.onReturnPressed: {
-                newAddress.addWorker()
+                    newAddress.addWorker()
                 }
             }
 

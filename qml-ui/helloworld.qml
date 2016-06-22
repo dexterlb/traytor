@@ -1,10 +1,11 @@
 import QtQuick 2.0
+import QtQuick.Controls 1.4
 
 
 Rectangle {
     id: page
     width: image.sourceSize.width + 50
-    height: image.sourceSize.height + 100
+    height: image.sourceSize.height + 120
     color: "lightgray"
 
     Rectangle{
@@ -26,16 +27,66 @@ Rectangle {
     }
 
     Grid {
-        id: colorPicker
+        id: addresses
         x: 4; 
-        anchors.top: frame.bottom
+        property int items : 0
+        anchors.top : frame.bottom
         anchors.margins : 3
         rows: 2
-        columns: 1
+        columns: 4
         spacing: 3
+    }
 
-        Cell { active: "red"; workerAddress : ":1234"}
-        Cell { active: "green"; workerAddress : "hoth:1234"}
+    Rectangle {
+        id : newAddress
+        anchors.bottom : page.bottom
+        width : page.width - 70
+        height : 30
+        anchors.left : page.left
+        function addWorker(){
+                        var worker = inputAddress.text
+                        var newCell = 'import QtQuick 2.6;
+                                 Cell {
+                                     active: "green"; workerAddress : "' +  String(worker) + '"
+                                 }'
+                        if (worker != "" && addresses.items <= 12){
+                            if(addresses.items == addresses.rows * addresses.columns
+                                && 
+                            addresses.items <= 8) {
+                                addresses.rows += 1;
+                                page.height += Math.max(0, addresses.rows - 2) * 100;
+                                newAddress.anchors.bottom = page.bottom;
+                            }
+                            var newObject = Qt.createQmlObject(
+                                newCell,
+                                addresses, "dynamicSnippet1"
+                            );
+                            addresses.items = addresses.items + 1;
+                            inputAddress.text = "";
+                        }
+                    }
+
+        TextInput {
+            id : inputAddress
+            anchors.fill : newAddress
+            Keys.onReturnPressed: {
+               newAddress.addWorker()
+            }
+        }
+
+        Button {
+            id : addWorker
+            anchors.left : inputAddress.right
+            width: page.width - newAddress.width
+            height : newAddress.height
+            text : "Add"
+
+            MouseArea {
+                anchors.fill : parent
+                onClicked : newAddress.addWorker()
+            }
+
+        }
     }
 
 }

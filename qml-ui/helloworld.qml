@@ -3,30 +3,36 @@ import QtQuick 2.0
 
 Rectangle {
     id: page
-    width: 320; height: 480
+    width: image.sourceSize.width + 50
+    height: image.sourceSize.height + 100
     color: "lightgray"
 
     Rectangle{
-        id : textArea
-        color : "white"
+        id : frame
         anchors.horizontalCenter: page.horizontalCenter
-        width : 200
-        height : 30
+        width : image.sourceSize.width
+        height : image.sourceSize.height
         y : 30
     }
 
-    TextInput{
-        id : address
-        anchors.fill : textArea
-        width : textArea.width
-        height : textArea.height
-        
+    Image {
+        id : image
+        source: "foo.png"
+        fillMode: Image.PreserveAspectFit
+        anchors.left : frame.left
+        anchors.top : frame.top
+        width : frame.width
+        height : frame.height
     }
 
     Grid {
         id: colorPicker
-        x: 4; anchors.bottom: page.bottom; anchors.bottomMargin: 4
-        rows: 2; columns: 3; spacing: 3
+        x: 4; 
+        anchors.top: frame.bottom
+        anchors.margins : 3
+        rows: 2
+        columns: 1
+        spacing: 3
 
         Cell { active: "red"; workerAddress : ":1234"}
         Cell { active: "green"; workerAddress : "hoth:1234"}

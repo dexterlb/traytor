@@ -58,6 +58,7 @@ Window {
             width: page.width
 
             GridView {
+                cellHeight: 50
                 anchors.fill: parent
                 model: workers
                 delegate: workerListDelegate
@@ -76,6 +77,7 @@ Window {
                     address: workerAddress,
                     activeColour: "green",
                 })
+                inputAddress.text = "";
             }
 
 

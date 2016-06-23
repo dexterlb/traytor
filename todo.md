@@ -1,7 +1,7 @@
 ## todo list for traytor
 
 - architecture
-    - [ ] move all the code into neat separate packages
+    - [x] move all the code into neat separate packages
     - [x] fix relative paths when loading files (textures etc) to be
       relative to the scene file location
 
@@ -34,11 +34,11 @@
       because buffered channels are awesome.
 
 - GUI
-    - [ ] try out [QML](http://doc.qt.io/qt-5/qtqml-index.html) without
+    - [x] try out [QML](http://doc.qt.io/qt-5/qtqml-index.html) without
       Go - for example use [qmlscene](http://doc.qt.io/qt-5/qtquick-qmlscene.html)
-    - [ ] make the same thing run under Go with [go-qml](https://github.com/go-qml/qml)
-    - [ ] figure out how the Go code will communicate with QML (shared variables?)
-    - [ ] find a way to display our Image in the GUI (QPainter still not
+    - [x] make the same thing run under Go with [go-qml](https://github.com/go-qml/qml)
+    - [x] figure out how the Go code will communicate with QML (shared variables?)
+    - [x] find a way to display our Image in the GUI (QPainter still not
       available in Go? Maybe need to use QLabel with a custom image? Or OpenGL?)
     - [ ] huge RENDER button!
     - [ ] implement the client in the GUI so that it can display a new image
@@ -50,6 +50,7 @@
 
 - rendering
     - [x] fix the goddamn refraction
+    - [ ] sky
     - [ ] bicubic texture sampling
     - [ ] add mix shader/add shader
     - [ ] add a fresnel sampler

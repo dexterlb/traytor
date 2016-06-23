@@ -94,6 +94,7 @@ Window {
                 anchors.fill : newAddress
                 Keys.onReturnPressed: {
                 newAddress.addWorker()
+                boundsBehavior: Flickable.StopAtBounds
                 }
             }
 

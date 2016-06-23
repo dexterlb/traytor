@@ -12,6 +12,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
+	"github.com/DexterLB/mvm/progress"
 	"github.com/DexterLB/traytor/hdrimage"
 	"github.com/DexterLB/traytor/rpc"
 )
@@ -22,6 +23,7 @@ func RenderLoop(
 	renderedImages chan<- *hdrimage.Image,
 	globalSettings *rpc.SampleSettings,
 	synchronous bool,
+	bar progress.Progress,
 ) {
 	settings := *globalSettings
 	for {
@@ -43,7 +45,7 @@ func RenderLoop(
 			if synchronous {
 				renderedImages <- image
 			}
-			log.Printf("Rendered samples :)\n")
+			bar.Add(1)
 		} else {
 			log.Printf("No sample :( %s\n", err)
 		}
@@ -88,6 +90,8 @@ func runClient(c *cli.Context) error {
 	workers := make([]*rpc.RemoteRaytracerCaller, len(workerAdresses))
 	finishWorker := &sync.WaitGroup{}
 	data, err := ioutil.ReadFile(scene)
+	bar := progress.StartProgressBar(totalSamples, "rendering samples ")
+
 	if err != nil {
 		return fmt.Errorf("Error when loading scene: %s", err)
 	}
@@ -121,13 +125,13 @@ func runClient(c *cli.Context) error {
 			finishRender.Add(requests)
 			for request := 0; request < requests; request++ {
 				go func() {
-					RenderLoop(sampleCounter, workers[i], renderedImages, settings, synchronous)
+					RenderLoop(sampleCounter, workers[i], renderedImages, settings, synchronous, bar)
 					finishRender.Done()
 				}()
 			}
 			finishRender.Wait()
 			if !synchronous {
-				fmt.Printf("Getting image from %s\n", workerAdresses[i])
+				bar.Prefix(fmt.Sprintf("Getting image from %s", workerAdresses[i]))
 				image, err := workers[i].GetImage()
 				if err == nil {
 					renderedImages <- image
@@ -142,6 +146,7 @@ func runClient(c *cli.Context) error {
 	go func() {
 		finishWorker.Wait()
 		close(renderedImages)
+		bar.Done()
 	}()
 
 	averageImage := JoinSamples(renderedImages, width, height)

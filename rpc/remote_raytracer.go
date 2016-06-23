@@ -1,7 +1,8 @@
 package rpc
 
 import (
-	"github.com/DexterLB/traytor"
+	"github.com/DexterLB/traytor/hdrimage"
+	"github.com/DexterLB/traytor/scene"
 	"github.com/valyala/gorpc"
 )
 
@@ -57,13 +58,13 @@ func (rr *RemoteRaytracer) registerFunctions() {
 	rr.Dispatcher.AddFunc("MaxSamplesAtOnce", rr.MaxSamplesAtOnce)
 	rr.Dispatcher.AddFunc("StoreSample", rr.StoreSample)
 	rr.Dispatcher.AddFunc("GetImage", rr.GetImage)
-	gorpc.RegisterType(&traytor.Image{})
+	gorpc.RegisterType(&hdrimage.Image{})
 	gorpc.RegisterType(&SampleSettings{})
 }
 
 func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	var err error
-	scene, err := traytor.LoadSceneFromBytes(data)
+	scene, err := scene.LoadFromBytes(data)
 	if err != nil {
 		return err
 	}
@@ -72,7 +73,7 @@ func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	return nil
 }
 
-func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*traytor.Image, error) {
+func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*hdrimage.Image, error) {
 	return rr.Raytracer.Sample(settings)
 }
 
@@ -88,6 +89,6 @@ func (rr *RemoteRaytracer) StoreSample(settings *SampleSettings) error {
 	return rr.Raytracer.StoreSample(settings)
 }
 
-func (rr *RemoteRaytracer) GetImage() *traytor.Image {
+func (rr *RemoteRaytracer) GetImage() *hdrimage.Image {
 	return rr.Raytracer.GetImage()
 }

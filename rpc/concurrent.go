@@ -3,7 +3,10 @@ package rpc
 import (
 	"fmt"
 
-	"github.com/DexterLB/traytor"
+	"github.com/DexterLB/traytor/hdrimage"
+	"github.com/DexterLB/traytor/random"
+	"github.com/DexterLB/traytor/raytracer"
+	"github.com/DexterLB/traytor/scene"
 )
 
 // ConcurrentRaytracer can render image samples on a scene in parallel,
@@ -15,15 +18,15 @@ type ConcurrentRaytracer struct {
 }
 
 type renderUnit struct {
-	raytracer traytor.Raytracer
-	image     *traytor.Image
+	raytracer raytracer.Raytracer
+	image     *hdrimage.Image
 }
 
 // NewConcurrentRaytracer creates a concurrent raytracer with parallelSamples
 // allowed number of parallel operations
 func NewConcurrentRaytracer(
 	parallelSamples int,
-	scene *traytor.Scene,
+	scene *scene.Scene,
 	seed int64,
 ) *ConcurrentRaytracer {
 	if parallelSamples < 1 {
@@ -35,13 +38,13 @@ func NewConcurrentRaytracer(
 		units:           make(chan *renderUnit, parallelSamples),
 	}
 
-	random := traytor.NewRandom(seed)
+	randomGen := random.New(seed)
 
 	for i := 0; i < parallelSamples; i++ {
 		cr.units <- &renderUnit{
-			raytracer: traytor.Raytracer{
+			raytracer: raytracer.Raytracer{
 				Scene:  scene,
-				Random: traytor.NewRandom(random.NewSeed()),
+				Random: random.New(randomGen.NewSeed()),
 			},
 			image: nil,
 		}
@@ -61,7 +64,7 @@ func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) error {
 	}
 
 	if unit.image == nil {
-		unit.image = traytor.NewImage(settings.Width, settings.Height)
+		unit.image = hdrimage.New(settings.Width, settings.Height)
 		unit.image.Divisor = 0
 	}
 
@@ -75,13 +78,13 @@ func (cr *ConcurrentRaytracer) StoreSample(settings *SampleSettings) error {
 
 // Sample works like StoreSample(), but instead of storing the image internally,
 // returns a new image.
-func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) (*traytor.Image, error) {
+func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) (*hdrimage.Image, error) {
 	unit := <-cr.units
 
 	if unit.raytracer.Scene == nil {
 		return nil, fmt.Errorf("N/A scene")
 	}
-	image := traytor.NewImage(settings.Width, settings.Height)
+	image := hdrimage.New(settings.Width, settings.Height)
 	image.Divisor = 0
 
 	for i := 0; i < settings.SamplesAtOnce; i++ {
@@ -108,7 +111,7 @@ func (cr *ConcurrentRaytracer) pushAllUnits(units []*renderUnit) {
 	}
 }
 
-func (cr *ConcurrentRaytracer) SetScene(scene *traytor.Scene) {
+func (cr *ConcurrentRaytracer) SetScene(scene *scene.Scene) {
 	units := cr.getAllUnits()
 	for _, unit := range units {
 		unit.image = nil
@@ -122,8 +125,8 @@ func (cr *ConcurrentRaytracer) SetScene(scene *traytor.Scene) {
 // are currently being rendered to finish), and merges them.
 // StoreSample() can be called during calling this function, and will block until
 // it finishes. Next samples will start from zero (e.g. the base image is reset)
-func (cr *ConcurrentRaytracer) GetImage() *traytor.Image {
-	var mergedSamples *traytor.Image
+func (cr *ConcurrentRaytracer) GetImage() *hdrimage.Image {
+	var mergedSamples *hdrimage.Image
 
 	units := cr.getAllUnits()
 	for _, unit := range units {

@@ -3,7 +3,7 @@ package rpc
 import (
 	"time"
 
-	"github.com/DexterLB/traytor"
+	"github.com/DexterLB/traytor/hdrimage"
 	"github.com/valyala/gorpc"
 )
 
@@ -45,12 +45,12 @@ func (rrc *RemoteRaytracerCaller) MaxRequestsAtOnce() (int, error) {
 	return requests.(int), nil
 }
 
-func (rrc *RemoteRaytracerCaller) Sample(settings *SampleSettings) (*traytor.Image, error) {
+func (rrc *RemoteRaytracerCaller) Sample(settings *SampleSettings) (*hdrimage.Image, error) {
 	image, err := rrc.funcClient.CallTimeout("Sample", settings, rrc.timeout)
 	if err != nil {
 		return nil, err
 	}
-	return image.(*traytor.Image), nil
+	return image.(*hdrimage.Image), nil
 }
 
 func (rrc *RemoteRaytracerCaller) StoreSample(settings *SampleSettings) error {
@@ -58,10 +58,10 @@ func (rrc *RemoteRaytracerCaller) StoreSample(settings *SampleSettings) error {
 	return err
 }
 
-func (rrc *RemoteRaytracerCaller) GetImage() (*traytor.Image, error) {
+func (rrc *RemoteRaytracerCaller) GetImage() (*hdrimage.Image, error) {
 	image, err := rrc.funcClient.CallTimeout("GetImage", nil, rrc.timeout)
 	if err != nil {
 		return nil, err
 	}
-	return image.(*traytor.Image), nil
+	return image.(*hdrimage.Image), nil
 }

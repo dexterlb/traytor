@@ -12,7 +12,7 @@ import (
 
 	"github.com/codegangsta/cli"
 
-	"github.com/DexterLB/traytor"
+	"github.com/DexterLB/traytor/hdrimage"
 	"github.com/DexterLB/traytor/rpc"
 )
 
@@ -41,7 +41,7 @@ func (sc *SampleCounter) Dec(value int) int {
 func RenderLoop(
 	sampleCounter *SampleCounter,
 	client *rpc.RemoteRaytracerCaller,
-	renderedImages chan<- *traytor.Image,
+	renderedImages chan<- *hdrimage.Image,
 	globalSettings *rpc.SampleSettings,
 	synchronous bool,
 ) {
@@ -52,7 +52,7 @@ func RenderLoop(
 			return
 		}
 		var err error
-		var image *traytor.Image
+		var image *hdrimage.Image
 
 		if synchronous {
 			image, err = client.Sample(&settings)
@@ -73,11 +73,11 @@ func RenderLoop(
 }
 
 func JoinSamples(
-	renderedImages <-chan *traytor.Image,
+	renderedImages <-chan *hdrimage.Image,
 	width int,
 	height int,
-) *traytor.Image {
-	averageImage := traytor.NewImage(width, height)
+) *hdrimage.Image {
+	averageImage := hdrimage.New(width, height)
 	averageImage.Divisor = 0
 	for image := range renderedImages {
 		averageImage.Add(image)
@@ -106,7 +106,7 @@ func runClient(c *cli.Context) error {
 	width, height := c.Int("width"), c.Int("height")
 	totalSamples := c.Int("total-samples")
 	sampleCounter := NewSampleCounter(totalSamples)
-	renderedImages := make(chan *traytor.Image, len(workerAdresses))
+	renderedImages := make(chan *hdrimage.Image, len(workerAdresses))
 	workers := make([]*rpc.RemoteRaytracerCaller, len(workerAdresses))
 	finishWorker := &sync.WaitGroup{}
 	data, err := ioutil.ReadFile(scene)

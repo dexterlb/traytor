@@ -50,6 +50,11 @@ func main() {
 					Value: runtime.NumCPU(),
 					Usage: "number of parallel rendering threads",
 				},
+				cli.IntFlag{
+					Name:  "total-samples, t",
+					Usage: "total samples to render",
+					Value: 20,
+				},
 			},
 		},
 		{

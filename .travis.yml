@@ -1,9 +1,11 @@
-sudo: false
+sudo: true
 language: go
 go:
   - 1.5
   - 1.6
-before_install: bash .gitcookie.sh
+before_install: 
+  - bash .gitcookie.sh
+  - sudo apt-get install qtbase5-dev qtdeclarative5-dev qt5-default
 script: go test -v ./...
 env:
   - GODEBUG=cgocheck=0

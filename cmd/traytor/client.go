@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"image/png"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"sync"
 	"time"
@@ -152,12 +150,5 @@ func runClient(c *cli.Context) error {
 	}()
 
 	averageImage := JoinSamples(renderedImages, width, height)
-	file, err := os.Create(image)
-	defer file.Close()
-
-	if err != nil {
-		return fmt.Errorf("Error when saving image: %s", err)
-	}
-	png.Encode(file, averageImage)
-	return nil
+	return savePng(averageImage, image)
 }

@@ -62,6 +62,13 @@ func (m *AnyMaterial) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		*m = AnyMaterial{material}
+	case "mixed":
+		material := &MixedMaterial{}
+		err = json.Unmarshal(data, &material)
+		if err != nil {
+			return err
+		}
+		*m = AnyMaterial{material}
 	default:
 		return fmt.Errorf("Unknown material type: '%s'", materialType)
 	}

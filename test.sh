@@ -16,7 +16,7 @@ declare -a addresses
 declare -a indices
 addresses=( `cat "$1"` )
 len=${#addresses[@]}
-echo "num_hosts start_time end_time hosts"
+echo "num_hosts start_time end_time hosts" >> ${2}
 for (( i = 1 ; i <= len ; i++))
 do
 		colour="\033[33;3$(( i % 8 ))m"

@@ -79,6 +79,7 @@ func runRender(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("can't open scene: %s", err)
 	}
+	scene.Init()
 
 	go func() {
 		renderer(width, height, renderedImages, scene, 42, totalSamples, threads)

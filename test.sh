@@ -16,10 +16,11 @@ declare -a addresses
 declare -a indices
 addresses=( `cat "$1"` )
 len=${#addresses[@]}
+echo "num_hosts start_time end_time hosts"
 for (( i = 1 ; i <= len ; i++))
 do
 		colour="\033[33;3$(( i % 8 ))m"
-		echo -e "${colour}===> Testing with" ${i}
+		echo -e "${colour}===> Testing for ${i}\n"
 		echo -n -e "\e[0m"
 		for (( j = 1 ; j <= $3 ; j++ ))
 		do
@@ -30,6 +31,9 @@ do
 				arguments+=(-w "$index")
 				used="$used$index,"
 			done
+			echo -e "${colour}===> with [${used%,}]"
+			echo -n -e "\e[0m"
+
 
 			before=`date +%s%N`
 			echo traytor client "${@:6}" "${arguments[@]}" "${4}" "${5}"

@@ -132,7 +132,9 @@ func runClient(c *cli.Context) error {
 				bar.Prefix(fmt.Sprintf("Getting image from %s", workerAdresses[i]))
 				image, err := workers[i].GetImage()
 				if err == nil {
-					renderedImages <- image
+					if image.Width != 0 {
+						renderedImages <- image
+					}
 				} else {
 					fmt.Printf("Smelly image x_x %s\n", err)
 				}

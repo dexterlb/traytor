@@ -8,6 +8,7 @@ before_install:
   - sudo add-apt-repository --yes ppa:beineri/opt-qt561
   - sudo apt-get update
   - sudo apt-get install qt56tools qt56base qt56declarative qt56quickcontrols qt56quickcontrols2
+  - source /opt/qt56/bin/qt56-env.sh
 script: go test -v ./...
 env:
   - GODEBUG=cgocheck=0

@@ -140,6 +140,9 @@ func (cr *ConcurrentRaytracer) GetImage() *hdrimage.Image {
 	}
 	cr.pushAllUnits(units)
 
+	if mergedSamples == nil {
+		return hdrimage.New(0, 0)
+	}
 	return mergedSamples
 }
 

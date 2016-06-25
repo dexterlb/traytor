@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 
@@ -121,5 +122,8 @@ func main() {
 
 	app.Flags = []cli.Flag{}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Printf("error: %s", err)
+	}
 }

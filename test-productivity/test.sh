@@ -25,7 +25,7 @@ else
     echo "please enter correct number of hosts"
 fi
 
-echo "num_hosts start_time end_time hosts" >> ${3}
+echo "num_hosts start_time end_time hosts" >> "${3}"
 for (( i = first ; i <= last ; i++))
 do
 		colour="\033[33;32m"
@@ -48,7 +48,7 @@ do
 			traytor client "${@:7}" "${arguments[@]}" "${5}" "${6}"
 			after=`date +%s%N`
 			sleep 1
-			echo "$i $before $after ${used%,}" >> $3
+			echo "$i $before $after ${used%,}" >> "${3}"
 		done
 		echo -e "$colour****** done ******"
 done

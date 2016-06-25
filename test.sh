@@ -1,9 +1,10 @@
 #!/bin/zsh
 
 #1 is data file for addresses
-#2 is log file 
-#3 is how many times to run the script 
-#4 is scene 5 is otuput image file
+#2 is the range (for example 3-5 for numbers of hosts to test for)
+#3 is log file 
+#4 is how many times to run the script 
+#5 is scene 6 is otuput image file
 #6+ all the remaining attributes for traytor
 
 #generate_random n k
@@ -15,14 +16,22 @@ function generate_random {
 declare -a addresses
 declare -a indices
 addresses=( `cat "$1"` )
-len=${#addresses[@]}
-echo "num_hosts start_time end_time hosts" >> ${2}
-for (( i = 1 ; i <= len ; i++))
+
+if [[ "${2}" =~ '([0-9]+)-([0-9]+)' ]]; then
+    first="${match[1]}"
+    last="${match[2]}"
+    echo "will test from $first to $last hosts"
+else
+    echo "please enter correct number of hosts"
+fi
+
+echo "num_hosts start_time end_time hosts" >> ${3}
+for (( i = first ; i <= last ; i++))
 do
-		colour="\033[33;3$(( i % 8 ))m"
+		colour="\033[33;32m"
 		echo -e "${colour}===> Testing for ${i}\n"
 		echo -n -e "\e[0m"
-		for (( j = 1 ; j <= $3 ; j++ ))
+		for (( j = 1 ; j <= $4 ; j++ ))
 		do
 			arguments=()
 			used=""
@@ -36,11 +45,10 @@ do
 
 
 			before=`date +%s%N`
-			echo traytor client "${@:6}" "${arguments[@]}" "${4}" "${5}"
-			traytor client "${@:6}" "${arguments[@]}" "${4}" "${5}"
+			traytor client "${@:7}" "${arguments[@]}" "${5}" "${6}"
 			after=`date +%s%N`
 			sleep 1
-			echo "$i $before $after ${used%,}" >> $2
+			echo "$i $before $after ${used%,}" >> $3
 		done
 		echo -e "$colour****** done ******"
 done

@@ -7,9 +7,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="93.016373mm"
-   height="176.8813mm"
-   viewBox="504 199 186.03275 347.12955"
+   width="73.016373mm"
+   height="156.88129mm"
+   viewBox="504 199 146.03275 307.87952"
    id="svg4322"
    version="1.1"
    inkscape:version="0.91 r13725"
@@ -37,33 +37,33 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1916"
+     inkscape:window-width="956"
      inkscape:window-height="1048"
      id="namedview4464"
      showgrid="false"
      units="mm"
-     fit-margin-top="10"
-     fit-margin-left="10"
-     fit-margin-right="10"
-     fit-margin-bottom="10"
      inkscape:zoom="1.0688999"
-     inkscape:cx="-26.173817"
-     inkscape:cy="296.36912"
+     inkscape:cx="-61.606917"
+     inkscape:cy="256.94585"
      inkscape:window-x="0"
      inkscape:window-y="30"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg4322" />
+     inkscape:current-layer="svg4322"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <rect
-     style="fill:#e5c9ab;fill-opacity:0.48346055;stroke:#000fef;stroke-width:0.71151429;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     style="fill:#e5c9ab;fill-opacity:0.48346055;stroke:#000fef;stroke-width:0.68063986;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
      id="rect4470-3"
-     width="145.32123"
-     height="109.35732"
-     x="524.35577"
-     y="213.787"
-     ry="11.278275" />
+     width="139.01537"
+     height="104.61203"
+     x="507.50867"
+     y="202.83127"
+     ry="10.788881" />
   <g
      id="g4438"
-     transform="matrix(0.43396086,0,0,0.43396086,324.64064,148.81201)">
+     transform="matrix(0.41513019,0,0,0.41513019,316.4597,140.67571)">
     <path
        style="fill:#ffffff"
        d="m 549.54,449.696 c -15.493,-0.345 -45.54,6.906 -41.315,22.445 4.226,15.539 24.414,18.992 32.864,14.503 8.451,-4.489 -13.145,21.754 28.169,28.66 41.315,6.906 62.441,-4.144 56.338,-12.086 -6.103,-7.942 36.15,18.647 55.869,3.453 19.718,-15.193 -20.188,-29.696 -11.737,-27.624 8.45,2.072 34.272,-0.69 25.821,-26.588 -8.45,-25.898 -84.507,-5.871 -76.056,-9.669 8.451,-3.798 -12.676,-22.79 -38.967,-18.992 -26.291,3.799 -28.156,10.691 -30.973,25.885 l -0.013,0.013 z"
@@ -87,16 +87,16 @@
     </text>
   </g>
   <rect
-     style="fill:#d0deb2;fill-opacity:0.48346055;stroke:#000fef;stroke-width:0.71151429;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+     style="fill:#d0deb2;fill-opacity:0.48346055;stroke:#000fef;stroke-width:0.68063986;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
      id="rect4470"
-     width="145.32123"
-     height="145.26547"
-     x="524.35577"
-     y="381.5726"
-     ry="11.278275" />
+     width="139.01537"
+     height="138.96204"
+     x="507.50867"
+     y="363.33621"
+     ry="10.788881" />
   <g
      id="g4324"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,138.73033)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,131.0315)">
     <rect
        style="fill:#ffffff"
        x="560"
@@ -129,7 +129,7 @@
   </g>
   <g
      id="g4334"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,138.73033)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,131.0315)">
     <rect
        style="fill:#ffffff"
        x="520"
@@ -162,7 +162,7 @@
   </g>
   <g
      id="g4344"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,138.73033)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,131.0315)">
     <rect
        style="fill:#ffffff"
        x="540"
@@ -195,7 +195,7 @@
   </g>
   <g
      id="g4354"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <rect
        style="fill:#ffffff"
        x="554"
@@ -228,7 +228,7 @@
   </g>
   <g
      id="g4364"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <rect
        style="fill:#ffffff"
        x="540"
@@ -261,7 +261,7 @@
   </g>
   <g
      id="g4374"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <rect
        style="fill:#ffffff"
        x="530"
@@ -294,7 +294,7 @@
   </g>
   <g
      id="g4384"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <rect
        style="fill:#ffffff"
        x="566"
@@ -327,7 +327,7 @@
   </g>
   <g
      id="g4394"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,138.73033)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,131.0315)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="604.25"
@@ -346,7 +346,7 @@
   </g>
   <g
      id="g4402"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,138.73033)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,131.0315)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="604.42499"
@@ -365,7 +365,7 @@
   </g>
   <g
      id="g4410"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="605.27502"
@@ -384,7 +384,7 @@
   </g>
   <g
      id="g4418"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="605.90002"
@@ -403,7 +403,7 @@
   </g>
   <g
      id="g4426"
-     transform="matrix(0.43396086,0,0,0.43396086,321.65348,161.13407)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.60216,152.46309)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="606.70001"
@@ -422,18 +422,18 @@
   </g>
   <text
      font-size="12.7998"
-     style="font-style:normal;font-weight:normal;font-size:5.55461216px;font-family:sans-serif;text-anchor:start;fill:#000000"
-     x="577.74896"
-     y="347.28931"
+     style="font-style:normal;font-weight:normal;font-size:5.31358337px;font-family:sans-serif;text-anchor:start;fill:#000000"
+     x="558.58502"
+     y="330.54056"
      id="text4434">
     <tspan
-       x="577.74896"
-       y="347.28931"
+       x="558.58502"
+       y="330.54056"
        id="tspan4436" />
   </text>
   <g
      id="g4410-6"
-     transform="matrix(0.43396086,0,0,0.43396086,321.83005,122.51137)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.77107,115.51632)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="605.27502"
@@ -452,7 +452,7 @@
   </g>
   <g
      id="g4410-6-5"
-     transform="matrix(0.43396086,0,0,0.43396086,321.08327,61.274494)">
+     transform="matrix(0.41513019,0,0,0.41513019,313.05669,56.936673)">
     <line
        style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
        x1="605.27502"
@@ -471,28 +471,28 @@
   </g>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:11.90283489px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="432.7709"
-     y="-640.52344"
+     style="font-style:normal;font-weight:normal;font-size:11.38634014px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="412.3129"
+     y="-618.63556"
      id="text4535"
      sodipodi:linespacing="125%"
      transform="matrix(0,1,-1,0,0,0)"><tspan
        sodipodi:role="line"
        id="tspan4537"
-       x="432.7709"
-       y="-640.52344"
+       x="412.3129"
+       y="-618.63556"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif'">Worker</tspan></text>
   <text
      xml:space="preserve"
-     style="font-style:normal;font-weight:normal;font-size:11.90283489px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-     x="251.74184"
-     y="-641.0545"
+     style="font-style:normal;font-weight:normal;font-size:11.38634014px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     x="239.13914"
+     y="-619.14355"
      id="text4535-7"
      sodipodi:linespacing="125%"
      transform="matrix(0,1,-1,0,0,0)"><tspan
        sodipodi:role="line"
        id="tspan4537-1"
-       x="251.74184"
-       y="-641.0545"
+       x="239.13914"
+       y="-619.14355"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:'Droid Serif';-inkscape-font-specification:'Droid Serif'">Client</tspan></text>
 </svg>

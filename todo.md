@@ -7,7 +7,7 @@
 
 - thread paralellism
     - [x] make traytor render in multiple threads at once
-    - [ ] make a simple `traytor_render` executable which takes a scene,
+    - [x] make a simple `traytor_render` executable which takes a scene,
       number of samples and number of threads to render it on, and spits
       out an image (so we can use it to measure time for rendering on
       1, 2, ... n threads)
@@ -52,7 +52,7 @@
     - [x] fix the goddamn refraction
     - [ ] sky
     - [ ] bicubic texture sampling
-    - [ ] add mix shader/add shader
+    - [x] add mix shader/add shader
     - [ ] add a fresnel sampler
     - [ ] implement lamp sampling or bidirectional path tracing to speed
       it up a lot (hard)

@@ -9,19 +9,31 @@ traytor
 T-ray-tor is a raytracer written in Go which uses the Path Tracing algorithm
 (or something faster if we get to it)
 
+![Skull rendered with traytor](https://github.com/DexterLB/traytor/raw/master/skull.png)
+
 ### Features
 
-- Reads scenes from JSON (Blender export script!)
-- Materials: lambert, reflective, refractive, (coming soon: combinations of those)
+- Reads scenes from gzipped JSON (Blender export script!)
+- Materials: lambert, reflective, refractive, any mixture of those
 - Mesh lamps
 
 ### Usage
 	$ go get github.com/DexterLB/traytor/cmd/traytor_gui
 
-Then export your scene from Blender with the [exporter](https://github.com/DexterLB/traytor/tree/master/blender_exporter) and run the live renderer:
+Then export your scene from Blender with the [exporter](https://github.com/DexterLB/traytor/tree/master/blender_exporter) render it with 50 samples:
 
-	$ traytor_gui my-scene.json.gz
+	$ traytor render -t 50 my-scene.json.gz output.png
 
-Note: currently the textures are loaded from the working directory, so you must be in a folder relative to the texture paths in the scene.
+You can find some sample scenes in the sample_scenes directory.
 
-Soon there will be a console renderer as well.
+You can also run a distributed render on many worker machines! On each worker, start:
+
+    $ traytor worker -l :1234
+
+to listen on port 1234, and on the client, run:
+
+    $ traytor client -w worker1:1234 -w worker2:1234 -t 500 my-scene.json.gz output.png
+
+this will render the scene on all workers with 500 samples.
+
+For more info, see `traytor --help` :)

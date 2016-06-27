@@ -96,6 +96,7 @@ func (cr *ConcurrentRaytracer) Sample(settings *SampleSettings) (*hdrimage.Image
 	return image, nil
 }
 
+// getAllUnits empties the units channel and returns the extracted units
 func (cr *ConcurrentRaytracer) getAllUnits() []*renderUnit {
 	units := make([]*renderUnit, cr.parallelSamples)
 	for i := range units {
@@ -105,12 +106,14 @@ func (cr *ConcurrentRaytracer) getAllUnits() []*renderUnit {
 	return units
 }
 
+// pushAllUnits fills the units channel with the provided slice of units
 func (cr *ConcurrentRaytracer) pushAllUnits(units []*renderUnit) {
 	for i := range units {
 		cr.units <- units[i]
 	}
 }
 
+// SetScene sets a new scene, resetting the state of the raytracer
 func (cr *ConcurrentRaytracer) SetScene(scene *scene.Scene) {
 	units := cr.getAllUnits()
 	for _, unit := range units {
@@ -146,6 +149,7 @@ func (cr *ConcurrentRaytracer) GetImage() *hdrimage.Image {
 	return mergedSamples
 }
 
+// ParallelSamples returns the number of allowed parallel samples
 func (cr *ConcurrentRaytracer) ParallelSamples() int {
 	return cr.parallelSamples
 }

@@ -11,28 +11,33 @@ import (
 	qml "gopkg.in/qml.v1"
 )
 
+// Interface is shared between the Go code and QML
 type Interface struct {
 	qml.Object
 	lastImageID int
 	lastImage   image.Image
 }
 
+// Init is called upon starting the UI
 func (i *Interface) Init(engine *qml.Engine) {
 	log.Printf("QML has started!")
 	engine.AddImageProvider("renderedImage", i.loadImage)
 }
 
+// ShowImage tells the UI to request the image from us and display it
 func (i *Interface) ShowImage(image image.Image) {
 	i.lastImage = image
 	i.lastImageID++
 	i.Call("showImage", i.lastImageID)
 }
 
+// loadImage is called by the UI upon requesting an image
 func (i *Interface) loadImage(id string, width int, height int) image.Image {
 	log.Printf("loading image")
 	return i.lastImage
 }
 
+// DoStuff is a testing method
 func (i *Interface) DoStuff() {
 	log.Printf("doing stuff")
 	pngFile, err := os.Open("/tmp/foo.png")
@@ -40,7 +45,9 @@ func (i *Interface) DoStuff() {
 		log.Printf("error opening png file: %s", err)
 		return
 	}
-	defer pngFile.Close()
+	defer func() {
+		_ = pngFile.Close()
+	}()
 	image, err := png.Decode(pngFile)
 	if err != nil {
 		log.Printf("error decoding png file: %s", err)

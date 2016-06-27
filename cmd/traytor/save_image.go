@@ -7,13 +7,19 @@ import (
 	"os"
 )
 
-func savePng(image image.Image, filename string) error {
+func savePng(image image.Image, filename string) (err error) {
 	file, err := os.Create(filename)
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+	}()
 
 	if err != nil {
 		return fmt.Errorf("Error when saving image: %s", err)
 	}
-	png.Encode(file, image)
+	err = png.Encode(file, image)
+	if err != nil {
+		return fmt.Errorf("Cannot encode png data: %s", err)
+	}
+
 	return nil
 }

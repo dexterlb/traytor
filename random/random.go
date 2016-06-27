@@ -120,10 +120,7 @@ func (r *Random) IntAB(a, b int) int {
 
 // Bool returns true or false at random
 func (r *Random) Bool() bool {
-	if r.Int0N(1) == 0 {
-		return true
-	}
-	return false
+	return (r.Int0N(1) == 0)
 }
 
 // Sign returns -1 or 1 at random

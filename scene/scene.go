@@ -21,12 +21,14 @@ type Scene struct {
 }
 
 // LoadFromFile loads the scene from a gzipped json file
-func LoadFromFile(filename string) (*Scene, error) {
+func LoadFromFile(filename string) (scene *Scene, err error) {
 	f, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
+	defer func() {
+		err = f.Close()
+	}()
 
 	return Load(f)
 }
@@ -37,16 +39,18 @@ func LoadFromBytes(data []byte) (*Scene, error) {
 }
 
 // Load loads the scene from a reader which outputs gzipped json data
-func Load(reader io.Reader) (*Scene, error) {
+func Load(reader io.Reader) (scene *Scene, err error) {
 	gzReader, err := gzip.NewReader(reader)
 	if err != nil {
 		return nil, err
 	}
-	defer gzReader.Close()
+	defer func() {
+		err = gzReader.Close()
+	}()
 
 	decoder := json.NewDecoder(gzReader)
 
-	scene := &Scene{}
+	scene = &Scene{}
 	err = decoder.Decode(&scene)
 	if err != nil {
 		return nil, err

@@ -11,7 +11,7 @@ import (
 
 func showError(c *cli.Context, message string) {
 	fmt.Fprintf(os.Stderr, ">>> error: %s\n\n", message)
-	cli.ShowSubcommandHelp(c)
+	_ = cli.ShowSubcommandHelp(c)
 	os.Exit(1)
 }
 

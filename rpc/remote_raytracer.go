@@ -6,7 +6,8 @@ import (
 	"github.com/valyala/gorpc"
 )
 
-// RemoteRaytracer represents a remote raytracer and a dispatcher
+// RemoteRaytracer represents a remote raytracer and a dispatcher.
+// It can be used in a client/server environment with gorpc.
 type RemoteRaytracer struct {
 	Raytracer  *ConcurrentRaytracer
 	Requests   int
@@ -21,6 +22,7 @@ type SampleSettings struct {
 	SamplesAtOnce int
 }
 
+// NewRemoteRaytracer initialises the remote raytracer object
 func NewRemoteRaytracer(
 	randomSeed int64,
 	threads int, // number of threads that render simoultaneously
@@ -62,6 +64,7 @@ func (rr *RemoteRaytracer) registerFunctions() {
 	gorpc.RegisterType(&SampleSettings{})
 }
 
+// LoadScene loads a scene
 func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	var err error
 	scene, err := scene.LoadFromBytes(data)
@@ -73,22 +76,29 @@ func (rr *RemoteRaytracer) LoadScene(data []byte) error {
 	return nil
 }
 
+// Sample samples an image and returns it
 func (rr *RemoteRaytracer) Sample(settings *SampleSettings) (*hdrimage.Image, error) {
 	return rr.Raytracer.Sample(settings)
 }
 
+// MaxRequestsAtOnce returns the maximum number of requests allowed to the worker
+// at the same time
 func (rr *RemoteRaytracer) MaxRequestsAtOnce() (int, error) {
 	return rr.Requests, nil
 }
 
+// MaxSamplesAtOnce returns the number of samples the worker might render at once
 func (rr *RemoteRaytracer) MaxSamplesAtOnce() (int, error) {
 	return rr.Samples, nil
 }
 
+// StoreSample stores samples an image without returning it, to be used
+// with a later call of GetImage()
 func (rr *RemoteRaytracer) StoreSample(settings *SampleSettings) error {
 	return rr.Raytracer.StoreSample(settings)
 }
 
+// GetImage returns the combined result of any previously stored samples
 func (rr *RemoteRaytracer) GetImage() *hdrimage.Image {
 	return rr.Raytracer.GetImage()
 }

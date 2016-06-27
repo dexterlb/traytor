@@ -5,7 +5,7 @@ import (
 	"github.com/DexterLB/traytor/ray"
 )
 
-// MixedMaterials mixes the shaders of two materials where
+// MixedMaterial mixes two other materials depending on a coefficient
 type MixedMaterial struct {
 	First       *AnyMaterial
 	Second      *AnyMaterial

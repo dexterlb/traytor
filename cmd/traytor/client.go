@@ -15,6 +15,10 @@ import (
 	"github.com/DexterLB/traytor/rpc"
 )
 
+// RenderLoop renders samples of an image until the sample counter reaches
+// 0, and then returns the combined result. If synchronous is set, images
+// will be transferred from the worker after every sample. Otherwise,
+// the image is transferred at the end.
 func RenderLoop(
 	sampleCounter *rpc.SampleCounter,
 	client *rpc.RemoteRaytracerCaller,
@@ -50,6 +54,7 @@ func RenderLoop(
 	}
 }
 
+// JoinSamples combines samples into a single image
 func JoinSamples(
 	renderedImages <-chan *hdrimage.Image,
 	width int,

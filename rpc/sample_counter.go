@@ -10,7 +10,7 @@ type SampleCounter struct {
 
 // NewSampleCounter initializes the counter with a value
 func NewSampleCounter(value int) *SampleCounter {
-	return &SampleCounter{Counter: value}
+	return &SampleCounter{Counter: value + 1}
 }
 
 // Dec decreases the counter by value, but doesn't go below zero (if

@@ -25,7 +25,7 @@ func RenderLoop(
 	renderedImages chan<- *hdrimage.Image,
 	globalSettings *rpc.SampleSettings,
 	synchronous bool,
-	bar progress.Progress,
+	bar *progress.ProgressBar,
 ) {
 	settings := *globalSettings
 	for {
@@ -47,7 +47,9 @@ func RenderLoop(
 			if synchronous {
 				renderedImages <- image
 			}
-			bar.Add(1)
+			if bar != nil {
+				bar.Add(1)
+			}
 		} else {
 			log.Printf("No sample :( %s\n", err)
 		}
@@ -78,13 +80,17 @@ func runClient(c *cli.Context) error {
 	}
 	synchronous := c.Bool("synchronous")
 
-	fmt.Printf(
-		"will render %s to %s of size %dx%d on those workers: %s, synchronous %v\n",
-		scene, image,
-		c.Int("width"), c.Int("height"),
-		strings.Join(workerAdresses, ", "),
-		synchronous,
-	)
+	quiet := c.GlobalBool("quiet")
+
+	if !quiet {
+		fmt.Printf(
+			"will render %s to %s of size %dx%d on those workers: %s, synchronous %v\n",
+			scene, image,
+			c.Int("width"), c.Int("height"),
+			strings.Join(workerAdresses, ", "),
+			synchronous,
+		)
+	}
 
 	width, height := c.Int("width"), c.Int("height")
 	totalSamples := c.Int("total-samples")
@@ -93,7 +99,11 @@ func runClient(c *cli.Context) error {
 	workers := make([]*rpc.RemoteRaytracerCaller, len(workerAdresses))
 	finishWorker := &sync.WaitGroup{}
 	data, err := ioutil.ReadFile(scene)
-	bar := progress.StartProgressBar(totalSamples, "rendering samples ")
+
+	var bar *progress.ProgressBar
+	if !quiet {
+		bar = progress.StartProgressBar(totalSamples, "rendering samples ")
+	}
 
 	if err != nil {
 		return fmt.Errorf("Error when loading scene: %s", err)
@@ -134,7 +144,9 @@ func runClient(c *cli.Context) error {
 			}
 			finishRender.Wait()
 			if !synchronous {
-				bar.Prefix(fmt.Sprintf("Getting image from %s", workerAdresses[i]))
+				if !quiet {
+					bar.Prefix(fmt.Sprintf("Getting image from %s", workerAdresses[i]))
+				}
 				image, err := workers[i].GetImage()
 				if err == nil {
 					if image.Width != 0 {
@@ -151,7 +163,9 @@ func runClient(c *cli.Context) error {
 	go func() {
 		finishWorker.Wait()
 		close(renderedImages)
-		bar.Done()
+		if !quiet {
+			bar.Done()
+		}
 	}()
 
 	averageImage := JoinSamples(renderedImages, width, height)

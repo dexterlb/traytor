@@ -120,7 +120,12 @@ func main() {
 		},
 	}
 
-	app.Flags = []cli.Flag{}
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{
+			Name:  "quiet, q",
+			Usage: "don't show any output or progressbars",
+		},
+	}
 
 	err := app.Run(os.Args)
 	if err != nil {

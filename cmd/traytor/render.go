@@ -21,18 +21,24 @@ func renderer(
 	seed int64,
 	totalSamples int,
 	threads int,
+	quiet bool,
 ) {
 	randomGen := random.New(seed)
 
 	sampleCounter := rpc.NewSampleCounter(totalSamples)
-	bar := progress.StartProgressBar(totalSamples, "rendering samples")
+	var bar *progress.ProgressBar
+	if !quiet {
+		bar = progress.StartProgressBar(totalSamples, "rendering samples")
+	}
 
 	wg := sync.WaitGroup{}
 	wg.Add(threads)
 
 	defer func() {
 		wg.Wait()
-		bar.Done()
+		if !quiet {
+			bar.Done()
+		}
 	}()
 
 	for i := 0; i < threads; i++ {
@@ -53,7 +59,9 @@ func renderer(
 					return
 				}
 				raytracer.Sample(image)
-				bar.Add(1)
+				if !quiet {
+					bar.Add(1)
+				}
 			}
 		}()
 	}
@@ -61,13 +69,17 @@ func renderer(
 
 func runRender(c *cli.Context) error {
 	scenePath, image := getArguments(c)
-	log.Printf(
-		"will render %d samples of %s to %s of size %dx%d with %d threads",
-		c.Int("total-samples"),
-		scenePath, image,
-		c.Int("width"), c.Int("height"),
-		c.Int("max-jobs"),
-	)
+	quiet := c.GlobalBool("quiet")
+
+	if !quiet {
+		log.Printf(
+			"will render %d samples of %s to %s of size %dx%d with %d threads",
+			c.Int("total-samples"),
+			scenePath, image,
+			c.Int("width"), c.Int("height"),
+			c.Int("max-jobs"),
+		)
+	}
 
 	width, height := c.Int("width"), c.Int("height")
 	totalSamples := c.Int("total-samples")
@@ -82,7 +94,7 @@ func runRender(c *cli.Context) error {
 	scene.Init()
 
 	go func() {
-		renderer(width, height, renderedImages, scene, 42, totalSamples, threads)
+		renderer(width, height, renderedImages, scene, 42, totalSamples, threads, quiet)
 		close(renderedImages)
 	}()
 

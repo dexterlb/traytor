@@ -10,12 +10,17 @@ import (
 )
 
 func runWorker(c *cli.Context) error {
-	fmt.Printf(
-		"will start worker with %d threads with max requests %d on this address: %s\n",
-		c.Int("max-jobs"),
-		c.Int("max-requests"),
-		c.String("listen-address"),
-	)
+	quiet := c.GlobalBool("quiet")
+
+	if !quiet {
+		fmt.Printf(
+			"will start worker with %d threads with max requests %d on this address: %s\n",
+			c.Int("max-jobs"),
+			c.Int("max-requests"),
+			c.String("listen-address"),
+		)
+	}
+
 	address := c.String("listen-address")
 
 	rr := rpc.NewRemoteRaytracer(

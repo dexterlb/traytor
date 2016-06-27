@@ -120,7 +120,6 @@ func (cr *ConcurrentRaytracer) SetScene(scene *scene.Scene) {
 		unit.image = nil
 		unit.raytracer.Scene = scene
 	}
-	fmt.Printf("%d - %d\n", len(units), cr.ParallelSamples())
 	cr.pushAllUnits(units)
 }
 

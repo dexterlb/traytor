@@ -42,12 +42,12 @@ func renderer(
 	}()
 
 	for i := 0; i < threads; i++ {
-		go func() {
+		go func(seed int64) {
 			defer wg.Done()
 
 			raytracer := raytracer.Raytracer{
 				Scene:  scene,
-				Random: random.New(randomGen.NewSeed()),
+				Random: random.New(seed),
 			}
 
 			image := hdrimage.New(width, height)
@@ -63,7 +63,7 @@ func renderer(
 					bar.Add(1)
 				}
 			}
-		}()
+		}(randomGen.NewSeed())
 	}
 }
 

@@ -19,20 +19,23 @@ else
 fi
 
 echo "num_threads start_time end_time" >> ${2}
-for (( i = first ; i <= last ; i++))
-do
-		colour="\033[33;32m"
-		echo -e "\n${colour}===> Testing for ${i}"
-		echo -n -e "\e[0m"
-		for (( j = 1 ; j <= ${3} ; j++ ))
-		do
-			arguments=(-j ${i})
+progress=0
 
-			before=`date +%s%N`
-			"${TRAYTOR_BIN}" render "${@:6}" "${arguments[@]}" "${4}" "${5}"
-			after=`date +%s%N`
-			sleep 1
-			echo "$i $before $after" >> "${2}"
-		done
-		echo -e "$colour****** done ******\e[0m"
+for (( k = first ; k <= last ; k++)); do
+    for (( j = 1 ; j <= ${3} ; j++ )); do
+        echo "${k}"
+    done
+done | shuf | while read i; do
+    progress=$(( progress + 1 ))
+    colour="\033[33;32m"
+    echo -e "\n${colour}===> [${progress} / $(( (last - first + 1) * ${3} ))] testing for ${i}"
+    echo -n -e "\e[0m"
+    arguments=(-j ${i})
+
+    before=`date +%s%N`
+    "${TRAYTOR_BIN}" -q render "${@:6}" "${arguments[@]}" "${4}" "${5}"
+    after=`date +%s%N`
+    sleep 1
+    echo "$i $before $after" >> "${2}"
+    echo -e "$colour****** done ******\e[0m"
 done

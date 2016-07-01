@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 #1 is the range (for example 3-5 for numbers of threads to test for)
 #2 is log file 
@@ -10,12 +10,13 @@ if [[ -z ${TRAYTOR_BIN} ]]; then
     TRAYTOR_BIN=traytor
 fi
 
-if [[ "${1}" =~ '([0-9]+)-([0-9]+)' ]]; then
-    first="${match[1]}"
-    last="${match[2]}"
+if [[ "${1}" =~ ([0-9]+)-([0-9]+) ]]; then
+    first="${BASH_REMATCH[1]}"
+    last="${BASH_REMATCH[2]}"
     echo "will test from $first to $last threads"
 else
     echo "please enter correct number of threads"
+    exit 2
 fi
 
 echo "num_threads start_time end_time" >> ${2}

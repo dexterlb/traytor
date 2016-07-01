@@ -108,36 +108,35 @@
 (\url{https://godoc.org/github.com/DexterLB/traytor}).
 
 \section{Имплементация}
-Основният обект, който върши работа е \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer}{Raytracer}. Важната функция е \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer.Sample}{Sample()} - идеята е за всеки пиксел
-от картинката да извикаме функцията \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer.Raytrace}{Raytrace()}.
-Тя ще намери цвета, който ще има този лъч:
+Основният обект, който върши работа е \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer}{Raytracer}. За да го инициализираме, ни трябва random seed. Важната негова функция е \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer.Sample}{Sample()} - фунцкия, която за всеки пиксел
+от картинката, подадена от потребителя, извиква функцията \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer.Raytrace}{Raytrace()}.
+Raytrace работи по следния алгоритъм:
 
+	\mitem Sample подава на Raytrace координати на пиксели. Тези координати се проектират върху плоската повърхност - екран. Взимаме лъча получен между камерата(приемаме, че е точка) и току-що намерената проекция.
+	\begin{center}
+	\includegraphics[width=0.7\textwidth]{camera_projection.png}
+	\end{center}	
 
-	\mitem Изстрелваме лъч от камерата, който отговаря на въпросните
-	координати по екрана
-	
 	\mitem Гледаме къде (и дали) този лъч се пресича с триъгълната
-	мрежа (\href{https://godoc.org/github.com/DexterLB/traytor/mesh#Mesh.Intersect}{Mesh.Intersect()}, като търсим триъгълника,
-	който пресичаме в k-d дървото.
+	мрежа (\href{https://godoc.org/github.com/DexterLB/traytor/mesh#Mesh.Intersect}{Mesh.Intersect()} на сцената. Чрез търсене в kd дърво, намираме триъгълника, който лъча пресича.
 	
-	\mitem Ако сме пресекли повърхност, знаем нейния материал.
+	\mitem Ако сме пресекли повърхност, знаем нейния материал, защото той се съхранява в самия обект триъгълник.
 	Извикваме \href{https://godoc.org/github.com/DexterLB/traytor/materials#Material}{Material.Shade()} за въпросната пресечна точка,
-	и намираме получения цвят. Ако материалът е ''лампа'', това ще
-	е дъното на рекурсията. Иначе материалът ще създаде нови лъчи
-	и ще сметне цвета въз основа на техните цветове.
+	и намираме получения цвят. Според различните видове материали, функцията постъпва по различен начин. Ако материалът е ''лампа'', това ще
+	е дъно на рекурсията и резултатът е цвета на лампата. Иначе материалът ще създаде нови лъчи, които ще отклони по определен начин и ще сметне цвета въз основа на техните цветове. Посоката, в която се отклоняваме, в повечето случаи зависи от random seed-а на текущия Raytracer. Лъчът може да се отклонява краен брой пъти. Ако ги надвиши, също се достига дъно на рекурсията и подразбираме черен цвят. Ако е Reflective, например, лъчът ще се отрази. 
 
 	\mend
 
-Така получаваме картинка, която е много шумна. Сега трябва да повторим
-същата операция много  пъти(100 е добро голямо число, a 1000: още по-добро \footnote{потвърдено от \href{https://www.fmi.uni-sofia.bg/bg/lecturers/ma/rnikolov}{ас. Росен Николов}}).
+За да получим идеална картина, трябва да пуснем безброй много лъчи през всеки пиксел, за да видим точния цвят. Тъй като това е невъзможно, получаваме картина с толкова лъчи пуснати през пиксел, колкото е броят на samples, подадени на програмата. Колкото по-близо са до безкрайност, толкова по-добра ще е картината.
 
 \subsection{Паралелизация по нишки (\href{https://github.com/DexterLB/traytor/blob/master/cmd/traytor/render.go}{traytor render})}
-
+	\mitem Броят на нишките n и броят на samples, които искаме, се взимат от командите параметри. По подразбираме, n е равнона броя на процесорите.
+	
 	\mitem стартират се n на брой нишки, като всяка
 от тях инициализира свой \href{https://godoc.org/github.com/DexterLB/traytor/raytracer#Raytracer}{Raytracer} обект, със случайно генериран
 random seed, и своя празна картинка
 
-	\mitem Всяка от нишките намаля с 1 споделен брояч (\href{https://godoc.org/github.com/DexterLB/traytor/rpc#SampleCounter}{SampleCounter}) и добавя sample към картинката. Повтаря тази
+	\mitem Всяка от нишките намаля с 1 споделен брояч (\href{https://godoc.org/github.com/DexterLB/traytor/rpc#SampleCounter}{SampleCounter}) и добавя sample към картинката.  Повтаря тази
 	операция, докато броячът не е станал 0.
 	
 	\mitem В момента, която някоя от нишките стане готова (общият
@@ -161,19 +160,19 @@ random seed, и своя празна картинка
 сървъра.
 
 
-	\mitem Клиентът стартира лека нишка за всеки от работниците
-	и извършва комуникацията с него в нея.
+	\mitem \href{https://github.com/DexterLB/traytor/blob/master/cmd/traytor/client.go}{client} стартира лека нишка за всеки от работниците
+	и извършва комуникацията с него в нея, играейки ролята на сървър.
 
 \begin{wrapfigure}{r}{7cm}
 \includegraphics[width=7cm]{architecture.pdf}
 \end{wrapfigure}
-	
-	\mitem Клиентът изпраща сцената на всеки от работниците
+
+	\mitem \href{https://github.com/DexterLB/traytor/blob/master/cmd/traytor/client.go}{client} изпраща сцената на всеки от работниците
 	(\href{https://godoc.org/github.com/DexterLB/traytor/rpc#RemoteRaytracer.LoadScene}{LoadScene()}). При получаване,
 	работникат инициализира сцената (строи k-d дървото и т.н.)
 	
 	\mitem В момента, в който сме свършили да пращаме сцена на някой
-	работник, стартираме толкова нишки за този клиент, колкото заявки
+	работник, стартираме толкова нишки за този работник, колкото заявки
 	може да получава (потребителски параметър max-requests) - добре е 
 	да са повече, отколкото реалните нишки на работника, за да може
 	да има ''изчакващи заявки'': така когато работникът свърши с
@@ -231,14 +230,14 @@ Cole Harris и mik1190.
 
 \subsection{Паралелизация по нишки}
 Тук трябва да споменем, че нишките в Go са много добри и лесни
-за използване - по подразбиране са "леки нишки", които се разпределят
+за използване - по подразбиране са ''леки нишки'', които се разпределят
 върху толкова на брой системни, колкото ядра имаме.
 
 \begin{center}
 \includegraphics[width=0.3\textwidth]{gopher.pdf}
 \end{center}
 Тестовете са извършени върху \url{t5600.rmi.yaht.net}
-(32 x Intel(R) Xeon(R) CPU E5-2660 0 @ 2.20GHz),
+(32 x Intel(R) Xeon(R) CPU E5-2660 @ 2.20GHz),
 операционна система CentOS Linux 7.2.1511 чрез ZSH скрипт,
 който за всеки брой нишки прави по 3 теста, и записва времената
 в .csv файл.
@@ -255,7 +254,7 @@ Cole Harris и mik1190.
 \end{center}
 
 \pagebreak
-Ефективност ($E_n = T_n / n$):
+Ефективност ($E_n = S_n / n$):
 \begin{center}
 \includegraphics[width=0.9\textwidth]{thread_graphs/Sn_n.pdf}
 \end{center}
@@ -297,7 +296,7 @@ Cole Harris и mik1190.
 (работниците изпращат резултатите си на клиента)
 
 \pagebreak
-Ефективност ($E_n = T_n / n$):
+Ефективност ($E_n = S_n / n$):
 \begin{center}
 \includegraphics[width=\textwidth]{host_graphs/Sn_n.pdf}
 \end{center}

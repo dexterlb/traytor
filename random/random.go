@@ -8,10 +8,38 @@ import (
 	sobol "github.com/phil-mansfield/gotetra/math/rand"
 )
 
+type VanDerCorput struct {
+	index     uint
+	generator func(uint) float64
+}
+
+func NewVanDerCorput(base uint) *VanDerCorput {
+	index := uint(0)
+	invb := 1 / float64(base)
+	g := func(n uint) (r float64) {
+		p := invb
+		for n > 0 {
+			r += p * float64(n%base)
+			p *= invb
+			n /= base
+		}
+		return
+	}
+
+	return &VanDerCorput{index: index, generator: g}
+}
+
+func (v *VanDerCorput) Next() float64 {
+	result := v.generator(v.index)
+	v.index += 1
+	return result
+}
+
 // Random is a random generator with convenient methods
 type Random struct {
 	generator      *rand.Rand
 	sobolGenerator *sobol.SobolSequence
+	vanDerCorput   *VanDerCorput
 }
 
 // New returns a new Random object initialized with the given seed
@@ -21,17 +49,22 @@ func New(seed int64) *Random {
 	r.generator = rand.New(source)
 	r.sobolGenerator = sobol.NewSobolSequence()
 	r.sobolGenerator.Init()
+	r.vanDerCorput = NewVanDerCorput(3)
+
 	for i := int64(0); i < seed%100; i++ {
 		r.sobolGenerator.Next(1)
+	}
+
+	for i := int64(0); i < seed%100; i++ {
+		r.vanDerCorput.Next()
 	}
 	return r
 }
 
 // Vec3Sphere returns a random unit vector
 func (r *Random) Vec3Sphere() *maths.Vec3 {
-	sobol_random := r.sobolGenerator.Next(2)
-	u := sobol_random[0]*2 - 1
-	theta := sobol_random[1] * 2 * math.Pi
+	u := r.FloatAB(-1, 1)
+	theta := r.Float02Pi()
 
 	return maths.NewVec3(
 		math.Sqrt(1-u*u)*math.Cos(theta),
@@ -74,7 +107,7 @@ func (r *Random) Vec3HemiCos(normal *maths.Vec3) *maths.Vec3 {
 
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
-	return r.sobolGenerator.Next(1)[0]
+	return r.vanDerCorput.Next()
 }
 
 // Float0Pi returns a random float between 0 and Pi

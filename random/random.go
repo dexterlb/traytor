@@ -29,8 +29,10 @@ func New(seed int64) *Random {
 
 // Vec3Sphere returns a random unit vector
 func (r *Random) Vec3Sphere() *maths.Vec3 {
-	u := r.FloatAB(-1, 1)
-	theta := r.Float02Pi()
+	sobol_random := r.sobolGenerator.Next(2)
+	u := sobol_random[0]*2 - 1
+	theta := sobol_random[1] * 2 * math.Pi
+
 	return maths.NewVec3(
 		math.Sqrt(1-u*u)*math.Cos(theta),
 		math.Sqrt(1-u*u)*math.Sin(theta),

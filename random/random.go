@@ -5,11 +5,13 @@ import (
 	"math/rand"
 
 	"github.com/DexterLB/traytor/maths"
+	sobol "github.com/phil-mansfield/gotetra/math/rand"
 )
 
 // Random is a random generator with convenient methods
 type Random struct {
-	generator *rand.Rand
+	generator      *rand.Rand
+	sobolGenerator *sobol.SobolSequence
 }
 
 // New returns a new Random object initialized with the given seed
@@ -17,6 +19,11 @@ func New(seed int64) *Random {
 	r := &Random{}
 	source := rand.NewSource(seed)
 	r.generator = rand.New(source)
+	r.sobolGenerator = sobol.NewSobolSequence()
+	r.sobolGenerator.Init()
+	for i := int64(0); i < seed%100; i++ {
+		r.sobolGenerator.Next(1)
+	}
 	return r
 }
 
@@ -65,17 +72,17 @@ func (r *Random) Vec3HemiCos(normal *maths.Vec3) *maths.Vec3 {
 
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
-	return r.generator.Float64()
+	return r.sobolGenerator.Next(1)[0]
 }
 
 // Float0Pi returns a random float between 0 and Pi
 func (r *Random) Float0Pi() float64 {
-	return r.generator.Float64() * math.Pi
+	return r.Float01() * math.Pi
 }
 
 // Float02Pi returns a random float between 0 and 2*Pi
 func (r *Random) Float02Pi() float64 {
-	return r.generator.Float64() * 2 * math.Pi
+	return r.Float01() * 2 * math.Pi
 }
 
 // Float0A returns a random float between 0 and a

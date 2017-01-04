@@ -27,16 +27,21 @@ def read_binary_file(filen):
         bytes = f.read()
     return bytes
 
-def compare(file1, file2):
-    first = decode_traytor_srgb(read_binary_file(file1))
-    second = decode_traytor_srgb(read_binary_file(file2))
-   
+def compare(first, second):
     return math.sqrt(sum([(a - b) ** 2 for a, b in zip(first, second)]))
 
+def norm(original):
+    return math.sqrt(sum(a ** 2 for a in original))
+
 if __name__ == '__main__':
-    if len(sys.argv) == 3:
-        f1 = sys.argv[1]
-        f2 = sys.argv[2]
-        print(compare(f1, f2))
+    if len(sys.argv) == 2:
+        original_file = "/home/do/go/src/github.com/DexterLB/traytor/mccpy/new/normal_3000.th"
+        file_name = sys.argv[1]
+
+        original = decode_traytor_srgb(read_binary_file(original_file))
+        second = decode_traytor_srgb(read_binary_file(file_name))
+
+        perr = compare(original, second)
+        print("Dist: %.3f; Percent error: %.3f%%" % (perr, perr/norm(original) * 100))
     else:
         print("Wrong number of arguments")

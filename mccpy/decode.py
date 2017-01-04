@@ -1,6 +1,7 @@
 from array import array
 import struct
 import math
+import sys
 
 def encode_traytor_hdr(format, image):
     size = array('h', image.size)
@@ -30,4 +31,12 @@ def compare(file1, file2):
     first = decode_traytor_srgb(read_binary_file(file1))
     second = decode_traytor_srgb(read_binary_file(file2))
    
-    print(math.sqrt(sum([(a - b) ** 2 for a, b in zip(first, second)])))
+    return math.sqrt(sum([(a - b) ** 2 for a, b in zip(first, second)]))
+
+if __name__ == '__main__':
+    if len(sys.argv) == 3:
+        f1 = sys.argv[1]
+        f2 = sys.argv[2]
+        print(compare(f1, f2))
+    else:
+        print("Wrong number of arguments")

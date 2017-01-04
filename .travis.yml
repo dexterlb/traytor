@@ -3,10 +3,9 @@ language: go
 go:
   - 1.5
   - 1.6
+  - 1.7
 before_install: 
   - bash .gitcookie.sh
-  - sudo apt-get update
-  - sudo apt-get install qtdeclarative5-dev-tools qtdeclarative5-dev qt5-default libqt5qml-quickcontrols libqt5quick5 qtbase5-dev
 script: go test -v ./...
 env:
   - GODEBUG=cgocheck=0

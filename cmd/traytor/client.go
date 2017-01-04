@@ -169,5 +169,5 @@ func runClient(c *cli.Context) error {
 	}()
 
 	averageImage := JoinSamples(renderedImages, width, height)
-	return savePng(averageImage, image)
+	return saveImage(averageImage, image, c.String("format"))
 }

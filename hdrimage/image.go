@@ -41,8 +41,8 @@ func Decode(reader io.Reader) (*Image, error) {
 	im := New(int(size[0]), int(size[1]))
 	var rgba [4]float32
 
-	for i := im.Width - 1; i > 0; i-- {
-		for j := 0; j < im.Height; j++ {
+	for i := im.Height - 1; i >= 0; i-- {
+		for j := 0; j < im.Width; j++ {
 			err = binary.Read(reader, binary.LittleEndian, &rgba)
 			if err != nil {
 				return nil, fmt.Errorf("cannot read image data: %s", err)
@@ -54,6 +54,37 @@ func Decode(reader io.Reader) (*Image, error) {
 	}
 
 	return im, nil
+}
+
+// Encode writes data in the simple traytor_hdr format into a writer
+func (im *Image) Encode(writer io.Writer) error {
+	size := [2]uint16{
+		uint16(im.Width),
+		uint16(im.Height),
+	}
+
+	err := binary.Write(writer, binary.LittleEndian, size)
+	if err != nil {
+		return fmt.Errorf("cannot write header to image: %s", err)
+	}
+
+	var rgba [4]float32
+
+	for i := im.Height - 1; i >= 0; i-- {
+		for j := 0; j < im.Width; j++ {
+			pixel := im.AtHDR(j, i)
+			rgba[0] = pixel.R
+			rgba[1] = pixel.G
+			rgba[2] = pixel.B
+
+			err = binary.Write(writer, binary.LittleEndian, rgba)
+			if err != nil {
+				return fmt.Errorf("cannot write image data: %s", err)
+			}
+		}
+	}
+
+	return nil
 }
 
 // String returns a string which is the representaton of image:

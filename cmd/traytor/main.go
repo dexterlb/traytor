@@ -30,6 +30,13 @@ func main() {
 
 	app.Commands = []cli.Command{
 		{
+			Name:      "convert",
+			Aliases:   []string{"conv", "c"},
+			Usage:     "convert a traytor_hdr file to a png file (loses HDR information)",
+			ArgsUsage: "<traytor_hdr file> <png file>",
+			Action:    runConvert,
+		},
+		{
 			Name:      "render",
 			Aliases:   []string{"ren", "r"},
 			Usage:     "render a scene locally",
@@ -55,6 +62,11 @@ func main() {
 					Name:  "total-samples, t",
 					Usage: "total samples to render",
 					Value: 20,
+				},
+				cli.StringFlag{
+					Name:  "format, f",
+					Usage: "output file format (png or traytor_hdr)",
+					Value: "png",
 				},
 			},
 		},
@@ -115,6 +127,11 @@ func main() {
 					Name:  "height, y",
 					Usage: "height of the output image",
 					Value: 450,
+				},
+				cli.StringFlag{
+					Name:  "format, f",
+					Usage: "output file format (png or traytor_hdr)",
+					Value: "png",
 				},
 			},
 		},

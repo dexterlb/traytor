@@ -30,7 +30,5 @@ func runConvert(c *cli.Context) (err error) {
 		return fmt.Errorf("unable to read input image: %s", err)
 	}
 
-	fmt.Printf("first pixel: %v\n", image.Pixels[0][0])
-
 	return saveImage(image, toFilename, "png")
 }

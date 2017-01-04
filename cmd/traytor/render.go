@@ -105,8 +105,5 @@ func runRender(c *cli.Context) error {
 		averageImage.Divisor += currentImage.Divisor
 	}
 
-	fmt.Printf("first pixel: %v\n", averageImage.Pixels[0][0])
-
-	saveImage(averageImage, "/tmp/test.png", "png")
 	return saveImage(averageImage, image, c.String("format"))
 }

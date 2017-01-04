@@ -105,5 +105,5 @@ func runRender(c *cli.Context) error {
 		averageImage.Divisor += currentImage.Divisor
 	}
 
-	return savePng(averageImage, image)
+	return saveImage(averageImage, image, c.String("format"))
 }

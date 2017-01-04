@@ -63,8 +63,10 @@ func New(seed int64) *Random {
 
 // Vec3Sphere returns a random unit vector
 func (r *Random) Vec3Sphere() *maths.Vec3 {
-	u := r.FloatAB(-1, 1)
-	theta := r.Float02Pi()
+	point := r.sobolGenerator.Next(2)
+
+	u := point[0]*2 - 1
+	theta := point[1] * 2 * math.Pi
 
 	return maths.NewVec3(
 		math.Sqrt(1-u*u)*math.Cos(theta),
@@ -94,9 +96,12 @@ func (r *Random) Vec3HemiCos(normal *maths.Vec3) *maths.Vec3 {
 	ox.Normalise()
 	oy.Normalise()
 
-	u := r.Float01()
+	point := r.sobolGenerator.Next(2)
+
+	u := point[0]
 	radius := math.Sqrt(u)
-	theta := r.Float02Pi()
+
+	theta := point[1] * 2 * math.Pi
 
 	vec := normal.Scaled(math.Sqrt(math.Max(0, 1-u)))
 	vec.Add(ox.Scaled(radius * math.Cos(theta)))
@@ -107,7 +112,7 @@ func (r *Random) Vec3HemiCos(normal *maths.Vec3) *maths.Vec3 {
 
 // Float01 returns a random float between 0 and 1
 func (r *Random) Float01() float64 {
-	return r.vanDerCorput.Next()
+	return r.sobolGenerator.Next(1)[0]
 }
 
 // Float0Pi returns a random float between 0 and Pi

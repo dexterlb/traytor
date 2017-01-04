@@ -1,5 +1,6 @@
 from array import array
 import struct
+import math
 
 def encode_traytor_hdr(format, image):
     size = array('h', image.size)
@@ -12,9 +13,21 @@ def encode_traytor_hdr(format, image):
     return size.tobytes() + pixels.tobytes()
 
 def decode_traytor_srgb(array_of_bytes):
-	size = struct.unpack('h', array_of_bytes[0:2])[0], struct.unpack('h', array_of_bytes[2:4])[0]
-	pixel_bytes = array_of_bytes[4:]
-	pixels = []
-	for i in range(0, len(pixel_bytes), 4):
-		pixels.append(struct.unpack('f', pixel_bytes[i: i+4])[0])
-	return pixels
+    size = struct.unpack('hh', array_of_bytes[0:4])
+    pixel_bytes = array_of_bytes[4:]
+    
+    pixels = array('f')
+    pixels.frombytes(pixel_bytes)
+
+    return pixels.tolist()
+
+def read_binary_file(filen):
+    with open(filen, "rb") as f:
+        bytes = f.read()
+    return bytes
+
+def compare(file1, file2):
+    first = decode_traytor_srgb(read_binary_file(file1))
+    second = decode_traytor_srgb(read_binary_file(file2))
+   
+    print(math.sqrt(sum([(a - b) ** 2 for a, b in zip(first, second)])))

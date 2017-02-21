@@ -6,7 +6,7 @@ import sys
 def encode_traytor_hdr(format, image):
     size = array('h', image.size)
     pixels = array('f', image.pixels)   # note: this is huge!
-    
+
     if format == 'traytor_srgb':
         for i in range(len(pixels)):
             pixels[i] = srgb_to_linear(pixels[i])
@@ -16,7 +16,7 @@ def encode_traytor_hdr(format, image):
 def decode_traytor_srgb(array_of_bytes):
     size = struct.unpack('hh', array_of_bytes[0:4])
     pixel_bytes = array_of_bytes[4:]
-    
+
     pixels = array('f')
     pixels.frombytes(pixel_bytes)
 
@@ -35,7 +35,7 @@ def norm(original):
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
-        original_file = "/home/do/go/src/github.com/DexterLB/traytor/mccpy/new/normal_3000.th"
+        original_file = "new/normal_3000.th"
         file_name = sys.argv[1]
 
         original = decode_traytor_srgb(read_binary_file(original_file))

@@ -3,6 +3,7 @@ traytor
 [![GoDoc](https://godoc.org/github.com/DexterLB/traytor?status.svg)](http://godoc.org/github.com/DexterLB/traytor)
 [![Build Status](https://travis-ci.org/DexterLB/traytor.svg?branch=master)](https://travis-ci.org/DexterLB/traytor)
 [![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/DexterLB/traytor/master/LICENSE)
+
 [![forthebadge](http://forthebadge.com/images/badges/no-ragrets.svg)](http://forthebadge.com)
 
 ```Every single ray misses```
